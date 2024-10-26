@@ -90,7 +90,7 @@ namespace Deque {
     _reverse_array: Array a -> Array a;
     _reverse_array = |arr| (
         let n = arr.get_size;
-        let output = arr.force_unique;
+        let output = arr;
         loop((output, 0), |(output, i)|
             if i >= n { break $ output };
             let output = output.set(n - i - 1, arr.@(i));
