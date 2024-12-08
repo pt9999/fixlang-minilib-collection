@@ -1,7 +1,5 @@
 module RbtreeTest;
 
-import Random;
-
 import Minilib.Collection.RBTree;
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
