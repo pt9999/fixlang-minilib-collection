@@ -98,37 +98,3 @@ Calculates union of two TreeSets.
 ### `to_iter : [a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator a`
 
 Converts a TreeSet into an iterator in sorted order.
-
-## `namespace Minilib.Collection.TreeSet::TreeSet::TreeSet`
-
-### `@less_than : Minilib.Collection.TreeSet::TreeSet::TreeSet a -> a -> a -> Std::Bool`
-
-Retrieves the field `less_than` from a value of `TreeSet`.
-
-### `@root : Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Minilib.Collection.RBTree::RBNode::RBNode a`
-
-Retrieves the field `root` from a value of `TreeSet`.
-
-### `act_less_than : [f : Std::Functor] ((a -> a -> Std::Bool) -> f (a -> a -> Std::Bool)) -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> f (Minilib.Collection.TreeSet::TreeSet::TreeSet a)`
-
-Updates a value of `TreeSet` by applying a functorial action to field `less_than`.
-
-### `act_root : [f : Std::Functor] (Minilib.Collection.RBTree::RBNode::RBNode a -> f (Minilib.Collection.RBTree::RBNode::RBNode a)) -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> f (Minilib.Collection.TreeSet::TreeSet::TreeSet a)`
-
-Updates a value of `TreeSet` by applying a functorial action to field `root`.
-
-### `mod_less_than : ((a -> a -> Std::Bool) -> a -> a -> Std::Bool) -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
-
-Updates a value of `TreeSet` by applying a function to field `less_than`.
-
-### `mod_root : (Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a) -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
-
-Updates a value of `TreeSet` by applying a function to field `root`.
-
-### `set_less_than : (a -> a -> Std::Bool) -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
-
-Updates a value of `TreeSet` by setting field `less_than` to a specified one.
-
-### `set_root : Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
-
-Updates a value of `TreeSet` by setting field `root` to a specified one.
