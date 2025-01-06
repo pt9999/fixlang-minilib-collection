@@ -90,6 +90,12 @@ namespace TreeSet {
         ts.@root.find_range(lt_begin, lt_end)
     );
 
+    // Converts a TreeSet into an array in sorted order.
+    to_array: [a: TreeSetElem] TreeSet a -> Array a;
+    to_array = |ts| (
+        ts.@root.to_array
+    );
+
     // Converts a TreeSet into an iterator in sorted order.
     to_iter: [a: TreeSetElem] TreeSet a -> Iterator a;
     to_iter = |ts| (
