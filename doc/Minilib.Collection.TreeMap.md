@@ -101,6 +101,10 @@ Returns an iterator of keys in ascending order.
 NOTE: `less_than` function must meet specific conditions. For details, see documentation of
 [`RBTree`](./rbtree.md).
 
+### `to_array : [k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Array (k, v)`
+
+Converts a TreeMap into an array of key-value pairs in ascending order of keys.
+
 ### `to_iter : [k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator (k, v)`
 
 Converts a TreeMap into an iterator of key-value pairs in ascending order of keys.

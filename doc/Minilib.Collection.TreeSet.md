@@ -95,6 +95,10 @@ NOTE: `less_than` function must meet specific conditions. For details, see docum
 
 Calculates union of two TreeSets.
 
+### `to_array : [a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Array a`
+
+Converts a TreeSet into an array in sorted order.
+
 ### `to_iter : [a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator a`
 
 Converts a TreeSet into an iterator in sorted order.

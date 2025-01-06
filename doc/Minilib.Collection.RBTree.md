@@ -90,6 +90,8 @@ Returns `(active, removed, min)` where `removed` is the node after removal,
 `min` is the minimum element,
 and `active` is true iff `removed.level == node.level - 1`.
 
+### `_to_array_inner : [a : Minilib.Collection.RBTree::RBNode::RBNodeElem] Std::Array a -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Array a`
+
 ### `_try_remove_range : [a : Minilib.Collection.RBTree::RBNode::RBNodeElem] (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Option (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a)`
 
 `node._try_remove_range(lt_begin, lt_end)` tries to remove single element `elem`
@@ -195,6 +197,8 @@ for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
 ### `set_color : ((Minilib.Collection.RBTree::RBNode::RBNode a, a, Minilib.Collection.RBTree::RBNode::RBNode a) -> Minilib.Collection.RBTree::RBNode::RBNode a) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a`
 
 ### `set_triplet : (Minilib.Collection.RBTree::RBNode::RBNode a, a, Minilib.Collection.RBTree::RBNode::RBNode a) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a`
+
+### `to_array : [a : Minilib.Collection.RBTree::RBNode::RBNodeElem] Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Array a`
 
 ### `to_iter : [a : Minilib.Collection.RBTree::RBNode::RBNodeElem] Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Iterator a`
 
