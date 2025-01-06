@@ -679,6 +679,21 @@ namespace RBNode {
         }
     );
 
+    _to_array_inner: [a: RBNodeElem] Array a -> RBNode a -> Array a;
+    _to_array_inner = |arr, node| (
+        if node.is_empty { arr };
+        let (left, elem, right) = node.get_triplet;
+        let arr = left._to_array_inner(arr);
+        let arr = arr.push_back(elem);
+        let arr = right._to_array_inner(arr);
+        arr
+    );
+
+    to_array: [a: RBNodeElem] RBNode a -> Array a;
+    to_array = |node| (
+        node._to_array_inner([])
+    );
+
     to_iter: [a: RBNodeElem] RBNode a -> Iterator a;
     to_iter = |node| (
         if node.is_empty { Iterator::empty };
