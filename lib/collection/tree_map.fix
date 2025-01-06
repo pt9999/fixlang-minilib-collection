@@ -135,6 +135,12 @@ namespace TreeMap {
         tm.@root.find_range(lt_begin, lt_end)
     );
 
+    // Converts a TreeMap into an array of key-value pairs in ascending order of keys.
+    to_array: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> Array (k, v);
+    to_array = |tm| (
+        tm.@root.to_array
+    );
+
     // Converts a TreeMap into an iterator of key-value pairs in ascending order of keys.
     to_iter: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> Iterator (k, v);
     to_iter = |tm| (

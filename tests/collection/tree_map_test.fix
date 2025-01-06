@@ -5,6 +5,24 @@ import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
 
+test_to_iter: TestCase;
+test_to_iter = (
+    make_test("test_to_iter") $ |_|
+    let iter = Iterator::range(0, 10).map(|i| (i, i.to_string));
+    let map: TreeMap I64 String = from_iter(iter);
+    let _ = *assert_equal("eq", iter.to_array, map.to_iter.to_array);
+    pure()
+);
+
+test_to_array: TestCase;
+test_to_array = (
+    make_test("test_to_array") $ |_|
+    let iter = Iterator::range(0, 10).map(|i| (i, i.to_string));
+    let map: TreeMap I64 String = from_iter(iter);
+    let _ = *assert_equal("eq", iter.to_array, map.to_array);
+    pure()
+);
+
 test_insert_erase_ok: (I64, Reorder, Reorder) -> TestCase;
 test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
     let testname = "test_insert_erase_ok("+ n.to_string + "," +
@@ -122,6 +140,8 @@ test_find_range = (
 main: IO ();
 main = (
      [
+        test_to_iter,
+        test_to_array,
         test_insert_erase,
         test_upsert,
         test_find_range,
