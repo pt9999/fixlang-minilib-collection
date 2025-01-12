@@ -5,7 +5,7 @@ authors = ["pt9999"]
 license = "MIT"
 
 [build]
-opt_level = "separated"
+opt_level = "basic"
 files = [
     "lib/collection/deque.fix",
     "lib/collection/ordered_map.fix",
@@ -15,7 +15,7 @@ files = [
 ]
 
 [build.test]
-opt_level = "separated"
+opt_level = "basic"
 files = [
     "tests/test.fix",
     "tests/collection/deque_test.fix",
