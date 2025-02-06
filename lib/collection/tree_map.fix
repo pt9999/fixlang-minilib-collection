@@ -100,7 +100,7 @@ namespace TreeMap {
     );
 
     // Returns an iterator of keys in ascending order.
-    keys: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> Iterator k;
+    keys: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> DynIterator k;
     keys = |tm| (
         tm.to_iter.map(|e| e.@0)
     );
@@ -118,7 +118,7 @@ namespace TreeMap {
     // `tm.find_range(begin, end)` finds all entries `(k,v)`
     // where `!less_than(k, begin) && less_than(k, end)` is true.
     // In default `LessThan` ordering, that condition is same as `begin <= k && k < end`.
-    find_range: [k: TreeMapKey, v: TreeMapValue] k -> k -> TreeMap k v -> Iterator (k, v);
+    find_range: [k: TreeMapKey, v: TreeMapValue] k -> k -> TreeMap k v -> DynIterator (k, v);
     find_range = |begin, end, tm| (
         let less_than = tm.@key_less_than;
         let lt_begin = |(ent_k,_)| less_than(ent_k, begin);
@@ -130,7 +130,7 @@ namespace TreeMap {
     // where `!lt_begin((k, v)) && lt_end((k, v))` is true.
     // NOTE: `lt_begin` and `lt_end` must meet following condition:
     // for all `(k,v)`, `lt_begin((k,v))` is true then `lt_end((k,v))` must be true.
-    find_raw_range: [k: TreeMapKey, v: TreeMapValue] ((k,v) -> Bool) -> ((k,v) -> Bool) -> TreeMap k v -> Iterator (k, v);
+    find_raw_range: [k: TreeMapKey, v: TreeMapValue] ((k,v) -> Bool) -> ((k,v) -> Bool) -> TreeMap k v -> DynIterator (k, v);
     find_raw_range = |lt_begin, lt_end, tm| (
         tm.@root.find_range(lt_begin, lt_end)
     );
@@ -142,13 +142,13 @@ namespace TreeMap {
     );
 
     // Converts a TreeMap into an iterator of key-value pairs in ascending order of keys.
-    to_iter: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> Iterator (k, v);
+    to_iter: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> DynIterator (k, v);
     to_iter = |tm| (
         tm.@root.to_iter
     );
 
     // Converts an iterator of key-value pairs into a TreeMap using specified ordering.
-    from_iter_lt: [k: TreeMapKey, v: TreeMapValue] (k -> k -> Bool) -> Iterator (k, v) -> TreeMap k v;
+    from_iter_lt: [k: TreeMapKey, v: TreeMapValue, it: Iterator, Item it = (k, v)] (k -> k -> Bool) -> it -> TreeMap k v;
     from_iter_lt = |key_less_than, iter| (
         let tm = TreeMap::make_lt(key_less_than);
         let root = RBNode::from_iter_lt(tm.@entry_less_than, iter);
@@ -156,7 +156,7 @@ namespace TreeMap {
     );
 
     // Converts an iterator of key-value pairs into a TreeMap using default `LessThan` ordering.
-    from_iter: [k: LessThan, k: TreeMapKey, v: TreeMapValue] Iterator (k, v) -> TreeMap k v;
+    from_iter: [k: LessThan, k: TreeMapKey, v: TreeMapValue, it: Iterator, Item it = (k, v)] it -> TreeMap k v;
     from_iter = |iter| (
         TreeMap::from_iter_lt(RBNode::_less_than, iter)
     );
@@ -164,6 +164,6 @@ namespace TreeMap {
 
 impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: ToString {
     to_string = |tm| (
-        "TreeMap{" + tm.to_iter.map(to_string).join(",") + "}"
+        "TreeMap{" + tm.to_iter.Iterator::map(to_string).join(",") + "}"
     );
 }

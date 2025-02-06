@@ -35,7 +35,7 @@ test_insert_remove_ok = |(n, insert_reorder, remove_reorder)| (
     // test remove
     let shuffled = array.reorder(remove_reorder);
     let node = *shuffled.to_iter.zip(Iterator::count_up(0)).fold_m(
-        node, |node, (i, idx)|
+        node, |(i, idx), node|
         eval _debug_eprintln_lazy(|_| "removing: idx="+idx.to_string+" i="+i.to_string + " node="+node.to_string);
         eval _debug_eprintln_lazy(|_| "node.level=" + node.level.to_string);
         let node = node.remove(i);
@@ -71,7 +71,7 @@ test_get_first_last = (
         (40, shuffle(234)),
         (50, shuffle(345))
     ].to_iter.fold_m(
-        (), |_, (n, insert_reorder)|
+        (), |(n, insert_reorder), _|
         let array = Iterator::range(0, n).to_array;
         let node: RBNode I64 = array.reorder(insert_reorder).to_iter.from_iter;
         let _ = *assert_equal("get_first: n="+n.to_string, 
@@ -103,7 +103,7 @@ test_find_range_ok = |insert_reorder| (
         ([], (n, n+1))
     ];
     test_patterns.to_iter.fold_m(
-        (), |_, (expected, (begin, end))|
+        (), |(expected, (begin, end)), _|
         let actual = node.find_range(|x| x < begin, |x| x < end).to_array;
         let _ = *assert_equal("find_range", expected, actual);
         let expected = expected.to_iter.reverse.to_array;

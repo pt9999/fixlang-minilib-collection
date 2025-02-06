@@ -73,7 +73,7 @@ namespace TreeSet {
     // `ts.find_range(begin, end)` finds all elements `x`
     // where `!less_than(x, begin) && less_than(x, end)` is true.
     // In default `LessThan` ordering, that condition is same as `begin <= x && x < end`.
-    find_range: [a: TreeSetElem] a -> a -> TreeSet a -> Iterator a;
+    find_range: [a: TreeSetElem] a -> a -> TreeSet a -> DynIterator a;
     find_range = |begin, end, ts| (
         let less_than = ts.@less_than;
         let lt_begin = |x| less_than(x, begin);
@@ -85,7 +85,7 @@ namespace TreeSet {
     // where `!lt_begin(x) && lt_end(x)` is true.
     // NOTE: `lt_begin` and `lt_end` must meet following condition:
     // for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
-    find_raw_range: [a: TreeSetElem] (a -> Bool) -> (a -> Bool) -> TreeSet a -> Iterator a;
+    find_raw_range: [a: TreeSetElem] (a -> Bool) -> (a -> Bool) -> TreeSet a -> DynIterator a;
     find_raw_range = |lt_begin, lt_end, ts| (
         ts.@root.find_range(lt_begin, lt_end)
     );
@@ -97,13 +97,13 @@ namespace TreeSet {
     );
 
     // Converts a TreeSet into an iterator in sorted order.
-    to_iter: [a: TreeSetElem] TreeSet a -> Iterator a;
+    to_iter: [a: TreeSetElem] TreeSet a -> DynIterator a;
     to_iter = |ts| (
         ts.@root.to_iter
     );
 
     // Converts an iterator into a TreeSet using specified ordering.
-    from_iter_lt: [a: TreeSetElem] (a -> a -> Bool) -> Iterator a -> TreeSet a;
+    from_iter_lt: [a: TreeSetElem, it: Iterator, Item it = a] (a -> a -> Bool) -> it -> TreeSet a;
     from_iter_lt = |less_than, iter| (
         TreeSet {
             root: RBNode::from_iter_lt(less_than, iter),
@@ -112,7 +112,7 @@ namespace TreeSet {
     );
 
     // Converts an iterator into a TreeSet using default `LessThan` ordering.
-    from_iter: [a: LessThan, a: TreeSetElem] Iterator a -> TreeSet a;
+    from_iter: [a: LessThan, a: TreeSetElem, it: Iterator, Item it = a] it -> TreeSet a;
     from_iter = |iter| (
         TreeSet::from_iter_lt(RBNode::_less_than, iter)
     );
@@ -121,7 +121,7 @@ namespace TreeSet {
     intersect: [a : TreeSetElem] TreeSet a -> TreeSet a -> TreeSet a;
     intersect = |ts1, ts2| (
         ts1.to_iter.fold(
-            ts1, |ts1, x|
+            ts1, |x, ts1|
             if ts2.contains(x) {
                 ts1
             } else {
@@ -134,7 +134,7 @@ namespace TreeSet {
     merge: [a : TreeSetElem] TreeSet a -> TreeSet a -> TreeSet a;
     merge = |ts1, ts2| (
         ts2.to_iter.fold(
-            ts1, |ts1, x|
+            ts1, |x, ts1|
             ts1.insert(x)
         )
     );
@@ -143,6 +143,6 @@ namespace TreeSet {
 // Converts a TreeSet into a String.
 impl [a: TreeSetElem] TreeSet a: ToString {
     to_string = |ts| (
-        "TreeSet{" + ts.to_iter.map(to_string).join(",") + "}"
+        "TreeSet{" + ts.to_iter.Iterator::map(to_string).join(",") + "}"
     );
 }

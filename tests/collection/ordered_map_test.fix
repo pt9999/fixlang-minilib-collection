@@ -32,7 +32,7 @@ test_erase = (
     let iter = Iterator::count_up(0).take(n);
     let om: OrderedMap I64 String = iter.fold(
         OrderedMap::empty(0),
-        |m, i| m.insert(i, i.to_string));
+        |i, m| m.insert(i, i.to_string));
     let om = om.erase(erase_key);
     let actual = om.to_iter.to_array;
     let expected = iter.filter(|i| i != erase_key).map(|i| (i, i.to_string)).to_array;
@@ -83,7 +83,7 @@ test_to_iter = (
     let iter = Iterator::count_up(0).take(p).map(|i| (i * 5) % p);
     let om: OrderedMap I64 String = iter.fold(
         OrderedMap::empty(0),
-        |m, i| m.insert(i, i.to_string));
+        |i, m| m.insert(i, i.to_string));
     let actual = om.to_iter.to_array;
     let expected = iter.map(|i| (i, i.to_string)).to_array;
     let _ = *(assert_equal("should equal array", expected, actual));
@@ -97,10 +97,10 @@ test_eq = (
     let iter = Iterator::count_up(0).take(p);
     let om1: OrderedMap I64 String = iter.map(|i| (i * 5) % p).fold(
         OrderedMap::empty(0),
-        |m, i| m.insert(i, i.to_string));
+        |i, m| m.insert(i, i.to_string));
     let om2: OrderedMap I64 String = iter.map(|i| (i * 3) % p).fold(
         OrderedMap::empty(0),
-        |m, i| m.insert(i, i.to_string));
+        |i, m| m.insert(i, i.to_string));
     let _ = *(assert_equal("should be equal even if different order", om1, om2));
     let om1 = om1.insert(1, "1");
     let _ = *(assert_equal("should be equal even if same key-value is insered", om1, om2));

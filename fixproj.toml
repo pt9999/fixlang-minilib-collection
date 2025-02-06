@@ -35,11 +35,11 @@ git = { url = "https://github.com/pt9999/fixlang-minilib-common.git" }
 
 [[dependencies]]
 name = "hashmap"
-version = "*"
+version = "1.1.0"
 git = { url = "https://github.com/tttmmmyyyy/fixlang-hashmap.git" }
 
 # for test_util_array.fix
 [[dependencies]]
 name = "random"
-version = "1.0.0"
+version = "1.1.0"
 git = { url = "https://github.com/tttmmmyyyy/fixlang-random.git" }

@@ -35,7 +35,7 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
     let keys_shuffled = keys_sorted.reorder(insert_reorder);
     let set: TreeSet I64 = TreeSet::make();
     let set = keys_shuffled.to_iter.fold(
-        set, |set, k|
+        set, |k, set|
         set.insert(k)
     );
 
@@ -45,14 +45,14 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
 
     // assert that keys exist
     let _ = *keys_sorted.to_iter.fold_m(
-        (), |_, k|
+        (), |k, _|
         assert_equal("set.contains", true, set.contains(k))
     );
 
     // erase keys
     let keys_shuffled = keys_sorted.reorder(erase_reorder);
     let set = keys_shuffled.to_iter.fold(
-        set, |set, i|
+        set, |i, set|
         set.erase(i)
     );
     let keys_current = set.to_iter.to_array;
@@ -78,7 +78,7 @@ test_find_range = (
     let keys_sorted = Iterator::range(0, 30).to_array;
     let keys_shuffled = keys_sorted.reorder(shuffle(345));
     let set = keys_shuffled.to_iter.fold(
-        TreeSet::make(), |set, x|
+        TreeSet::make(), |x, set|
         set.insert(x)
     );
     let test_find_range_ok = |begin, end, expected| (
@@ -141,8 +141,8 @@ test_tuple2 = (
         (user1 < user2) || (user1 == user2 && book1 < book2)
     );
     let iter = do {
-        let user = *Iterator::range(0,10).map(|i| "user" + i.to_string);
-        let book = *Iterator::range(0,10).map(|i| "book" + i.to_string);
+        let user = *Iterator::range(0,10).map(|i| "user" + i.to_string).to_dyn;
+        let book = *Iterator::range(0,10).map(|i| "book" + i.to_string).to_dyn;
         pure $ (user,book)
     };
     let iter = iter.to_array.reorder(shuffle(345)).to_iter;
