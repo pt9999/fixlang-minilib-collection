@@ -186,9 +186,9 @@ namespace RBNode {
     // such that `!elem.lt_begin && elem.lt_end` is true.
     // NOTE: `lt_begin` and `lt_end` must meet following condition:
     // for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
-    find_range: (a -> Bool) -> (a -> Bool) -> RBNode a -> Iterator a;
+    find_range: (a -> Bool) -> (a -> Bool) -> RBNode a -> DynIterator a;
     find_range = |lt_begin, lt_end, node| (
-        if node.is_empty { Iterator::empty };
+        if node.is_empty { DynIterator::empty };
         let next = |_| (
             let (left, elem, right) = node.get_triplet;
             if elem.lt_begin {         // elem < begin
@@ -196,21 +196,21 @@ namespace RBNode {
             } else if elem.lt_end {    // begin <= elem && elem < end
                 left.find_range(lt_begin, lt_end)
                 ._fast_append(right.find_range(lt_begin, lt_end)
-                        .push_front(elem))
+                        .push_front(elem).to_dyn)
             } else {                    // end <= elem
                 left.find_range(lt_begin, lt_end)
             }
         ).advance;
-        Iterator { next: next }
+        DynIterator { next: next }
     );
 
     // `node.find_range(lt_begin, lt_end)` finds all elements `elem`
     // such that `!elem.lt_begin && elem.lt_end` is true, in descending order.
     // NOTE: `lt_begin` and `lt_end` must meet following condition:
     // for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
-    find_range_descending: (a -> Bool) -> (a -> Bool) -> RBNode a -> Iterator a;
+    find_range_descending: (a -> Bool) -> (a -> Bool) -> RBNode a -> DynIterator a;
     find_range_descending = |lt_begin, lt_end, node| (
-        if node.is_empty { Iterator::empty };
+        if node.is_empty { DynIterator::empty };
         let next = |_| (
             let (left, elem, right) = node.get_triplet;
             if elem.lt_begin {         // elem < begin
@@ -218,24 +218,24 @@ namespace RBNode {
             } else if elem.lt_end {    // begin <= elem && elem < end
                 right.find_range_descending(lt_begin, lt_end)
                 ._fast_append(left.find_range_descending(lt_begin, lt_end)
-                        .push_front(elem))
+                        .push_front(elem).to_dyn)
             } else {                    // end <= elem
                 left.find_range_descending(lt_begin, lt_end)
             }
         ).advance;
-        Iterator { next: next }
+        DynIterator { next: next }
     );
 
     // Same as `Iterator::append` but a little fast.
-    _fast_append : Iterator a -> Iterator a -> Iterator a;
+    _fast_append : DynIterator a -> DynIterator a -> DynIterator a;
     _fast_append = |rhs, lhs| (
         let next = |_| (
             let opt = lhs.advance;
             if opt.is_none { rhs.advance };
-            let (e, lhs) = opt.as_some;
-            some $ (e, lhs._fast_append(rhs))
+            let (lhs, e) = opt.as_some;
+            some $ (lhs._fast_append(rhs), e)
         );
-        Iterator { next : next }
+        DynIterator { next : next }
     );
 
     // Gets the first element (that is, the smallest element) of the tree.
@@ -694,22 +694,22 @@ namespace RBNode {
         node._to_array_inner([])
     );
 
-    to_iter: [a: RBNodeElem] RBNode a -> Iterator a;
+    to_iter: [a: RBNodeElem] RBNode a -> DynIterator a;
     to_iter = |node| (
-        if node.is_empty { Iterator::empty };
+        if node.is_empty { DynIterator::empty };
         let (left, elem, right) = node.get_triplet;
-        left.to_iter._fast_append(right.to_iter.push_front(elem))
+        left.to_iter._fast_append(right.to_iter.push_front(elem).to_dyn)
     );
 
-    from_iter_lt: [a: RBNodeElem] (a -> a -> Bool) -> Iterator a -> RBNode a;
+    from_iter_lt: [a: RBNodeElem, it: Iterator, Item it = a] (a -> a -> Bool) -> it -> RBNode a;
     from_iter_lt = |less_than, iter| (
         iter.fold(
-            empty(), |node, x|
+            empty(), |x, node|
             node.insert_lt(x, less_than)
         )
     );
 
-    from_iter: [a: LessThan, a: RBNodeElem] Iterator a -> RBNode a;
+    from_iter: [a: LessThan, a: RBNodeElem, it: Iterator, Item it = a] it -> RBNode a;
     from_iter = |iter| (
         iter.from_iter_lt(_less_than)
     );

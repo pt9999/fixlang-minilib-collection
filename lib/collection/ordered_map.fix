@@ -61,7 +61,7 @@ namespace OrderedMap {
 
     // Convert an OrderedMap into an iterator. The order of the elements is the same as 
     // when they were inserted into the map.
-    to_iter : OrderedMap k v -> Iterator (k, v);
+    to_iter : OrderedMap k v -> OrderedMapIterator k v;
     to_iter = |self| (
         let array = self.@map.to_iter.to_array;
         let array = array.sort_by(|(e1, e2)|
@@ -71,6 +71,8 @@ namespace OrderedMap {
         );
         array.to_iter.map(|(k, (s,v))| (k, v))
     );
+
+    type OrderedMapIterator k v = Std::Iterator::MapIterator (Std::Iterator::ArrayIterator (k, (Std::I64, v))) (k, (Std::I64, v)) (k, v);
 }
 
 impl [k: HashKey, v: Eq] OrderedMap k v: Eq
@@ -82,7 +84,7 @@ impl [k: HashKey, v: Eq] OrderedMap k v: Eq
         let every = |f, iter| (
             iter.loop_iter(
                 true,
-                |_, x|
+                |x, _|
                 if !f(x) {
                     break $ false
                 };
@@ -98,7 +100,7 @@ impl [k: HashKey, v: Eq] OrderedMap k v: Eq
 impl [k: HashKey, k: ToString, v: ToString] OrderedMap k v : ToString {
     to_string = |om| (
         "{" +
-        om.to_iter.map(|(k,v)| k.to_string + ":" + v.to_string).join(",")
+        om.to_iter.Iterator::map(|(k,v)| k.to_string + ":" + v.to_string).join(",")
         + "}"
     );
 }
