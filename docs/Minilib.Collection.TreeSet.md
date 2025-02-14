@@ -39,24 +39,24 @@ NOTE: If `ts` contains an element `y` equivalent to `x`,
 ie. `!less_than(x,y) && !less_than(y,x)` is true,
 then `y` is removed.
 
-### `find_range : [a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] a -> a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator a`
+### `find_range : [a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] a -> a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator::DynIterator a`
 
 `ts.find_range(begin, end)` finds all elements `x`
 where `!less_than(x, begin) && less_than(x, end)` is true.
 In default `LessThan` ordering, that condition is same as `begin <= x && x < end`.
 
-### `find_raw_range : [a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator a`
+### `find_raw_range : [a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator::DynIterator a`
 
 `ts.find_raw_range(lt_begin, lt_end)` finds all elements `x`
 where `!lt_begin(x) && lt_end(x)` is true.
 NOTE: `lt_begin` and `lt_end` must meet following condition:
 for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
 
-### `from_iter : [a : Std::LessThan, a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] Std::Iterator a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
+### `from_iter : [a : Std::LessThan, a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem, it : Std::Iterator, Std::Iterator::Item it = a] it -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
 
 Converts an iterator into a TreeSet using default `LessThan` ordering.
 
-### `from_iter_lt : [a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] (a -> a -> Std::Bool) -> Std::Iterator a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
+### `from_iter_lt : [a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem, it : Std::Iterator, Std::Iterator::Item it = a] (a -> a -> Std::Bool) -> it -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
 
 Converts an iterator into a TreeSet using specified ordering.
 
@@ -99,6 +99,6 @@ Calculates union of two TreeSets.
 
 Converts a TreeSet into an array in sorted order.
 
-### `to_iter : [a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator a`
+### `to_iter : [a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator::DynIterator a`
 
 Converts a TreeSet into an iterator in sorted order.

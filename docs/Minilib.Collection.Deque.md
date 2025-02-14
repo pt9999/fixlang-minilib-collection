@@ -17,6 +17,10 @@ A type that represents a double-ended queue.
 
 #### field `back : Std::Array a`
 
+## `namespace Minilib.Collection.Deque::Deque`
+
+### `type DequeIterator = Std::Iterator::AppendIterator (Std::Iterator::ReverseIterator (Std::Iterator::ArrayIterator a) a) (Std::Iterator::ArrayIterator a)`
+
 # Traits and aliases
 
 # Trait implementations
@@ -65,6 +69,6 @@ Pushes an element to the back of the queue.
 
 Pushes an element to the front of the queue.
 
-### `to_iter : Minilib.Collection.Deque::Deque a -> Std::Iterator a`
+### `to_iter : Minilib.Collection.Deque::Deque a -> Minilib.Collection.Deque::Deque::DequeIterator a`
 
 Returns an iterator of elements.

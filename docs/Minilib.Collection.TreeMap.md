@@ -48,24 +48,24 @@ then `(k1,v1)` is removed.
 
 Finds an element from a TreeMap.
 
-### `find_range : [k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] k -> k -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator (k, v)`
+### `find_range : [k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] k -> k -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator::DynIterator (k, v)`
 
 `tm.find_range(begin, end)` finds all entries `(k,v)`
 where `!less_than(k, begin) && less_than(k, end)` is true.
 In default `LessThan` ordering, that condition is same as `begin <= k && k < end`.
 
-### `find_raw_range : [k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] ((k, v) -> Std::Bool) -> ((k, v) -> Std::Bool) -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator (k, v)`
+### `find_raw_range : [k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] ((k, v) -> Std::Bool) -> ((k, v) -> Std::Bool) -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator::DynIterator (k, v)`
 
 `tm.find_raw_range(lt_begin, lt_end)` finds all entries `(k,v)`
 where `!lt_begin((k, v)) && lt_end((k, v))` is true.
 NOTE: `lt_begin` and `lt_end` must meet following condition:
 for all `(k,v)`, `lt_begin((k,v))` is true then `lt_end((k,v))` must be true.
 
-### `from_iter : [k : Std::LessThan, k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Std::Iterator (k, v) -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v`
+### `from_iter : [k : Std::LessThan, k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue, it : Std::Iterator, Std::Iterator::Item it = (k, v)] it -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v`
 
 Converts an iterator of key-value pairs into a TreeMap using default `LessThan` ordering.
 
-### `from_iter_lt : [k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] (k -> k -> Std::Bool) -> Std::Iterator (k, v) -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v`
+### `from_iter_lt : [k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue, it : Std::Iterator, Std::Iterator::Item it = (k, v)] (k -> k -> Std::Bool) -> it -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v`
 
 Converts an iterator of key-value pairs into a TreeMap using specified ordering.
 
@@ -87,7 +87,7 @@ then `(k1,v1)` is replaced with `(k,v)`.
 
 Checks whether a TreeMap is empty.
 
-### `keys : [k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator k`
+### `keys : [k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator::DynIterator k`
 
 Returns an iterator of keys in ascending order.
 
@@ -105,7 +105,7 @@ NOTE: `less_than` function must meet specific conditions. For details, see docum
 
 Converts a TreeMap into an array of key-value pairs in ascending order of keys.
 
-### `to_iter : [k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator (k, v)`
+### `to_iter : [k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator::DynIterator (k, v)`
 
 Converts a TreeMap into an iterator of key-value pairs in ascending order of keys.
 

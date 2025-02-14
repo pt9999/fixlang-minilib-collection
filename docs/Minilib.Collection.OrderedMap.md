@@ -15,6 +15,10 @@ Similar to HashMap, but `to_iter()` returns entries in the same order as they we
 
 #### field `serial : Std::I64`
 
+## `namespace Minilib.Collection.OrderedMap::OrderedMap`
+
+### `type OrderedMapIterator = Std::Iterator::MapIterator (Std::Iterator::ArrayIterator (k, (Std::I64, v))) (k, (Std::I64, v)) (k, v)`
+
 # Traits and aliases
 
 # Trait implementations
@@ -63,7 +67,7 @@ Insert an element into an OrderedMap.
 
 Reserve an OrderedMap so that it will not rehash until size exceeds the spacified value.
 
-### `to_iter : Minilib.Collection.OrderedMap::OrderedMap k v -> Std::Iterator (k, v)`
+### `to_iter : Minilib.Collection.OrderedMap::OrderedMap k v -> Minilib.Collection.OrderedMap::OrderedMap::OrderedMapIterator k v`
 
 Convert an OrderedMap into an iterator. The order of the elements is the same as
 when they were inserted into the map.

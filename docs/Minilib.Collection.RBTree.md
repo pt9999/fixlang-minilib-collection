@@ -52,7 +52,7 @@ Debug flag. If set to true, a lot of debug messages will be printed and various 
 
 Prints to stderr if the debug flag is set.
 
-### `_fast_append : Std::Iterator a -> Std::Iterator a -> Std::Iterator a`
+### `_fast_append : Std::Iterator::DynIterator a -> Std::Iterator::DynIterator a -> Std::Iterator::DynIterator a`
 
 Same as `Iterator::append` but a little fast.
 
@@ -112,23 +112,23 @@ Returns `none()` if removal is failed.
 `node.find(x, less_than)` finds an element `elem` that is equivalent to `x`,
 ie. `!less_than(elem, x) && !less_than(x, elem)` is true.
 
-### `find_range : (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Iterator a`
+### `find_range : (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Iterator::DynIterator a`
 
 `node.find_range(lt_begin, lt_end)` finds all elements `elem`
 such that `!elem.lt_begin && elem.lt_end` is true.
 NOTE: `lt_begin` and `lt_end` must meet following condition:
 for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
 
-### `find_range_descending : (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Iterator a`
+### `find_range_descending : (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Iterator::DynIterator a`
 
 `node.find_range(lt_begin, lt_end)` finds all elements `elem`
 such that `!elem.lt_begin && elem.lt_end` is true, in descending order.
 NOTE: `lt_begin` and `lt_end` must meet following condition:
 for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
 
-### `from_iter : [a : Std::LessThan, a : Minilib.Collection.RBTree::RBNode::RBNodeElem] Std::Iterator a -> Minilib.Collection.RBTree::RBNode::RBNode a`
+### `from_iter : [a : Std::LessThan, a : Minilib.Collection.RBTree::RBNode::RBNodeElem, it : Std::Iterator, Std::Iterator::Item it = a] it -> Minilib.Collection.RBTree::RBNode::RBNode a`
 
-### `from_iter_lt : [a : Minilib.Collection.RBTree::RBNode::RBNodeElem] (a -> a -> Std::Bool) -> Std::Iterator a -> Minilib.Collection.RBTree::RBNode::RBNode a`
+### `from_iter_lt : [a : Minilib.Collection.RBTree::RBNode::RBNodeElem, it : Std::Iterator, Std::Iterator::Item it = a] (a -> a -> Std::Bool) -> it -> Minilib.Collection.RBTree::RBNode::RBNode a`
 
 ### `get_color : Minilib.Collection.RBTree::RBNode::RBNode a -> (Minilib.Collection.RBTree::RBNode::RBNode a, a, Minilib.Collection.RBTree::RBNode::RBNode a) -> Minilib.Collection.RBTree::RBNode::RBNode a`
 
@@ -200,7 +200,7 @@ for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
 
 ### `to_array : [a : Minilib.Collection.RBTree::RBNode::RBNodeElem] Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Array a`
 
-### `to_iter : [a : Minilib.Collection.RBTree::RBNode::RBNodeElem] Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Iterator a`
+### `to_iter : [a : Minilib.Collection.RBTree::RBNode::RBNodeElem] Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Iterator::DynIterator a`
 
 ### `upsert : [a : Std::LessThan, a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> (a -> a) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a`
 
