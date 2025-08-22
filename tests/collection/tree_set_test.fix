@@ -101,6 +101,36 @@ test_find_range = (
     pure()
 );
 
+test_find_range_descending: TestCase;
+test_find_range_descending = (
+    let testname = "test_find_range_descending";
+    make_test(testname) $ |_|
+    let keys_sorted = Iterator::range(0, 30).to_array;
+    let keys_shuffled = keys_sorted.reorder(shuffle(345));
+    let set = keys_shuffled.to_iter.fold(
+        TreeSet::make(), |x, set|
+        set.insert(x)
+    );
+    let test_find_range_desc_ok = |begin, end, expected| (
+        let actual = set.find_range_descending(begin, end).to_array;
+        assert_equal("begin="+begin.to_string+" end="+end.to_string, expected, actual)
+    );
+    let test_find_range_desc_desc_ok = |lt_begin, lt_end, expected| (
+        let actual = set.find_raw_range_descending(lt_begin, lt_end).to_array;
+        assert_equal("raw_range", expected, actual)
+    );
+
+    let _ = *test_find_range_desc_ok(3, 6, [5, 4, 3]);
+    let _ = *test_find_range_desc_ok(5, 6, [5]);
+    let _ = *test_find_range_desc_ok(5, 5, []);
+    let _ = *test_find_range_desc_ok(-1, 1, [0]);
+    let _ = *test_find_range_desc_ok(29, 31, [29]);
+    let _ = *test_find_range_desc_desc_ok(|x| x < 11, |x| x < 14, [13, 12, 11]);
+    let _ = *test_find_range_desc_desc_ok(|x| x < 28, |x| true, [29, 28]);
+    let _ = *test_find_range_desc_desc_ok(|x| false, |x| x < 2, [1, 0]);
+    pure()
+);
+
 test_equivalence: TestCase;
 test_equivalence = (
     make_test("test_equivalence") $ |_|
@@ -162,6 +192,7 @@ main = (
         test_to_array,
         test_insert_erase,
         test_find_range,
+        test_find_range_descending,
         test_equivalence,
         test_intersect,
         test_merge,
