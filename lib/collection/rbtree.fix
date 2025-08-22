@@ -204,7 +204,7 @@ namespace RBNode {
         DynIterator { next: next }
     );
 
-    // `node.find_range(lt_begin, lt_end)` finds all elements `elem`
+    // `node.find_range_descending(lt_begin, lt_end)` finds all elements `elem`
     // such that `!elem.lt_begin && elem.lt_end` is true, in descending order.
     // NOTE: `lt_begin` and `lt_end` must meet following condition:
     // for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
