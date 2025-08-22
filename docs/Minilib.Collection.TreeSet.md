@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeSet
 
-Defined in minilib-collection@0.5.1
+Defined in minilib-collection@0.5.2
 
 TreeSet is a set that manages elements in sorted order.
 
@@ -33,12 +33,29 @@ Type: `[a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] a -> a -> Minilib.
 where `!less_than(x, begin) && less_than(x, end)` is true.
 In default `LessThan` ordering, that condition is same as `begin <= x && x < end`.
 
+#### find_range_descending
+
+Type: `[a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] a -> a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator::DynIterator a`
+
+`ts.find_range(begin, end)` finds all elements `x`
+where `!less_than(x, begin) && less_than(x, end)` is true,  in descending order.
+In default `LessThan` ordering, that condition is same as `begin <= x && x < end`.
+
 #### find_raw_range
 
 Type: `[a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator::DynIterator a`
 
 `ts.find_raw_range(lt_begin, lt_end)` finds all elements `x`
 where `!lt_begin(x) && lt_end(x)` is true.
+NOTE: `lt_begin` and `lt_end` must meet following condition:
+for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
+
+#### find_raw_range_descending
+
+Type: `[a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator::DynIterator a`
+
+`ts.find_raw_range_descending(lt_begin, lt_end)` finds all elements `elem`
+such that `!lt_begin(x) && lt_end(x)` is true, in descending order.
 NOTE: `lt_begin` and `lt_end` must meet following condition:
 for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
 

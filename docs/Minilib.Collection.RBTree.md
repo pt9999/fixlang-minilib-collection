@@ -1,6 +1,6 @@
 # Minilib.Collection.RBTree
 
-Defined in minilib-collection@0.5.1
+Defined in minilib-collection@0.5.2
 
 Red-Black Tree.
 (This is an internal module of `TreeMap` and `TreeSet`.)
@@ -22,105 +22,6 @@ NOTE: `less_than()` function must meet following conditions.
 
 ### namespace Minilib.Collection.RBTree::RBNode
 
-#### _Debug
-
-Type: `Std::Bool`
-
-Debug flag. If set to true, a lot of debug messages will be printed and various validations will be done.
-
-#### _balance
-
-Type: `Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a`
-
-#### _debug_assert_level_diff
-
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] Std::String -> Std::String -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::String -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::I64 -> Std::Lazy b -> b`
-
-#### _debug_eprintln_lazy
-
-Type: `(() -> Std::String) -> ()`
-
-Prints to stderr if the debug flag is set.
-
-#### _fast_append
-
-Type: `Std::Iterator::DynIterator a -> Std::Iterator::DynIterator a -> Std::Iterator::DynIterator a`
-
-Same as `Iterator::append` but a little fast.
-
-#### _less_than
-
-Type: `[a : Std::LessThan, a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> a -> Std::Bool`
-
-Default less_than function using `LessThan` trait.
-
-#### _remove_fix_left
-
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a) -> (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a)`
-
-Called when `node.left.level == node.right.level - 1`.
-Returns `(active, fixed)` where `fixed` is the fixed node,
-and `active` is true iff `fixed.level = node.level - 1`.
-
-#### _remove_fix_left_inner
-
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a) -> (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a)`
-
-#### _remove_fix_right
-
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a) -> (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a)`
-
-Called when `node.right.level == node.level.level - 1`.
-Returns `(active, fixed)` where `fixed` is the fixed node,
-and `active` is true iff `fixed.level = node.level - 1`.
-
-#### _remove_fix_right_inner
-
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a) -> (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a)`
-
-#### _remove_max
-
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] Minilib.Collection.RBTree::RBNode::RBNode a -> (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a, a)`
-
-`node._remove_max` removes an maximum element.
-Returns `(active, removed, max)` where `removed` is the node after removal,
-`max` is the maximum element,
-and `active` is true iff `removed.level == node.level - 1`.
-
-#### _remove_min
-
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] Minilib.Collection.RBTree::RBNode::RBNode a -> (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a, a)`
-
-`node._remove_min` removes an minimum element.
-Returns `(active, removed, min)` where `removed` is the node after removal,
-`min` is the minimum element,
-and `active` is true iff `removed.level == node.level - 1`.
-
-#### _to_array_inner
-
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] Std::Array a -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Array a`
-
-#### _try_remove_range
-
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Option (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a)`
-
-`node._try_remove_range(lt_begin, lt_end)` tries to remove single element `elem`
-where `!elem.lt_begin && elem.lt_end` is true.
-Even if there are several elements that holds the condition, only one of them
-are removed.
-Returns `some((active, removed))` if removal is succeeded
-where `removed` is the node after removal,
-and `active` is true iff `removed.level == node.level - 1`.
-Returns `none()` if removal is failed.
-
-#### _try_remove_range_inner
-
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Option (Std::Bool, Minilib.Collection.RBTree::RBNode::RBNode a)`
-
-#### _upsert_inner
-
-Type: `a -> (a -> a) -> (a -> a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a`
-
 #### find
 
 Type: `a -> (a -> a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Option a`
@@ -141,7 +42,7 @@ for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
 
 Type: `(a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Std::Iterator::DynIterator a`
 
-`node.find_range(lt_begin, lt_end)` finds all elements `elem`
+`node.find_range_descending(lt_begin, lt_end)` finds all elements `elem`
 such that `!elem.lt_begin && elem.lt_end` is true, in descending order.
 NOTE: `lt_begin` and `lt_end` must meet following condition:
 for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.

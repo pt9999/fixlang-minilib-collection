@@ -1,6 +1,6 @@
 # Minilib.Collection.OrderedMap
 
-Defined in minilib-collection@0.5.1
+Defined in minilib-collection@0.5.2
 
 Ordered map.
 This is similar to HashMap except it preserves the order of entries.

@@ -1,18 +1,12 @@
 # Minilib.Collection.TreeMap
 
-Defined in minilib-collection@0.5.1
+Defined in minilib-collection@0.5.2
 
 TreeMap is a map that manages keys in sorted order.
 
 ## Values
 
 ### namespace Minilib.Collection.TreeMap::TreeMap
-
-#### _lift_lt
-
-Type: `(k -> k -> Std::Bool) -> (k, v) -> (k, v) -> Std::Bool`
-
-Converts key_less_than to entry_less_than.
 
 #### contains_key
 

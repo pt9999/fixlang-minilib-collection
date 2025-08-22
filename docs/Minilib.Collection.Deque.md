@@ -1,6 +1,6 @@
 # Minilib.Collection.Deque
 
-Defined in minilib-collection@0.5.1
+Defined in minilib-collection@0.5.2
 
 Deque (double-ended queue).
 Deque can be used as a FIFO such as a message queue.
@@ -10,12 +10,6 @@ When used as a FIFO, the amortized costs of `push_back()` and
 ## Values
 
 ### namespace Minilib.Collection.Deque::Deque
-
-#### _reverse_array
-
-Type: `Std::Array a -> Std::Array a`
-
-Reverses an array.
 
 #### empty
 
