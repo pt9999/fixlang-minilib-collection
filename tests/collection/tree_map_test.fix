@@ -39,6 +39,9 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
         map.insert(k, "value-1-" + k.to_string )
     );
 
+    // assert that the size is same as keys
+    let _ = *assert_equal("size after insertion", keys_sorted.get_size, map.get_size);
+
     // assert that keys are sorted
     let keys_current = map.keys.to_array;
     let _ = *assert_equal("keys are sorted", keys_sorted, keys_current);
@@ -56,6 +59,9 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
         map, |k, map|
         map.insert(k, "value-2-" + k.to_string )
     );
+
+    // assert that the size is same as keys
+    let _ = *assert_equal("size after change", keys_sorted.get_size, map.get_size);
 
     // assert that keys are sorted
     let keys_current = map.keys.to_array;
@@ -78,6 +84,8 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
     let keys_current = map.keys.to_array;
     let _ = *assert_equal("[] == keys_current", [], keys_current);
     let _ = *assert_true("map.is_empty", map.is_empty);
+    let _ = *assert_equal("size after erase", 0, map.get_size);
+
     pure()      // success
 );
 
@@ -98,8 +106,10 @@ test_upsert = (
     let map = map.upsert(1, [11], push_back(12));
     let map = map.upsert(2, [21], push_back(22));
     let map = map.upsert(3, [31], push_back(32));
+    let _ = *assert_equal("size", 3, map.get_size);
     let map = map.upsert(1, [13], push_back(14));
     let map = map.upsert(2, [23], pop_back);
+    let _ = *assert_equal("size", 3, map.get_size);
     let _ = *assert_equal("eq", none(), map.find(0));
     let _ = *assert_equal("eq", some([11, 14]), map.find(1));
     let _ = *assert_equal("eq", some([]), map.find(2));

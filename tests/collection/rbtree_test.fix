@@ -10,7 +10,8 @@ test_simple: TestCase;
 test_simple = (
     make_test("test_simple") $ |_|
     let node: RBNode I64 = [1,2,3].to_iter.from_iter;
-    let node = node.remove(1);
+    let (dsize, node) = node.remove(1);
+    let _ = *assert_equal("dsize", -1, dsize);
     //let _ = *eprintln(node.to_string).lift;
     let _ = *assert_equal("eq", 2, node.to_iter.to_array.get_size);
     pure()
@@ -27,6 +28,20 @@ test_insert_remove_ok = |(n, insert_reorder, remove_reorder)| (
     // test insert
     let shuffled = array.reorder(insert_reorder);
     //let _ = *eprintln("shuffled="+ shuffled.to_iter.map(to_string).join(",")).lift;
+    let node = *shuffled.to_iter.fold_m(
+        RBNode::empty(), |x, node|
+        let (dsize, node) = node.insert_lt(x, less_than);
+        let _ = *assert_equal("insert_lt dsize 1", 1, dsize);
+        let (dsize, node) = node.insert_lt(x, less_than);
+        let _ = *assert_equal("insert_lt dsize 0", 0, dsize);
+        pure $ node
+    );
+    let sorted = node.to_iter.to_array;
+    //let _ = *eprintln("sorted="+sorted.to_iter.map(to_string).join(",")).lift;
+    let _ = *assert_equal("array == sorted", array, sorted);
+
+    // test from_iter
+    let shuffled = array.reorder(insert_reorder);
     let node: RBNode I64 = shuffled.to_iter.from_iter;
     let sorted = node.to_iter.to_array;
     //let _ = *eprintln("sorted="+sorted.to_iter.map(to_string).join(",")).lift;
@@ -38,7 +53,10 @@ test_insert_remove_ok = |(n, insert_reorder, remove_reorder)| (
         node, |(i, idx), node|
         eval _debug_eprintln_lazy(|_| "removing: idx="+idx.to_string+" i="+i.to_string + " node="+node.to_string);
         eval _debug_eprintln_lazy(|_| "node.level=" + node.level.to_string);
-        let node = node.remove(i);
+        let (dsize, node) = node.remove(i);
+        let _ = *assert_equal("remove dsize -1", -1, dsize);
+        let (dsize, node) = node.remove(i);
+        let _ = *assert_equal("remove dsize 0", 0, dsize);
         let expect_size = shuffled.get_size - idx - 1;
         let actual_size = node.to_iter.to_array.get_size;
         let _ = *assert_equal("expect_size == actual_size", expect_size, actual_size);

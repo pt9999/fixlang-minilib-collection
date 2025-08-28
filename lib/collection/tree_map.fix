@@ -20,6 +20,7 @@ namespace TreeMap {
     // `TreeMap` is a structure that stores key-value pairs into a red-black tree.
     type TreeMap k v = unbox struct {
         root: RBNode (k, v),
+        size: I64,
         key_less_than: k -> k -> Bool,
         entry_less_than: (k, v) -> (k, v) -> Bool
     };
@@ -37,9 +38,16 @@ namespace TreeMap {
     make_lt = |key_less_than| (
         TreeMap {
             root: RBNode::empty(),
+            size: 0,
             key_less_than: key_less_than,
             entry_less_than: _lift_lt(key_less_than)
         }
+    );
+
+    _mod_root_and_size: (RBNode (k, v) -> (I64, RBNode (k, v))) -> TreeMap k v -> TreeMap k v;
+    _mod_root_and_size = |f, tm| (
+        let (dsize, tm) = tm.act_root(f);
+        tm.mod_size(add(dsize))
     );
 
     // Inserts an entry into a TreeMap.
@@ -51,7 +59,7 @@ namespace TreeMap {
     // then `(k1,v1)` is replaced with `(k,v)`.
     insert: [k: TreeMapKey, v: TreeMapValue] k -> v -> TreeMap k v -> TreeMap k v;
     insert = |k, v, tm| (
-       tm.mod_root(insert_lt((k, v), tm.@entry_less_than))
+       tm._mod_root_and_size(insert_lt((k, v), tm.@entry_less_than))
     );
 
     // Inserts or updates an entry in a TreeMap.
@@ -63,7 +71,7 @@ namespace TreeMap {
     // then `(k1,v1)` is replaced with `(k, updater(v1))`.
     upsert: [k: TreeMapKey, v: TreeMapValue] k -> v -> (v -> v) -> TreeMap k v -> TreeMap k v;
     upsert = |k, v, updater, tm| (
-       tm.mod_root(upsert_lt((k, v), |(k1,v1)| (k,updater(v1)), tm.@entry_less_than))
+       tm._mod_root_and_size(upsert_lt((k, v), |(k1,v1)| (k,updater(v1)), tm.@entry_less_than))
     );
 
     // Erases an entry from a TreeMap.
@@ -78,7 +86,7 @@ namespace TreeMap {
         let less_than = tm.@key_less_than;
         let lt_begin = |(ent_k,_)| less_than(ent_k, k);
         let lt_end   = |(ent_k,_)| !less_than(k, ent_k);
-        tm.mod_root(remove_range(lt_begin, lt_end))
+        tm._mod_root_and_size(remove_range(lt_begin, lt_end))
     );
 
     // Checks whether a TreeMap is empty.
@@ -90,7 +98,8 @@ namespace TreeMap {
     // Gets the number of entries.
     get_size: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> I64;
     get_size = |tm| (
-        tm.@root.get_size
+        //tm.@root.get_size
+        tm.@size
     );
 
     // Checks whether a TreeMap contains a key.
@@ -152,7 +161,7 @@ namespace TreeMap {
     from_iter_lt = |key_less_than, iter| (
         let tm = TreeMap::make_lt(key_less_than);
         let root = RBNode::from_iter_lt(tm.@entry_less_than, iter);
-        tm.set_root(root)
+        tm.set_root(root).set_size(root.get_size)
     );
 
     // Converts an iterator of key-value pairs into a TreeMap using default `LessThan` ordering.

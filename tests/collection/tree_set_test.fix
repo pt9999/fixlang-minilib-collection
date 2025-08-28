@@ -39,6 +39,9 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
         set.insert(k)
     );
 
+    // assert that the size is same as keys
+    let _ = *assert_equal("size after insertion", keys_sorted.get_size, set.get_size);
+
     // assert that keys are sorted
     let keys_current = set.to_iter.to_array;
     let _ = *assert_equal("keys are sorted", keys_sorted, keys_current);
@@ -58,6 +61,8 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
     let keys_current = set.to_iter.to_array;
     let _ = *assert_equal("[] == keys_current", [], keys_current);
     let _ = *assert_true("set.is_empty", set.is_empty);
+    let _ = *assert_equal("size after erase", 0, set.get_size);
+
     pure()      // success
 );
 

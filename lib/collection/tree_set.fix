@@ -10,6 +10,7 @@ namespace TreeSet {
     // A type of set that manages elements in sorted order.
     type TreeSet a = unbox struct {
         root: RBNode a,
+        size: I64,
         less_than: a -> a -> Bool
     };
 
@@ -26,8 +27,15 @@ namespace TreeSet {
     make_lt = |less_than| (
         TreeSet {
             root: RBNode::empty(),
+            size: 0,
             less_than: less_than
         }
+    );
+
+    _mod_root_and_size: (RBNode a -> (I64, RBNode a)) -> TreeSet a -> TreeSet a;
+    _mod_root_and_size = |f, ts| (
+        let (dsize, ts) = ts.act_root(f);
+        ts.mod_size(add(dsize))
     );
 
     // Inserts an element into a TreeSet.
@@ -38,7 +46,7 @@ namespace TreeSet {
     // then `y` is replaced with `x`.
     insert: [a: TreeSetElem] a -> TreeSet a -> TreeSet a;
     insert = |x, ts| (
-       ts.mod_root(insert_lt(x, ts.@less_than))
+       ts._mod_root_and_size(insert_lt(x, ts.@less_than))
     );
 
     // Erases an element from a TreeSet.
@@ -49,7 +57,7 @@ namespace TreeSet {
     // then `y` is removed.
     erase: [a: TreeSetElem] a -> TreeSet a -> TreeSet a;
     erase = |x, ts| (
-       ts.mod_root(remove_lt(x, ts.@less_than))
+       ts._mod_root_and_size(remove_lt(x, ts.@less_than))
     );
 
     // Checks whether a TreeSet is empty.
@@ -61,7 +69,8 @@ namespace TreeSet {
     // Gets the number of elements.
     get_size: TreeSet a -> I64;
     get_size = |ts| (
-        ts.@root.get_size
+        //ts.@root.get_size
+        ts.@size
     );
 
     // Checks whether a TreeSet contains an element.
@@ -125,8 +134,10 @@ namespace TreeSet {
     // Converts an iterator into a TreeSet using specified ordering.
     from_iter_lt: [a: TreeSetElem, it: Iterator, Item it = a] (a -> a -> Bool) -> it -> TreeSet a;
     from_iter_lt = |less_than, iter| (
+        let node = RBNode::from_iter_lt(less_than, iter);
         TreeSet {
-            root: RBNode::from_iter_lt(less_than, iter),
+            root: node,
+            size: node.get_size,
             less_than: less_than
         }
     );
