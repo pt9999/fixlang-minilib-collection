@@ -133,6 +133,7 @@ namespace RBNode {
     );
 
     // Gets the number of elements.
+    // NOTE: Time complexity is O(n).
     get_size: RBNode a -> I64;
     get_size = |node| (
         if node.is_empty { 0 };
@@ -291,24 +292,37 @@ namespace RBNode {
         node
     );
 
-    _upsert_inner: a -> (a -> a) -> (a -> a -> Bool) -> RBNode a -> RBNode a;
-    _upsert_inner = |x, updater, less_than, node| (
+    // returns size diff and node
+    _upsert_inner_dsize: a -> (a -> a) -> (a -> a -> Bool) -> RBNode a -> (I64, RBNode a);
+    _upsert_inner_dsize = |x, updater, less_than, node| (
         if node.is_empty {
             // if `x` is not found, insert `x`.
-            red $ (node, x, node) 
+            let node = red $ (node, x, node);
+            (1, node)
         };
         let color = if node.is_red { red } else { black }; // constructor
         let (left, elem, right) = node.get_triplet;
         if less_than(x, elem) {
-            let node = color $ (left._upsert_inner(x, updater, less_than), elem, right);
-            node._balance
+            let (dsize, left) = left._upsert_inner_dsize(x, updater, less_than);
+            let node = color $ (left, elem, right);
+            (dsize, node._balance)
         };
         if less_than(elem, x) {
-            let node = color $ (left, elem, right._upsert_inner(x, updater, less_than));
-            node._balance
+            let (dsize, right) = right._upsert_inner_dsize(x, updater, less_than);
+            let node = color $ (left, elem, right);
+            (dsize, node._balance)
         };
         // If neither `x < elem` nor `elem < x` holds, replace `elem` with `updater(elem)`.
-        color $ (left, updater(elem), right)
+        let node = color $ (left, updater(elem), right);
+        (0, node)
+    );
+
+    upsert_lt_dsize: [a: RBNodeElem] a -> (a -> a) -> (a -> a -> Bool) -> RBNode a -> (I64, RBNode a);
+    upsert_lt_dsize = |x, updater, less_than, node| (
+        let (dsize, inserted) = node._upsert_inner_dsize(x, updater, less_than);
+        let inserted = black $ inserted.get_triplet;
+        eval if _Debug { let _ = inserted.validate(less_than); () } else { () };
+        (dsize, inserted)
     );
 
     // `node.upsert_lt(x, less_than)` inserts or updates using `less_than` ordering.
@@ -318,9 +332,7 @@ namespace RBNode {
     // then `y` is updated with `updater(y)`.
     upsert_lt: [a: RBNodeElem] a -> (a -> a) -> (a -> a -> Bool) -> RBNode a -> RBNode a;
     upsert_lt = |x, updater, less_than, node| (
-        let inserted = node._upsert_inner(x, updater, less_than);
-        let inserted = black $ inserted.get_triplet;
-        eval if _Debug { let _ = inserted.validate(less_than); () } else { () };
+        let (dsize, inserted) = upsert_lt_dsize(x, updater, less_than);
         inserted
     );
 
@@ -337,6 +349,15 @@ namespace RBNode {
     //====================================================================
     // Insertion
     //====================================================================
+
+    // `node.insert_lt_dsize(x, less_than)` inserts an element `x` using `less_than` ordering.
+    // If `node` already contains an element `y` equivalent to `x`,
+    // ie. `!less_than(x,y) && !less_than(y,x)` is true,
+    // then `y` is replaced with `x`.
+    insert_lt_dsize: [a: RBNodeElem] a -> (a -> a -> Bool) -> RBNode a -> (I64, RBNode a);
+    insert_lt_dsize = |x, less_than, node| (
+        node.upsert_lt_dsize(x, |_| x, less_than)
+    );
 
     // `node.insert_lt(x, less_than)` inserts an element `x` using `less_than` ordering.
     // If `node` already contains an element `y` equivalent to `x`,
@@ -389,6 +410,21 @@ namespace RBNode {
         if opt.is_none { node };
         let (active, removed) = opt.as_some;
         removed.remove_range(lt_begin, lt_end)      // repeat recursively
+    );
+
+    // `node.remove_range_dsize(lt_begin, lt_end)` removes all elements `elem`
+    // where `!elem.lt_begin && elem.lt_end` is true.
+    // NOTE: `lt_begin` and `lt_end` must meet following condition:
+    // for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
+    remove_range_dsize: [a: RBNodeElem] (a -> Bool) -> (a -> Bool) -> RBNode a -> (I64, RBNode a);
+    remove_range_dsize = |lt_begin, lt_end, node| (
+        loop(
+            (0, node), |(dsize, node)|
+            let opt = node._try_remove_range(lt_begin, lt_end);
+            if opt.is_none { break $ (dsize, node) };
+            let (active, removed) = opt.as_some;
+            continue $ (dsize - 1, removed)   // repeat recursively
+        )
     );
 
     // `node._try_remove_range(lt_begin, lt_end)` tries to remove single element `elem`
