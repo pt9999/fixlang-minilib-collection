@@ -96,9 +96,9 @@ namespace TreeMap {
     );
 
     // Gets the number of entries.
+    // The time complexity of this function is O(1).
     get_size: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> I64;
     get_size = |tm| (
-        //tm.@root.get_size
         tm.@size
     );
 

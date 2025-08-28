@@ -133,7 +133,7 @@ namespace RBNode {
     );
 
     // Gets the number of elements.
-    // NOTE: Time complexity is O(n).
+    // The time complexity of this function is O(n).
     get_size: RBNode a -> I64;
     get_size = |node| (
         if node.is_empty { 0 };

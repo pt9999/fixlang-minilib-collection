@@ -67,9 +67,9 @@ namespace TreeSet {
     );
 
     // Gets the number of elements.
+    // The time complexity of this function is O(1).
     get_size: TreeSet a -> I64;
     get_size = |ts| (
-        //ts.@root.get_size
         ts.@size
     );
 
