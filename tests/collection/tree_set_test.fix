@@ -1,6 +1,8 @@
 module TreeSetTest;
 
+import Random;
 import Minilib.Collection.TreeSet;
+import Minilib.Collection.RBTree::RBNode::{ get_size };
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
@@ -74,6 +76,51 @@ test_insert_erase = (
         let erase_reorder = *[skip(15), ascending(), descending(), shuffle(345)];
         pure $ test_insert_erase_ok $ (n, insert_reorder, erase_reorder)
     }.run_tests
+);
+
+test_get_size: TestCase;
+test_get_size = (
+    make_table_test(
+        "test_get_size",
+        [
+            (1234, 100, 2),
+            (1235, 100, 10),
+            (1236, 10, 2),
+            (1237, 10, 10),
+        ],
+        |(seed, n, max_op)|
+        let debug_eprintln = if false { debug_eprintln } else { |_| () };
+        eval debug_eprintln ("--- test_get_size (seed, n, max_op)=" + (seed, n, max_op).to_string);
+        let random = Random::init_by_seed(seed.to_U64);
+        let mask = Array::fill(n, false);
+        let size = 0;
+        let ts: TreeSet I64 = TreeSet::make();
+        loop_m(
+            (random, mask, size, ts, 0), |(random, mask, size, ts, i)|
+            if i >= n * 10 { break_m $ () };
+            let (random, v) = random.generate_U64;
+            let (random, op) = random.generate_U64;
+            let v = (v % n.to_U64).to_I64;
+            let op = (op % max_op.to_U64).to_I64;
+            if op == 0 {
+                let size = if mask.@(v) { size } else { size + 1 };
+                let mask = mask.set(v, true);
+                let ts = ts.insert(v);
+                eval debug_eprintln("insert " + (v, size).to_string);
+                assert_equal("insert", size, ts.get_size);;
+                assert_equal("insert root get_size", ts.@root.get_size, ts.get_size);;
+                continue_m $ (random, mask, size, ts, i + 1)
+            } else { // op == 1 or above
+                let size = if !mask.@(v) { size } else { size - 1 };
+                let mask = mask.set(v, false);
+                let ts = ts.erase(v);
+                eval debug_eprintln("erase " + (v, size).to_string);
+                assert_equal("erase", size, ts.get_size);;
+                assert_equal("erase root get_size", ts.@root.get_size, ts.get_size);;
+                continue_m $ (random, mask, size, ts, i + 1)
+            }
+        )
+    )
 );
 
 test_find_range: TestCase;
@@ -196,6 +243,7 @@ main = (
         test_to_iter,
         test_to_array,
         test_insert_erase,
+        test_get_size,
         test_find_range,
         test_find_range_descending,
         test_equivalence,
