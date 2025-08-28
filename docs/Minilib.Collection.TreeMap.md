@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeMap
 
-Defined in minilib-collection@0.5.2
+Defined in minilib-collection@0.6.0
 
 TreeMap is a map that manages keys in sorted order.
 
@@ -66,6 +66,7 @@ Converts an iterator of key-value pairs into a TreeMap using specified ordering.
 Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::I64`
 
 Gets the number of entries.
+The time complexity of this function is O(1).
 
 #### insert
 
@@ -142,6 +143,10 @@ Defined as: `type TreeMap k v = unbox struct { ...fields... }`
 ##### field `root`
 
 Type: `Minilib.Collection.RBTree::RBNode::RBNode (k, v)`
+
+##### field `size`
+
+Type: `Std::I64`
 
 ##### field `key_less_than`
 

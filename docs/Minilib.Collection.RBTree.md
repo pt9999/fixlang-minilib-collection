@@ -1,6 +1,6 @@
 # Minilib.Collection.RBTree
 
-Defined in minilib-collection@0.5.2
+Defined in minilib-collection@0.6.0
 
 Red-Black Tree.
 (This is an internal module of `TreeMap` and `TreeSet`.)
@@ -84,6 +84,7 @@ Type: `Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree:
 Type: `Minilib.Collection.RBTree::RBNode::RBNode a -> Std::I64`
 
 Gets the number of elements.
+The time complexity of this function is O(n).
 
 #### get_triplet
 
@@ -94,18 +95,20 @@ If the node is empty, it will abort.
 
 #### insert
 
-Type: `[a : Std::LessThan, a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a`
+Type: `[a : Std::LessThan, a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> Minilib.Collection.RBTree::RBNode::RBNode a -> (Std::I64, Minilib.Collection.RBTree::RBNode::RBNode a)`
 
 `node.insert(x)` inserts an element `x` using default `LessThan` ordering.
+Returns the size difference and the changed node.
 If `node` already contains an element `y` equivalent to `x`,
 ie. `!(x < y) && !(y < x)` is true,
 then `y` is replaced with `x`.
 
 #### insert_lt
 
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> (a -> a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a`
+Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> (a -> a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> (Std::I64, Minilib.Collection.RBTree::RBNode::RBNode a)`
 
 `node.insert_lt(x, less_than)` inserts an element `x` using `less_than` ordering.
+Returns the size difference and the changed node.
 If `node` already contains an element `y` equivalent to `x`,
 ie. `!less_than(x,y) && !less_than(y,x)` is true,
 then `y` is replaced with `x`.
@@ -126,24 +129,27 @@ This function does not validate, so an unbalanced node can be specified.
 
 #### remove
 
-Type: `[a : Std::LessThan, a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a`
+Type: `[a : Std::LessThan, a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> Minilib.Collection.RBTree::RBNode::RBNode a -> (Std::I64, Minilib.Collection.RBTree::RBNode::RBNode a)`
 
 `node.remove(x)` removes any element `y` equivalent to `x`,
 ie. `!(x < y) && !(y < x)` is true.
+Returns the size difference and the changed node.
 
 #### remove_lt
 
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> (a -> a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a`
+Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> (a -> a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> (Std::I64, Minilib.Collection.RBTree::RBNode::RBNode a)`
 
 `node.remove_lt(x, less_than)` removes any element `y` equivalent to `x`,
-ie. ie. `!less_than(x,y) && !less_than(y,x)` is true.
+ie. `!less_than(x,y) && !less_than(y,x)` is true.
+Returns the size difference and the changed node.
 
 #### remove_range
 
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a`
+Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] (a -> Std::Bool) -> (a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> (Std::I64, Minilib.Collection.RBTree::RBNode::RBNode a)`
 
 `node.remove_range(lt_begin, lt_end)` removes all elements `elem`
 where `!elem.lt_begin && elem.lt_end` is true.
+Returns the size difference and the changed node.
 NOTE: `lt_begin` and `lt_end` must meet following condition:
 for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
 
@@ -165,9 +171,10 @@ Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] Minilib.Collection.RB
 
 #### upsert
 
-Type: `[a : Std::LessThan, a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> (a -> a) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a`
+Type: `[a : Std::LessThan, a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> (a -> a) -> Minilib.Collection.RBTree::RBNode::RBNode a -> (Std::I64, Minilib.Collection.RBTree::RBNode::RBNode a)`
 
 `node.upsert(x, updater)` inserts or updates using default `LessThan` ordering.
+Returns the size difference and the changed node.
 If `node` does not contain an element equivalent to `x`, `x` is inserted.
 If `node` already contains an element `y` equivalent to `x`,
 ie. `!(x < y) && !(y < x)` is true,
@@ -175,9 +182,10 @@ then `y` is updated with `updater(y)`.
 
 #### upsert_lt
 
-Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> (a -> a) -> (a -> a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> Minilib.Collection.RBTree::RBNode::RBNode a`
+Type: `[a : Minilib.Collection.RBTree::RBNode::RBNodeElem] a -> (a -> a) -> (a -> a -> Std::Bool) -> Minilib.Collection.RBTree::RBNode::RBNode a -> (Std::I64, Minilib.Collection.RBTree::RBNode::RBNode a)`
 
-`node.upsert_lt(x, less_than)` inserts or updates using `less_than` ordering.
+`node.upsert_lt(x, updater, less_than)` inserts or updates using `less_than` ordering.
+Returns the size difference and the changed node.
 If `node` does not contain an element equivalent to `x`, `x` is inserted.
 If `node` already contains an element `y` equivalent to `x`,
 ie. `!less_than(x,y) && !less_than(y,x)` is true,

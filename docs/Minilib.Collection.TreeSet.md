@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeSet
 
-Defined in minilib-collection@0.5.2
+Defined in minilib-collection@0.6.0
 
 TreeSet is a set that manages elements in sorted order.
 
@@ -76,6 +76,7 @@ Converts an iterator into a TreeSet using specified ordering.
 Type: `Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::I64`
 
 Gets the number of elements.
+The time complexity of this function is O(1).
 
 #### insert
 
@@ -145,6 +146,10 @@ A type of set that manages elements in sorted order.
 ##### field `root`
 
 Type: `Minilib.Collection.RBTree::RBNode::RBNode a`
+
+##### field `size`
+
+Type: `Std::I64`
 
 ##### field `less_than`
 
