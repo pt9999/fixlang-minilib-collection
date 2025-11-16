@@ -6,6 +6,7 @@ import Minilib.Collection.RBTree::RBNode::{ get_size };
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
+import Minilib.Trait.Traversable;
 
 test_to_iter: TestCase;
 test_to_iter = (
@@ -49,8 +50,7 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
     assert_equal("keys are sorted", keys_sorted, keys_current);;
 
     // assert that keys exist
-    keys_sorted.to_iter.fold_m(
-        (), |k, _|
+    keys_sorted.to_iter.foreach_m(|k|
         assert_equal("set.contains", true, set.contains(k))
     );;
 
