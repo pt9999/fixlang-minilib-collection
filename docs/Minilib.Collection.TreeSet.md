@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeSet
 
-Defined in minilib-collection@0.6.0
+Defined in minilib-collection@0.6.1
 
 TreeSet is a set that manages elements in sorted order.
 
@@ -156,6 +156,14 @@ Type: `Std::I64`
 Type: `a -> a -> Std::Bool`
 
 ## Traits and aliases
+
+### namespace Minilib.Collection.TreeSet::TreeSet
+
+#### trait `TreeSetElem = Std::ToString`
+
+Kind: `*`
+
+A trait of the element. Currently `ToString` is required.
 
 ## Trait implementations
 

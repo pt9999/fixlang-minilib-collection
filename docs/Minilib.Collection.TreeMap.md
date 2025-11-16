@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeMap
 
-Defined in minilib-collection@0.6.0
+Defined in minilib-collection@0.6.1
 
 TreeMap is a map that manages keys in sorted order.
 
@@ -157,6 +157,20 @@ Type: `k -> k -> Std::Bool`
 Type: `(k, v) -> (k, v) -> Std::Bool`
 
 ## Traits and aliases
+
+### namespace Minilib.Collection.TreeMap::TreeMap
+
+#### trait `TreeMapKey = Std::ToString`
+
+Kind: `*`
+
+A trait of the key. Currently `ToString` is required.
+
+#### trait `TreeMapValue = Std::ToString`
+
+Kind: `*`
+
+A trait of the value. Currently `ToString` is required.
 
 ## Trait implementations
 

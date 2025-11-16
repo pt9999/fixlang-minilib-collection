@@ -1,6 +1,6 @@
 # Minilib.Collection.RBTree
 
-Defined in minilib-collection@0.6.0
+Defined in minilib-collection@0.6.1
 
 Red-Black Tree.
 (This is an internal module of `TreeMap` and `TreeSet`.)
@@ -226,6 +226,14 @@ Type: `(Minilib.Collection.RBTree::RBNode::RBNode a, a, Minilib.Collection.RBTre
 Type: `(Minilib.Collection.RBTree::RBNode::RBNode a, a, Minilib.Collection.RBTree::RBNode::RBNode a)`
 
 ## Traits and aliases
+
+### namespace Minilib.Collection.RBTree::RBNode
+
+#### trait `RBNodeElem = Std::ToString`
+
+Kind: `*`
+
+A trait of the element. Currently `ToString` is required.
 
 ## Trait implementations
 
