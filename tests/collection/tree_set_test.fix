@@ -12,7 +12,7 @@ test_to_iter = (
     make_test("test_to_iter") $ |_|
     let iter = Iterator::range(0, 10);
     let set: TreeSet I64 = from_iter(iter);
-    let _ = *assert_equal("eq", iter.to_array, set.to_iter.to_array);
+    assert_equal("eq", iter.to_array, set.to_iter.to_array);;
     pure()
 );
 
@@ -21,7 +21,7 @@ test_to_array = (
     make_test("test_to_array") $ |_|
     let iter = Iterator::range(0, 10);
     let set: TreeSet I64 = from_iter(iter);
-    let _ = *assert_equal("eq", iter.to_array, set.to_array);
+    assert_equal("eq", iter.to_array, set.to_array);;
     pure()
 );
 
@@ -42,17 +42,17 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
     );
 
     // assert that the size is same as keys
-    let _ = *assert_equal("size after insertion", keys_sorted.get_size, set.get_size);
+    assert_equal("size after insertion", keys_sorted.get_size, set.get_size);;
 
     // assert that keys are sorted
     let keys_current = set.to_iter.to_array;
-    let _ = *assert_equal("keys are sorted", keys_sorted, keys_current);
+    assert_equal("keys are sorted", keys_sorted, keys_current);;
 
     // assert that keys exist
-    let _ = *keys_sorted.to_iter.fold_m(
+    keys_sorted.to_iter.fold_m(
         (), |k, _|
         assert_equal("set.contains", true, set.contains(k))
-    );
+    );;
 
     // erase keys
     let keys_shuffled = keys_sorted.reorder(erase_reorder);
@@ -61,9 +61,9 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
         set.erase(i)
     );
     let keys_current = set.to_iter.to_array;
-    let _ = *assert_equal("[] == keys_current", [], keys_current);
-    let _ = *assert_true("set.is_empty", set.is_empty);
-    let _ = *assert_equal("size after erase", 0, set.get_size);
+    assert_equal("[] == keys_current", [], keys_current);;
+    assert_true("set.is_empty", set.is_empty);;
+    assert_equal("size after erase", 0, set.get_size);;
 
     pure()      // success
 );
@@ -142,14 +142,14 @@ test_find_range = (
         assert_equal("raw_range", expected, actual)
     );
 
-    let _ = *test_find_range_ok(3, 6, [3, 4, 5]);
-    let _ = *test_find_range_ok(5, 6, [5]);
-    let _ = *test_find_range_ok(5, 5, []);
-    let _ = *test_find_range_ok(-1, 1, [0]);
-    let _ = *test_find_range_ok(29, 31, [29]);
-    let _ = *test_find_raw_range_ok(|x| x < 11, |x| x < 14, [11, 12, 13]);
-    let _ = *test_find_raw_range_ok(|x| x < 28, |x| true, [28, 29]);
-    let _ = *test_find_raw_range_ok(|x| false, |x| x < 2, [0, 1]);
+    test_find_range_ok(3, 6, [3, 4, 5]);;
+    test_find_range_ok(5, 6, [5]);;
+    test_find_range_ok(5, 5, []);;
+    test_find_range_ok(-1, 1, [0]);;
+    test_find_range_ok(29, 31, [29]);;
+    test_find_raw_range_ok(|x| x < 11, |x| x < 14, [11, 12, 13]);;
+    test_find_raw_range_ok(|x| x < 28, |x| true, [28, 29]);;
+    test_find_raw_range_ok(|x| false, |x| x < 2, [0, 1]);;
     pure()
 );
 
@@ -172,14 +172,14 @@ test_find_range_descending = (
         assert_equal("raw_range", expected, actual)
     );
 
-    let _ = *test_find_range_desc_ok(3, 6, [5, 4, 3]);
-    let _ = *test_find_range_desc_ok(5, 6, [5]);
-    let _ = *test_find_range_desc_ok(5, 5, []);
-    let _ = *test_find_range_desc_ok(-1, 1, [0]);
-    let _ = *test_find_range_desc_ok(29, 31, [29]);
-    let _ = *test_find_range_desc_desc_ok(|x| x < 11, |x| x < 14, [13, 12, 11]);
-    let _ = *test_find_range_desc_desc_ok(|x| x < 28, |x| true, [29, 28]);
-    let _ = *test_find_range_desc_desc_ok(|x| false, |x| x < 2, [1, 0]);
+    test_find_range_desc_ok(3, 6, [5, 4, 3]);;
+    test_find_range_desc_ok(5, 6, [5]);;
+    test_find_range_desc_ok(5, 5, []);;
+    test_find_range_desc_ok(-1, 1, [0]);;
+    test_find_range_desc_ok(29, 31, [29]);;
+    test_find_range_desc_desc_ok(|x| x < 11, |x| x < 14, [13, 12, 11]);;
+    test_find_range_desc_desc_ok(|x| x < 28, |x| true, [29, 28]);;
+    test_find_range_desc_desc_ok(|x| false, |x| x < 2, [1, 0]);;
     pure()
 );
 
