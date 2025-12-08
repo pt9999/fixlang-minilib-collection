@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeSet
 
-Defined in minilib-collection@0.6.1
+Defined in minilib-collection@0.6.2
 
 TreeSet is a set that manages elements in sorted order.
 
@@ -61,7 +61,7 @@ for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
 
 #### from_iter
 
-Type: `[a : Std::LessThan, a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem, it : Std::Iterator, Std::Iterator::Item it = a] it -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
+Type: `[a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem, a : Std::LessThan, it : Std::Iterator, Std::Iterator::Item it = a] it -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
 
 Converts an iterator into a TreeSet using default `LessThan` ordering.
 

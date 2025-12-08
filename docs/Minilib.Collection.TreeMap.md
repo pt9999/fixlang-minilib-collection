@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeMap
 
-Defined in minilib-collection@0.6.1
+Defined in minilib-collection@0.6.2
 
 TreeMap is a map that manages keys in sorted order.
 
@@ -51,13 +51,13 @@ for all `(k,v)`, `lt_begin((k,v))` is true then `lt_end((k,v))` must be true.
 
 #### from_iter
 
-Type: `[k : Std::LessThan, k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue, it : Std::Iterator, Std::Iterator::Item it = (k, v)] it -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v`
+Type: `[it : Std::Iterator, k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, k : Std::LessThan, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue, Std::Iterator::Item it = (k, v)] it -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v`
 
 Converts an iterator of key-value pairs into a TreeMap using default `LessThan` ordering.
 
 #### from_iter_lt
 
-Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue, it : Std::Iterator, Std::Iterator::Item it = (k, v)] (k -> k -> Std::Bool) -> it -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v`
+Type: `[it : Std::Iterator, k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue, Std::Iterator::Item it = (k, v)] (k -> k -> Std::Bool) -> it -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v`
 
 Converts an iterator of key-value pairs into a TreeMap using specified ordering.
 
@@ -94,7 +94,7 @@ Returns an iterator of keys in ascending order.
 
 #### make
 
-Type: `[k : Std::LessThan, k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] () -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v`
+Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, k : Std::LessThan, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] () -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v`
 
 `TreeMap::make()` creates an empty `TreeMap` using default `LessThan` ordering.
 
