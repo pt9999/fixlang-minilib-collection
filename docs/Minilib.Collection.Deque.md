@@ -1,6 +1,6 @@
 # Minilib.Collection.Deque
 
-Defined in minilib-collection@0.6.3
+Defined in minilib-collection@0.6.4
 
 Deque (double-ended queue).
 Deque can be used as a FIFO such as a message queue.

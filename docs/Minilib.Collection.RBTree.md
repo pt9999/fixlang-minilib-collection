@@ -1,6 +1,6 @@
 # Minilib.Collection.RBTree
 
-Defined in minilib-collection@0.6.3
+Defined in minilib-collection@0.6.4
 
 Red-Black Tree.
 (This is an internal module of `TreeMap` and `TreeSet`.)
