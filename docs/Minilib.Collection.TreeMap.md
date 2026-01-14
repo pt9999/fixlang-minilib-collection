@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeMap
 
-Defined in minilib-collection@0.6.4
+Defined in minilib-collection@0.6.5
 
 TreeMap is a map that manages keys in sorted order.
 
