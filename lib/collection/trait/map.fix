@@ -1,16 +1,63 @@
+// The trait for abstract maps.
 module Minilib.Collection.Trait.Map;
 
+// The trait for abstract maps.
 trait map: Map {
+    // The type of the keys.
     type MapKey map;
+    // The type of the values.
     type MapValue map;
+    // The type of the iterator returned by `to_iter`.
     type MapIterator map: * -> *;
 
+    // Inserts an entry into a map.
+    //
+    // # Parameters
+    // - `key`: a key
+    // - `value`: a value
+    // - `map`: a map
     insert: MapKey map -> MapValue map -> map -> map;
+
+    // Erases all entries whose key is equivalent to the specified key.
+    //
+    // # Parameters
+    // - `key`: a key
+    // - `map`: a map
     erase: MapKey map -> map -> map;
+
+    // Checks whether a map is empty.
+    //
+    // # Parameters
+    // - `map`: a map
     is_empty: map -> Bool;
+
+    // Gets the number of entries in a map.
+    //
+    // # Parameters
+    // - `map`: a map
     get_size: map -> I64;
+
+    // Checks whether any entry exists whose key is equivalent to the specified key.
+    //
+    // # Parameters
+    // - `key`: a key
+    // - `map`: a map
     contains_key: MapKey map -> map -> Bool;
+
+    // Finds an entry whose key is equivalent to the specified key.
+    // If an entry is found, returns `some(v)` where `v` is the value.
+    // If no entry is found, returns `none()`.
+    //
+    // # Parameters
+    // - `key`: a key
+    // - `map`: a map
     find: MapKey map -> map -> Option (MapValue map);
+
+    // Converts a map into an iterator of entries.
+    //
+    // # Parameters
+    // - `map`: a map
     to_iter: map -> Map::MapIterator map (MapKey map, MapValue map);
-    from_iter: [it: Iterator, Iterator::Item it = (k, v), MapKey map = k, MapValue map = v] it -> map;
+
+    //from_iter: [it: Iterator, Iterator::Item it = (k, v), MapKey map = k, MapValue map = v] it -> map;
 }
