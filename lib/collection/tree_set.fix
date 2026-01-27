@@ -1,4 +1,16 @@
 // TreeSet is a set that manages elements in sorted order.
+//
+// The elements of a TreeSet must have a partial order,
+// and `less_than` is the comparison function for that partial order.
+//
+// NOTE: `less_than()` function must meet following conditions.
+// - Irreflexivity: for all `x`, `less_than(x,x)` must be false.
+// - Asymmetry:     for all `x, y`, if `less_than(x,y)` is true, then `less_than(y,x)` must be false.
+// - Transitivity:  for all `x, y, z`, if `less_than(x,y)` is true and `less_than(y,z)` is true,
+//                  then `less_than(x,z)` must be true.
+//
+// If two elements `x` and `y` are incomparable, i.e. neither `less_than(x,y)` nor `less_than(y,x)` holds,
+// then `x` and `y` are considered equivalent.
 module Minilib.Collection.TreeSet;
 
 import Minilib.Collection.RBTree;
@@ -22,8 +34,9 @@ namespace TreeSet {
     );
 
     // `TreeSet::make_lt(less_than)` creates an empty `TreeSet` using specified ordering.
-    // NOTE: `less_than` function must meet specific conditions. For details, see documentation of 
-    // [`RBTree`](./rbtree.md).
+    //
+    // # Parameters
+    // - `less_than`: a comparision function
     make_lt: [a: TreeSetElem] (a -> a -> Bool) -> TreeSet a;
     make_lt = |less_than| (
         TreeSet {
@@ -83,6 +96,11 @@ namespace TreeSet {
     // `ts.find_range(begin, end)` finds all elements `x`
     // where `!less_than(x, begin) && less_than(x, end)` is true.
     // In default `LessThan` ordering, that condition is same as `begin <= x && x < end`.
+    //
+    // # Parameters
+    // - `begin`: the beginning of range
+    // - `end`: the end of range
+    // - `ts`: a TreeSet
     find_range: [a: TreeSetElem] a -> a -> TreeSet a -> DynIterator a;
     find_range = |begin, end, ts| (
         let less_than = ts.@less_than;
@@ -94,6 +112,11 @@ namespace TreeSet {
     // `ts.find_range(begin, end)` finds all elements `x`
     // where `!less_than(x, begin) && less_than(x, end)` is true,  in descending order.
     // In default `LessThan` ordering, that condition is same as `begin <= x && x < end`.
+    //
+    // # Parameters
+    // - `begin`: the beginning of range
+    // - `end`: the end of range
+    // - `ts`: a TreeSet
     find_range_descending: [a: TreeSetElem] a -> a -> TreeSet a -> DynIterator a;
     find_range_descending = |begin, end, ts| (
         let less_than = ts.@less_than;
@@ -106,6 +129,11 @@ namespace TreeSet {
     // where `!lt_begin(x) && lt_end(x)` is true.
     // NOTE: `lt_begin` and `lt_end` must meet following condition:
     // for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
+    //
+    // # Parameters
+    // - `lt_begin`: a function that determines the beginning of range
+    // - `lt_end`: a function that determines the end of range
+    // - `ts`: a TreeSet
     find_raw_range: [a: TreeSetElem] (a -> Bool) -> (a -> Bool) -> TreeSet a -> DynIterator a;
     find_raw_range = |lt_begin, lt_end, ts| (
         ts.@root.find_range(lt_begin, lt_end)
@@ -115,12 +143,20 @@ namespace TreeSet {
     // such that `!lt_begin(x) && lt_end(x)` is true, in descending order.
     // NOTE: `lt_begin` and `lt_end` must meet following condition:
     // for all `x`, `x.lt_begin` is true then `x.lt_end` must be true.
+    //
+    // # Parameters
+    // - `lt_begin`: a function that determines the beginning of range
+    // - `lt_end`: a function that determines the end of range
+    // - `ts`: a TreeSet
     find_raw_range_descending: [a: TreeSetElem] (a -> Bool) -> (a -> Bool) -> TreeSet a -> DynIterator a;
     find_raw_range_descending = |lt_begin, lt_end, ts| (
         ts.@root.find_range_descending(lt_begin, lt_end)
     );
 
     // Converts a TreeSet into an array in sorted order.
+    //
+    // # Parameters
+    // - `ts`: a TreeSet
     to_array: [a: TreeSetElem] TreeSet a -> Array a;
     to_array = |ts| (
         ts.@root.to_array
@@ -133,6 +169,10 @@ namespace TreeSet {
     );
 
     // Converts an iterator into a TreeSet using specified ordering.
+    //
+    // # Parameters
+    // - `less_than`: a comparision function
+    // - `iter`: an iterator of elements
     from_iter_lt: [a: TreeSetElem, it: Iterator, Item it = a] (a -> a -> Bool) -> it -> TreeSet a;
     from_iter_lt = |less_than, iter| (
         let node = RBNode::from_iter_lt(less_than, iter);
@@ -144,12 +184,19 @@ namespace TreeSet {
     );
 
     // Converts an iterator into a TreeSet using default `LessThan` ordering.
+    //
+    // # Parameters
+    // - `iter`: an iterator of elements
     from_iter: [a: LessThan, a: TreeSetElem, it: Iterator, Item it = a] it -> TreeSet a;
     from_iter = |iter| (
         TreeSet::from_iter_lt(RBNode::_less_than, iter)
     );
 
     // Calculates intersection of two TreeSets.
+    //
+    // # Parameters
+    // - `ts1`: a TreeSet
+    // - `ts2`: another TreeSet
     intersect: [a : TreeSetElem] TreeSet a -> TreeSet a -> TreeSet a;
     intersect = |ts1, ts2| (
         ts1.to_iter.fold(
@@ -163,6 +210,10 @@ namespace TreeSet {
     );
 
     // Calculates union of two TreeSets.
+    //
+    // # Parameters
+    // - `ts1`: a TreeSet
+    // - `ts2`: another TreeSet
     merge: [a : TreeSetElem] TreeSet a -> TreeSet a -> TreeSet a;
     merge = |ts1, ts2| (
         ts2.to_iter.fold(

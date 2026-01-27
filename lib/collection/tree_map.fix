@@ -1,4 +1,16 @@
 // TreeMap is a map that manages keys in sorted order.
+//
+// The keys of a TreeSet must have a partial order,
+// and `less_than` is the comparison function for that partial order.
+//
+// NOTE: `less_than()` function must meet following conditions.
+// - Irreflexivity: for all `x`, `less_than(x,x)` must be false.
+// - Asymmetry:     for all `x, y`, if `less_than(x,y)` is true, then `less_than(y,x)` must be false.
+// - Transitivity:  for all `x, y, z`, if `less_than(x,y)` is true and `less_than(y,z)` is true,
+//                  then `less_than(x,z)` must be true.
+//
+// If two keys `x` and `y` are incomparable, i.e. neither `less_than(x,y)` nor `less_than(y,x)` holds,
+// then `x` and `y` are considered equivalent.
 module Minilib.Collection.TreeMap;
 
 import Minilib.Collection.RBTree;

@@ -1,12 +1,12 @@
-// Trait for abstract sets.
+// The trait for abstract sets.
 module Minilib.Collection.Trait.Set;
 
-// Trait for abstract sets.
+// The trait for abstract sets.
 trait set: Set {
-    // Type of element.
+    // The type of an element.
     type SetElem set;
-    // Type of iterator.
-    type SetIterator set: * -> *;
+    // The type of an iterator which is returned from `to_iter`.
+    type SetIterator set a;
 
     // Inserts an element into a set.
     //
@@ -21,9 +21,26 @@ trait set: Set {
     // - `elem`: a element
     // - `set`: a set
     erase: SetElem set -> set -> set;
+
+    // Checks whether a set is empty.
+    //
+    // # Parameters
+    // - `set`: a set
     is_empty: set -> Bool;
+
+    // Gets the number of elements in a set.
+    //
+    // # Parameters
+    // - `set`: a set
     get_size: set -> I64;
+
+    // Checks whether a set contains the specified element.
+    //
+    // # Parameters
+    // - `elem`: a element
+    // - `set`: a set
     contains: SetElem set -> set -> Bool;
+
     to_iter: set -> SetIterator set (SetElem set);
-    from_iter: [it: Iterator, Iterator::Item it = e, SetElem set = e] it -> set;
+    //from_iter: [it: Iterator, Iterator::Item it = e, e = SetElem set] it -> set;
 }
