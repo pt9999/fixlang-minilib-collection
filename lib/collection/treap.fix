@@ -1,6 +1,7 @@
 module Minilib.Collection.Treap;
 
 import Minilib.Common.Common;
+import Minilib.Collection.Trait.Set;
 import Minilib.Text.StringEx;
 
 trait kc : KeyCompare {
@@ -132,24 +133,47 @@ namespace Treap {
         ).swap
     );
 
-    get_size: Treap kc k -> I64;
-    get_size = @size;
+    _is_empty: Treap kc k -> Bool;
+    _is_empty = |treap| treap.@size == 0;
 
-    insert: [kc: KeyCompare, Key kc = k] k -> Treap kc k -> Treap kc k;
-    insert = |key, treap| (
+    _get_size: Treap kc k -> I64;
+    _get_size = @size;
+
+    _contains: [kc: KeyCompare, Key kc = k] k -> Treap kc k -> Bool;
+    _contains = |key, treap| (
+        treap._contains_recursive(k, treap.@root)
+    );
+
+    _contains_recursive: [kc: KeyCompare, Key kc = k] k -> TNodeIndex -> Treap kc k -> Bool;
+    _contains_recursive = |key_to_find, node, treap| (
+        if node == TNodeIndex::empty {
+            false
+        };
+        let (prio, key, left, right) = treap[node].iget.to_quad;
+        if treap.@kc.compare(key, key_to_find) { // key < key_to_find
+            treap._contains_recursive(key_to_find, right)
+        } else if treap.@kc.compare(key_to_find, key) { // key_to_find < key
+            treap._contains_recursive(key_to_find, left)
+        } else {
+            true
+        }
+    );
+
+    _insert: [kc: KeyCompare, Key kc = k] k -> Treap kc k -> Treap kc k;
+    _insert = |key, treap| (
         let (treap, prio) = treap._generate_random_priority : (Treap kc k, Priority);
-        let (treap, root) = treap._insert(prio, key, treap.@root) : (Treap kc k, TNodeIndex);
+        let (treap, root) = treap._insert_recursive(prio, key, treap.@root) : (Treap kc k, TNodeIndex);
         treap.set_root(root)
     );
 
-    _insert: [kc: KeyCompare, Key kc = k] Priority -> k -> TNodeIndex -> Treap kc k -> (Treap kc k, TNodeIndex);
-    _insert = |new_prio, new_key, old_node, treap| (
+    _insert_recursive: [kc: KeyCompare, Key kc = k] Priority -> k -> TNodeIndex -> Treap kc k -> (Treap kc k, TNodeIndex);
+    _insert_recursive = |new_prio, new_key, old_node, treap| (
         if old_node == TNodeIndex::empty {
             treap._make_branch(new_prio, new_key, TNodeIndex::empty, TNodeIndex::empty)
         };
         let (old_prio, old_key, left, right) = treap[old_node].iget.to_quad;
         if treap.@kc.compare(old_key, new_key) { // old_key < new_key
-            let (treap, up_node) = treap._insert(new_prio, new_key, right);
+            let (treap, up_node) = treap._insert_recursive(new_prio, new_key, right);
             let (up_prio, up_key, up_left, up_right) = treap[up_node].iget.to_quad;
             if old_prio < up_prio {
                 let treap = treap[old_node][^right].iset(up_left);
@@ -160,7 +184,7 @@ namespace Treap {
                 (treap, old_node)
             }
         } else if treap.@kc.compare(new_key, old_key) { // new_key < old_key
-            let (treap, up_node) = treap._insert(new_prio, new_key, left);
+            let (treap, up_node) = treap._insert_recursive(new_prio, new_key, left);
             let (up_prio, up_key, up_left, up_right) = treap[up_node].iget.to_quad;
             if old_prio < up_prio {
                 let treap = treap[old_node][^left].iset(up_right);
@@ -176,27 +200,27 @@ namespace Treap {
         }
     );
 
-    remove: [kc: KeyCompare, Key kc = k] k -> Treap kc k -> Treap kc k;
-    remove = |key, treap| (
-        let (treap, root) = treap._remove(key, treap.@root);
+    _erase: [kc: KeyCompare, Key kc = k] k -> Treap kc k -> Treap kc k;
+    _erase = |key, treap| (
+        let (treap, root) = treap._erase_recursive(key, treap.@root);
         treap.set_root(root)
     );
 
-    _remove: [kc: KeyCompare, Key kc = k] k -> TNodeIndex -> Treap kc k -> (Treap kc k, TNodeIndex);
-    _remove = |key, old_node, treap| (
+    _erase_recursive: [kc: KeyCompare, Key kc = k] k -> TNodeIndex -> Treap kc k -> (Treap kc k, TNodeIndex);
+    _erase_recursive = |key, old_node, treap| (
         if old_node == TNodeIndex::empty {
             (treap, TNodeIndex::empty)
         };
         let (old_prio, old_key, left, right) = treap[old_node].iget.to_quad;
         if treap.@kc.compare(old_key, key) { // old_key < key
-            let (treap, right2) = treap._remove(key, right);
+            let (treap, right2) = treap._erase_recursive(key, right);
             let treap = if right == right2 { treap } else { treap[old_node][^right].iset(right2) };
             (treap, old_node)
         } else if treap.@kc.compare(key, old_key) { // key < old_key
-            let (treap, left2) = treap._remove(key, left);
+            let (treap, left2) = treap._erase_recursive(key, left);
             let treap = if left == left2 { treap } else { treap[old_node][^left].iset(left2) };
             (treap, old_node)
-        } else {    // remove this node
+        } else {    // erase this node
             let treap = treap._free_branch(old_node);
             treap._join(left, right)
         }
@@ -304,4 +328,19 @@ namespace Treap {
         }
     );
 }
+
+// Implementation of the `Set` trait.
+impl  [kc: KeyCompare, Key kc = k] Treap kc k: Set {
+    type SetElem (Treap kc k) = k;
+    type SetIterator (Treap kc k) x = DynIterator x;
+
+    insert = Treap::_insert;
+    erase = Treap::_erase;
+    is_empty = Treap::_is_empty;
+    get_size = Treap::_get_size;
+    contains = Treap::_contains;
+    to_iter = Treap::_to_iter;
+    //from_iter = Treap::_from_iter;
+}
+
 

@@ -1,6 +1,7 @@
 module TreapTest;
 
 import Minilib.Collection.Treap;
+import Minilib.Collection.Trait.Set;
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
