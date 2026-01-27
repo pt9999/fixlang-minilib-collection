@@ -1,0 +1,191 @@
+
+// Tests for Minilib.Collection.Trait.Set
+module AbstractSetTests;
+
+import Random;
+import Minilib.Collection.Trait.Set;
+import Minilib.Text.StringEx;
+import Minilib.Testing.UnitTest;
+import Minilib.Testing.TestUtilArray;
+import Minilib.Trait.Traversable;
+
+test_to_iter:
+    [set: Set, SetElem set = I64, SetIterator set I64 = iter, iter: Iterator, Item iter = I64]
+    set ->  TestCase;
+test_to_iter = |empty_set| (
+    make_test("test_to_iter") $ |_|
+    let iter = Iterator::range(0, 10);
+    let set = iter.fold(empty_set, insert);
+    assert_equal("eq", iter.to_array, set.to_iter.to_array);;
+    pure()
+);
+
+test_to_array: 
+    [set: Set, SetElem set = I64] 
+    set ->  TestCase;
+test_to_array = |empty_set| (
+    make_test("test_to_array") $ |_|
+    let iter = Iterator::range(0, 10);
+    let set = iter.fold(empty_set, insert);
+    assert_equal("eq", iter.to_array, set.to_array);;
+    pure()
+);
+
+test_insert_erase_ok:
+    [set: Set, SetElem set = I64]
+    set -> (I64, Reorder, Reorder) -> TestCase;
+test_insert_erase_ok = |empty_set, (n, insert_reorder, erase_reorder)| (
+    let testname = "test_insert_erase_ok("+ n.to_string + "," +
+                    insert_reorder.to_string + "," +
+                    erase_reorder.to_string + ")";
+    make_test(testname) $ |_|
+    let keys_sorted = Iterator::range(0, n).to_array;
+
+    // insert with keys shuffled
+    let keys_shuffled = keys_sorted.reorder(insert_reorder);
+    let set = empty_set;
+    let set = keys_shuffled.to_iter.fold(
+        set, |k, set|
+        set.insert(k)
+    );
+
+    // assert that the size is same as keys
+    assert_equal("size after insertion", keys_sorted.get_size, set.get_size);;
+
+    // assert that keys are sorted
+    let keys_current = set.to_array;
+    assert_equal("keys are sorted", keys_sorted, keys_current);;
+
+    // assert that keys exist
+    keys_sorted.to_iter.foreach_m(|k|
+        assert_equal("set.contains", true, set.contains(k))
+    );;
+
+    // erase keys
+    let keys_shuffled = keys_sorted.reorder(erase_reorder);
+    let set = keys_shuffled.to_iter.fold(
+        set, |i, set|
+        set.erase(i)
+    );
+    let keys_current = set.to_array;
+    assert_equal("[] == keys_current", [], keys_current);;
+    assert_true("set.is_empty", set.is_empty);;
+    assert_equal("size after erase", 0, set.get_size);;
+
+    pure()      // success
+);
+
+test_insert_erase: 
+    [set: Set, SetElem set = I64]
+    set -> TestCase;
+test_insert_erase = |empty_set| (
+    do {
+        let n = 30;
+        let insert_reorder = *[skip(15), ascending(), descending(), shuffle(123)];
+        let erase_reorder = *[skip(15), ascending(), descending(), shuffle(345)];
+        pure $ empty_set.test_insert_erase_ok $ (n, insert_reorder, erase_reorder)
+    }.run_tests
+);
+
+test_get_size: 
+    [set: Set, SetElem set = I64]
+    set -> TestCase;
+test_get_size = |empty_set| (
+    make_table_test(
+        "test_get_size",
+        [
+            (1234, 100, 2),
+            (1235, 100, 10),
+            (1236, 10, 2),
+            (1237, 10, 10),
+        ],
+        |(seed, n, max_op)|
+        let debug_eprintln = if false { debug_eprintln } else { |_| () };
+        eval debug_eprintln ("--- test_get_size (seed, n, max_op)=" + (seed, n, max_op).to_string);
+        let random = Random::init_by_seed(seed.to_U64);
+        let mask = Array::fill(n, false);
+        let size = 0;
+        let set = empty_set;
+        loop_m(
+            (random, mask, size, set, 0), |(random, mask, size, set, i)|
+            if i >= n * 10 { break_m $ () };
+            let (random, v) = random.generate_U64;
+            let (random, op) = random.generate_U64;
+            let v = (v % n.to_U64).to_I64;
+            let op = (op % max_op.to_U64).to_I64;
+            if op == 0 {
+                let size = if mask.@(v) { size } else { size + 1 };
+                let mask = mask.Array::set(v, true);
+                let set = set.insert(v);
+                eval debug_eprintln("insert " + (v, size).to_string);
+                assert_equal("insert", size, set.get_size);;
+                //assert_equal("insert root get_size", set.@root.get_size, set.get_size);;
+                continue_m $ (random, mask, size, set, i + 1)
+            } else { // op == 1 or above
+                let size = if !mask.@(v) { size } else { size - 1 };
+                let mask = mask.Array::set(v, false);
+                let set = set.erase(v);
+                eval debug_eprintln("erase " + (v, size).to_string);
+                assert_equal("erase", size, set.get_size);;
+                //assert_equal("erase root get_size", set.@root.get_size, set.get_size);;
+                continue_m $ (random, mask, size, set, i + 1)
+            }
+        )
+    )
+);
+
+// `test_perf` for the abstract type is a little slower than `test_perf` for the concrete type. why?
+
+test_perf: 
+    [set: Set, SetElem set = I64]
+    set -> I64 -> TestCase;
+test_perf = |empty_set, n| (
+    make_test("test_perf") $ |_|
+    //let n = 1000000;
+    println("test_perf (n=" + n.to_string + ")").lift;;
+    let array = Iterator::range(0, n).to_array;
+    let shuffled = array.reorder(shuffle(5432));
+    let (set, insert_time) = *consumed_time_while_io(do {
+        pure();;
+        pure $ shuffled.to_iter.fold(empty_set, insert)
+    }).lift;
+    println(" insert: " + insert_time.to_string + " seconds").lift;;
+    assert_equal("size", n, set.get_size);;
+    /*
+    let (ans1, ans1_time) = *consumed_time_while_io(do {
+        pure();;
+        pure $ set.to_iter.to_array
+    }).lift;
+    println(" to_iter.to_array: " + ans1_time.to_string + " seconds").lift;;
+    assert_equal("eq", ans1, array);;
+    */
+    let (ans2, ans2_time) = *consumed_time_while_io(do {
+        pure();;
+        pure $ set.to_array
+    }).lift;
+    println(" to_array: " + ans2_time.to_string + " seconds").lift;;
+    assert_equal("eq", ans2, array);;
+    let (set, erase_time) = *consumed_time_while_io(do {
+        pure();;
+        pure $ shuffled.to_iter.fold(
+            set, |x| erase(x)
+        )
+    }).lift;
+    println(" erase: " + erase_time.to_string + " seconds").lift;;
+    assert_equal("size", 0, set.get_size);;
+    pure()
+);
+
+abstract_set_tests:
+    [set: Set, SetElem set = I64, SetIterator set I64 = iter, iter: Iterator, Item iter = I64]
+    set -> TestCase;
+abstract_set_tests = |empty_set| (
+    [
+        test_to_iter(empty_set),
+        test_to_array(empty_set),
+        test_insert_erase(empty_set),
+        test_get_size(empty_set),
+        //test_perf(empty_set, 1000000),
+    ]
+    .run_tests
+);

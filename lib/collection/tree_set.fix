@@ -157,8 +157,8 @@ namespace TreeSet {
     //
     // # Parameters
     // - `ts`: a TreeSet
-    to_array: [a: TreeSetElem] TreeSet a -> Array a;
-    to_array = |ts| (
+    _to_array: [a: TreeSetElem] TreeSet a -> Array a;
+    _to_array = |ts| (
         ts.@root.to_array
     );
 
@@ -234,6 +234,7 @@ impl [a: TreeSetElem] TreeSet a: Set {
     get_size = TreeSet::_get_size;
     contains = TreeSet::_contains;
     to_iter = TreeSet::_to_iter;
+    to_array = TreeSet::_to_array;
     //from_iter = TreeSet::_from_iter;
 }
 

@@ -41,6 +41,17 @@ trait set: Set {
     // - `set`: a set
     contains: SetElem set -> set -> Bool;
 
+    // Converts a set into an iterator.
+    //
+    // # Parameters
+    // - `set`: a set
     to_iter: set -> SetIterator set (SetElem set);
+
+    // Converts a set into an array.
+    //
+    // # Parameters
+    // - `set`: a set
+    to_array: set -> Array (SetElem set);
+
     //from_iter: [it: Iterator, Iterator::Item it = e, e = SetElem set] it -> set;
 }

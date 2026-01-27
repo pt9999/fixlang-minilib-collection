@@ -6,6 +6,8 @@ import Minilib.Text.StringEx;
 
 trait kc : KeyCompare {
     type Key kc;
+
+    empty: kc;
     // Returns false iff the first key should appear after the second key.
     compare : Key kc -> Key kc -> kc -> Bool;
 }
@@ -14,21 +16,34 @@ type KeyLessThan k = unbox struct {};
 
 impl [k: LessThan] KeyLessThan k: KeyCompare {
     type Key (KeyLessThan k) = k;
+    empty = KeyLessThan {};
     compare = |x, y, kc| x < y;
 }
 
+/*
 type KeyLessThanOrEq k = unbox struct {};
 
 impl [k: LessThanOrEq] KeyLessThanOrEq k: KeyCompare {
     type Key (KeyLessThanOrEq k) = k;
+    empty = KeyLessThanOrEq {};
     compare = |x, y, kc| x <= y;
 }
+*/
 
 type KeyGreaterThan k = unbox struct {};
 
 impl [k: LessThan] KeyGreaterThan k: KeyCompare {
     type Key (KeyGreaterThan k) = k;
+    empty = KeyGreaterThan {};
     compare = |x, y, kc| y < x;
+}
+
+type WithValue v kc = unbox struct { kc: kc };
+
+impl [kc: KeyCompare] WithValue v kc: KeyCompare {
+    type Key (WithValue v kc) = (Key kc, v);
+    empty = WithValue { kc: KeyCompare::empty };
+    compare = |(x, _), (y, _), wkc| wkc.@kc.compare(x, y);
 }
 
 // The priority type. (used internally)
@@ -72,9 +87,9 @@ impl Treap kc k : Indexable {
 }
 
 namespace Treap {
-    empty: [k: LessThan] Treap (KeyLessThan k) k;
+    empty: [kc: KeyCompare, Key kc = k] Treap kc k;
     empty = (
-        Treap::make(KeyLessThan{})
+        Treap::make(KeyCompare::empty)
     );
 
     make: [kc: KeyCompare, Key kc = k] kc -> Treap kc k;
@@ -141,7 +156,7 @@ namespace Treap {
 
     _contains: [kc: KeyCompare, Key kc = k] k -> Treap kc k -> Bool;
     _contains = |key, treap| (
-        treap._contains_recursive(k, treap.@root)
+        treap._contains_recursive(key, treap.@root)
     );
 
     _contains_recursive: [kc: KeyCompare, Key kc = k] k -> TNodeIndex -> Treap kc k -> Bool;
@@ -245,8 +260,8 @@ namespace Treap {
         }
     );
 
-    to_array: Treap kc k -> Array k;
-    to_array = |treap| (
+    _to_array: Treap kc k -> Array k;
+    _to_array = |treap| (
         let inner = fix $ |inner, node, arr| (
             if node == TNodeIndex::empty { arr };
             let b = treap[node].iget;
@@ -258,6 +273,9 @@ namespace Treap {
         );
         inner(treap.@root, [])
     );
+
+    _to_iter: Treap kc k -> DynIterator k;
+    _to_iter = |treap| treap._to_array.to_iter.to_dyn;
 
     _debug_to_string: [k: ToString] Treap kc k -> String;
     _debug_to_string = |treap| (
@@ -340,6 +358,7 @@ impl  [kc: KeyCompare, Key kc = k] Treap kc k: Set {
     get_size = Treap::_get_size;
     contains = Treap::_contains;
     to_iter = Treap::_to_iter;
+    to_array = Treap::_to_array;
     //from_iter = Treap::_from_iter;
 }
 
