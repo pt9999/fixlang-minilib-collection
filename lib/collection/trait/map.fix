@@ -1,0 +1,16 @@
+module Minilib.Collection.Trait.Map;
+
+trait map: Map {
+    type MapKey map;
+    type MapValue map;
+    type MapIterator map: * -> *;
+
+    insert: MapKey map -> MapValue map -> map -> map;
+    erase: MapKey map -> map -> map;
+    is_empty: map -> Bool;
+    get_size: map -> I64;
+    contains_key: MapKey map -> map -> Bool;
+    find: MapKey map -> map -> Option (MapValue map);
+    to_iter: map -> Map::MapIterator map (MapKey map, MapValue map);
+    from_iter: [it: Iterator, Iterator::Item it = (k, v), MapKey map = k, MapValue map = v] it -> map;
+}

@@ -13,6 +13,8 @@ files = [
     "lib/collection/rbtree.fix",
     "lib/collection/tree_map.fix",
     "lib/collection/tree_set.fix",
+    "lib/collection/trait/set.fix",
+    "lib/collection/trait/map.fix",
 ]
 
 [build.test]
