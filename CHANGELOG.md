@@ -1,5 +1,6 @@
 ## 0.x.x
 ### Added
+- Added `Minilib.Collection.Treap`.
 - Added `Minilib.Collection.Trait.Set`, `Minilib.Collection.Trait.Map`.
 ### Changed
 - Minilib.Collection.TreeSet: Implemented `Minilib.Collection.Trait.Set`.
