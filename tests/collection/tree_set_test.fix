@@ -27,8 +27,11 @@ test_to_array = (
     pure()
 );
 
-test_insert_erase_ok: (I64, Reorder, Reorder) -> TestCase;
-test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
+test_insert_erase_ok:
+    [set: Set, SetElem set = I64, SetIterator set I64 = iter, iter: Iterator,
+     Item iter = I64]
+    set -> (I64, Reorder, Reorder) -> TestCase;
+test_insert_erase_ok = |empty_set, (n, insert_reorder, erase_reorder)| (
     let testname = "test_insert_erase_ok("+ n.to_string + "," +
                     insert_reorder.to_string + "," +
                     erase_reorder.to_string + ")";
@@ -37,7 +40,7 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
 
     // insert with keys shuffled
     let keys_shuffled = keys_sorted.reorder(insert_reorder);
-    let set: TreeSet I64 = TreeSet::make();
+    let set = empty_set;
     let set = keys_shuffled.to_iter.fold(
         set, |k, set|
         set.insert(k)
@@ -47,7 +50,7 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
     assert_equal("size after insertion", keys_sorted.get_size, set.get_size);;
 
     // assert that keys are sorted
-    let keys_current = set.to_iter.to_array;
+    let keys_current = set.to_iter.Iterator::to_array;
     assert_equal("keys are sorted", keys_sorted, keys_current);;
 
     // assert that keys exist
@@ -61,7 +64,7 @@ test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
         set, |i, set|
         set.erase(i)
     );
-    let keys_current = set.to_iter.to_array;
+    let keys_current = set.to_iter.Iterator::to_array;
     assert_equal("[] == keys_current", [], keys_current);;
     assert_true("set.is_empty", set.is_empty);;
     assert_equal("size after erase", 0, set.get_size);;
@@ -75,7 +78,8 @@ test_insert_erase = (
         let n = 30;
         let insert_reorder = *[skip(15), ascending(), descending(), shuffle(123)];
         let erase_reorder = *[skip(15), ascending(), descending(), shuffle(345)];
-        pure $ test_insert_erase_ok $ (n, insert_reorder, erase_reorder)
+        let empty_set: TreeSet I64 = TreeSet::make();
+        pure $ empty_set.test_insert_erase_ok $ (n, insert_reorder, erase_reorder)
     }.run_tests
 );
 

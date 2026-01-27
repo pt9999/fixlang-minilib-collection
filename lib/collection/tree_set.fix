@@ -226,7 +226,7 @@ namespace TreeSet {
 // Implementation of the `Set` trait.
 impl [a: TreeSetElem] TreeSet a: Set {
     type SetElem (TreeSet a) = a;
-    type SetIterator (TreeSet a) = DynIterator;
+    type SetIterator (TreeSet a) x = DynIterator x;
 
     insert = TreeSet::_insert;
     erase = TreeSet::_erase;
