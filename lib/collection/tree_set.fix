@@ -2,6 +2,7 @@
 module Minilib.Collection.TreeSet;
 
 import Minilib.Collection.RBTree;
+import Minilib.Collection.Trait.Set;
 
 namespace TreeSet {
     // A trait of the element. Currently `ToString` is required.
@@ -44,8 +45,8 @@ namespace TreeSet {
     // NOTE: If `ts` already contains an element `y` equivalent to `x`,
     // ie. `!less_than(x,y) && !less_than(y,x)` is true,
     // then `y` is replaced with `x`.
-    insert: [a: TreeSetElem] a -> TreeSet a -> TreeSet a;
-    insert = |x, ts| (
+    _insert: [a: TreeSetElem] a -> TreeSet a -> TreeSet a;
+    _insert = |x, ts| (
        ts._mod_root_and_size(insert_lt(x, ts.@less_than))
     );
 
@@ -55,27 +56,27 @@ namespace TreeSet {
     // NOTE: If `ts` contains an element `y` equivalent to `x`,
     // ie. `!less_than(x,y) && !less_than(y,x)` is true,
     // then `y` is removed.
-    erase: [a: TreeSetElem] a -> TreeSet a -> TreeSet a;
-    erase = |x, ts| (
+    _erase: [a: TreeSetElem] a -> TreeSet a -> TreeSet a;
+    _erase = |x, ts| (
        ts._mod_root_and_size(remove_lt(x, ts.@less_than))
     );
 
     // Checks whether a TreeSet is empty.
-    is_empty: [a: TreeSetElem] TreeSet a -> Bool;
-    is_empty = |ts| (
+    _is_empty: [a: TreeSetElem] TreeSet a -> Bool;
+    _is_empty = |ts| (
         ts.@root.is_empty
     );
 
     // Gets the number of elements.
     // The time complexity of this function is O(1).
-    get_size: TreeSet a -> I64;
-    get_size = |ts| (
+    _get_size: TreeSet a -> I64;
+    _get_size = |ts| (
         ts.@size
     );
 
     // Checks whether a TreeSet contains an element.
-    contains: [a: TreeSetElem] a -> TreeSet a -> Bool;
-    contains = |x, ts| (
+    _contains: [a: TreeSetElem] a -> TreeSet a -> Bool;
+    _contains = |x, ts| (
         ts.@root.find(x, ts.@less_than).is_some
     );
 
@@ -126,8 +127,8 @@ namespace TreeSet {
     );
 
     // Converts a TreeSet into an iterator in sorted order.
-    to_iter: [a: TreeSetElem] TreeSet a -> DynIterator a;
-    to_iter = |ts| (
+    _to_iter: [a: TreeSetElem] TreeSet a -> DynIterator a;
+    _to_iter = |ts| (
         ts.@root.to_iter
     );
 
@@ -169,6 +170,20 @@ namespace TreeSet {
             ts1.insert(x)
         )
     );
+}
+
+// Implementation of the `Set` trait.
+impl [a: TreeSetElem] TreeSet a: Set {
+    type SetElem (TreeSet a) = a;
+    type SetIterator (TreeSet a) = DynIterator;
+
+    insert = TreeSet::_insert;
+    erase = TreeSet::_erase;
+    is_empty = TreeSet::_is_empty;
+    get_size = TreeSet::_get_size;
+    contains = TreeSet::_contains;
+    to_iter = TreeSet::_to_iter;
+    //from_iter = TreeSet::_from_iter;
 }
 
 // Converts a TreeSet into a String.
