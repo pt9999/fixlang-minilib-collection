@@ -8,7 +8,7 @@ trait map: Map {
     // The type of the values.
     type MapValue map;
     // The type of the iterator returned by `to_iter`.
-    type MapIterator map: * -> *;
+    type MapIterator map a;
 
     // Inserts an entry into a map.
     //

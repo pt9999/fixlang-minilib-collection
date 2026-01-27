@@ -14,6 +14,7 @@
 module Minilib.Collection.TreeMap;
 
 import Minilib.Collection.RBTree;
+import Minilib.Collection.Trait.Map;
 import Minilib.Text.StringEx;
 
 namespace TreeMap {
@@ -69,8 +70,8 @@ namespace TreeMap {
     // where the key `k1` is equivalent to `k`,
     // ie. `!less_than(k,k1) && !less_than(k1,k)` is true,
     // then `(k1,v1)` is replaced with `(k,v)`.
-    insert: [k: TreeMapKey, v: TreeMapValue] k -> v -> TreeMap k v -> TreeMap k v;
-    insert = |k, v, tm| (
+    _insert: [k: TreeMapKey, v: TreeMapValue] k -> v -> TreeMap k v -> TreeMap k v;
+    _insert = |k, v, tm| (
        tm._mod_root_and_size(insert_lt((k, v), tm.@entry_less_than))
     );
 
@@ -93,8 +94,8 @@ namespace TreeMap {
     // where the key `k1` is equivalent to `k`,
     // ie. `!less_than(k,k1) && !less_than(k1,k)` is true,
     // then `(k1,v1)` is removed.
-    erase: [k: TreeMapKey, v: TreeMapValue] k -> TreeMap k v -> TreeMap k v;
-    erase = |k, tm| (
+    _erase: [k: TreeMapKey, v: TreeMapValue] k -> TreeMap k v -> TreeMap k v;
+    _erase = |k, tm| (
         let less_than = tm.@key_less_than;
         let lt_begin = |(ent_k,_)| less_than(ent_k, k);
         let lt_end   = |(ent_k,_)| !less_than(k, ent_k);
@@ -102,21 +103,21 @@ namespace TreeMap {
     );
 
     // Checks whether a TreeMap is empty.
-    is_empty: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> Bool;
-    is_empty = |tm| (
+    _is_empty: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> Bool;
+    _is_empty = |tm| (
         tm.@root.is_empty
     );
 
     // Gets the number of entries.
     // The time complexity of this function is O(1).
-    get_size: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> I64;
-    get_size = |tm| (
+    _get_size: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> I64;
+    _get_size = |tm| (
         tm.@size
     );
 
     // Checks whether a TreeMap contains a key.
-    contains_key: [k: TreeMapKey, v: TreeMapValue] k -> TreeMap k v -> Bool;
-    contains_key = |k, tm| (
+    _contains_key: [k: TreeMapKey, v: TreeMapValue] k -> TreeMap k v -> Bool;
+    _contains_key = |k, tm| (
         tm.find(k).is_some
     );
 
@@ -127,8 +128,8 @@ namespace TreeMap {
     );
 
     // Finds an element from a TreeMap.
-    find: [k: TreeMapKey, v: TreeMapValue] k -> TreeMap k v -> Option v;
-    find = |k, tm| (
+    _find: [k: TreeMapKey, v: TreeMapValue] k -> TreeMap k v -> Option v;
+    _find = |k, tm| (
         let less_than = tm.@key_less_than;
         let lt_begin = |(ent_k,_)| less_than(ent_k, k);
         let lt_end   = |(ent_k,_)| !less_than(k, ent_k);
@@ -163,8 +164,8 @@ namespace TreeMap {
     );
 
     // Converts a TreeMap into an iterator of key-value pairs in ascending order of keys.
-    to_iter: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> DynIterator (k, v);
-    to_iter = |tm| (
+    _to_iter: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> DynIterator (k, v);
+    _to_iter = |tm| (
         tm.@root.to_iter
     );
 
@@ -181,6 +182,22 @@ namespace TreeMap {
     from_iter = |iter| (
         TreeMap::from_iter_lt(RBNode::_less_than, iter)
     );
+}
+
+
+impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: Map {
+    type MapKey (TreeMap k v) = k;
+    type MapValue (TreeMap k v) = v;
+    type MapIterator (TreeMap k v) a = DynIterator a;
+
+    insert = _insert;
+    erase = _erase;
+    is_empty = _is_empty;
+    get_size = _get_size;
+    contains_key = _contains_key;
+    find = _find;
+    to_iter = _to_iter;
+    //from_iter = _from_iter;
 }
 
 impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: ToString {
