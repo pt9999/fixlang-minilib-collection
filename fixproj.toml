@@ -28,6 +28,7 @@ files = [
     "tests/collection/treap_test.fix",
     "tests/collection/tree_map_test.fix",
     "tests/collection/tree_set_test.fix",
+    "tests/collection/trait/abstract_map_tests.fix",
     "tests/collection/trait/abstract_set_tests.fix",
     "tests/testing/test_util_array.fix",
 ]

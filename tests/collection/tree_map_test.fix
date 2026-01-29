@@ -9,97 +9,8 @@ import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
 import Minilib.Trait.Traversable;
 
-test_to_iter: TestCase;
-test_to_iter = (
-    make_test("test_to_iter") $ |_|
-    let iter = Iterator::range(0, 10).map(|i| (i, i.to_string));
-    let map: TreeMap I64 String = from_iter(iter);
-    assert_equal("eq", iter.to_array, map.to_iter.to_array);;
-    pure()
-);
+import AbstractMapTests;
 
-test_to_array: TestCase;
-test_to_array = (
-    make_test("test_to_array") $ |_|
-    let iter = Iterator::range(0, 10).map(|i| (i, i.to_string));
-    let map: TreeMap I64 String = from_iter(iter);
-    assert_equal("eq", iter.to_array, map.to_array);;
-    pure()
-);
-
-test_insert_erase_ok: (I64, Reorder, Reorder) -> TestCase;
-test_insert_erase_ok = |(n, insert_reorder, erase_reorder)| (
-    let testname = "test_insert_erase_ok("+ n.to_string + "," +
-                    insert_reorder.to_string + "," +
-                    erase_reorder.to_string + ")";
-    make_test(testname) $ |_|
-    let keys_sorted = Iterator::range(0, n).to_array;
-
-    // insert with keys shuffled
-    let keys_shuffled = keys_sorted.reorder(insert_reorder);
-    let map: TreeMap I64 String = TreeMap::make();
-    let map = keys_shuffled.to_iter.fold(
-        map, |k, map|
-        map.insert(k, "value-1-" + k.to_string )
-    );
-
-    // assert that the size is same as keys
-    assert_equal("size after insertion", keys_sorted.get_size, map.get_size);;
-
-    // assert that keys are sorted
-    let keys_current = map.keys.to_array;
-    assert_equal("keys are sorted", keys_sorted, keys_current);;
-
-    // assert that keys exist and values are correct
-    keys_sorted.to_iter.foreach_m(|k|
-        assert_equal("map.contains_key", true, map.contains_key(k));;
-        let v = map.find(k);
-        assert_equal("map.find", some("value-1-" + k.to_string), v)
-    );;
-
-    // change values
-    let map = keys_shuffled.to_iter.fold(
-        map, |k, map|
-        map.insert(k, "value-2-" + k.to_string )
-    );
-
-    // assert that the size is same as keys
-    assert_equal("size after change", keys_sorted.get_size, map.get_size);;
-
-    // assert that keys are sorted
-    let keys_current = map.keys.to_array;
-    assert_equal("keys are sorted", keys_sorted, keys_current);;
-
-    // assert that keys exist and values are correct
-    keys_sorted.to_iter.foreach_m(|k|
-        assert_equal("map.contains_key", true, map.contains_key(k));;
-        let v = map.find(k);
-        assert_equal("map.find", some("value-2-" + k.to_string), v)
-    );;
-
-    // erase keys
-    let keys_shuffled = keys_sorted.reorder(erase_reorder);
-    let map = keys_shuffled.to_iter.fold(
-        map, |i, map|
-        map.erase(i)
-    );
-    let keys_current = map.keys.to_array;
-    assert_equal("[] == keys_current", [], keys_current);;
-    assert_true("map.is_empty", map.is_empty);;
-    assert_equal("size after erase", 0, map.get_size);;
-
-    pure()      // success
-);
-
-test_insert_erase: TestCase;
-test_insert_erase = (
-    do {
-        let n = 30;
-        let insert_reorder = *[skip(15), ascending(), descending(), shuffle(123)];
-        let erase_reorder = *[skip(15), ascending(), descending(), shuffle(345)];
-        pure $ test_insert_erase_ok $ (n, insert_reorder, erase_reorder)
-    }.run_tests
-);
 
 test_upsert: TestCase;
 test_upsert = (
@@ -119,60 +30,6 @@ test_upsert = (
     pure()
 );
 
-test_get_size: TestCase;
-test_get_size = (
-    make_table_test(
-        "test_get_size",
-        [
-            (1234, 100, 3),
-            (1235, 100, 10),
-            (1236, 10, 3),
-            (1237, 10, 10),
-        ],
-        |(seed, n, max_op)|
-        let debug_eprintln = if false { debug_eprintln } else { |_| () };
-        eval debug_eprintln ("--- test_get_size (seed, n, max_op)=" + (seed, n, max_op).to_string);
-        let random = Random::init_by_seed(seed.to_U64);
-        let mask = Array::fill(n, false);
-        let size = 0;
-        let tm: TreeMap I64 I64 = TreeMap::make();
-        loop_m(
-            (random, mask, size, tm, 0), |(random, mask, size, tm, i)|
-            if i >= n * 10 { break_m $ () };
-            let (random, k) = random.generate_U64;
-            let (random, v) = random.generate_U64;
-            let (random, op) = random.generate_U64;
-            let k = (k % n.to_U64).to_I64;
-            let v = (v % n.to_U64).to_I64;
-            let op = (op % max_op.to_U64).to_I64;
-            if op == 0 {
-                let size = if mask.@(k) { size } else { size + 1 };
-                let mask = mask.set(k, true);
-                let tm = tm.insert(k, v);
-                eval debug_eprintln("insert " + (k, size).to_string);
-                assert_equal("insert", size, tm.get_size);;
-                assert_equal("insert root get_size", tm.@root.get_size, tm.get_size);;
-                continue_m $ (random, mask, size, tm, i + 1)
-            } else if op == 1 {
-                let size = if mask.@(k) { size } else { size + 1 };
-                let mask = mask.set(k, true);
-                let tm = tm.upsert(k, v, |vv| vv + 123);
-                eval debug_eprintln("upsert " + (k, size).to_string);
-                assert_equal("upsert", size, tm.get_size);;
-                assert_equal("upsert root get_size", tm.@root.get_size, tm.get_size);;
-                continue_m $ (random, mask, size, tm, i + 1)
-            } else {    // op == 2 or above
-                let size = if !mask.@(k) { size } else { size - 1 };
-                let mask = mask.set(k, false);
-                let tm = tm.erase(k);
-                eval debug_eprintln("erase " + (k, size).to_string);
-                assert_equal("erase", size, tm.get_size);;
-                assert_equal("erase root get_size", tm.@root.get_size, tm.get_size);;
-                continue_m $ (random, mask, size, tm, i + 1)
-            }
-        )
-    )
-);
 
 test_find_range: TestCase;
 test_find_range = (
@@ -206,12 +63,10 @@ test_find_range = (
 
 main: IO ();
 main = (
+    let empty_map: TreeMap I64 String = TreeMap::make();
      [
-        test_to_iter,
-        test_to_array,
-        test_insert_erase,
+        AbstractMapTests::abstract_map_tests(empty_map),
         test_upsert,
-        test_get_size,
         test_find_range,
         TestCase::empty
     ]
