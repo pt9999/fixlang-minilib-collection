@@ -2,6 +2,7 @@ module Minilib.Collection.Treap;
 
 import Minilib.Common.Common;
 import Minilib.Collection.Trait.Set;
+import Minilib.Collection.Trait.SortedSet;
 import Minilib.Text.StringEx;
 
 trait kc : KeyCompare {
@@ -276,12 +277,17 @@ namespace Treap {
 
     type TreapIterator kc k = unbox struct {
         treap: Treap kc k,
+        lt_begin: k -> Bool,
+        lt_end: k -> Bool,
+        ascending: Bool,
         stack: Array (Result TNodeIndex k),
     };
 
-    impl TreapIterator kc k: Iterator {
+    impl [kc: KeyCompare, Key kc = k] TreapIterator kc k: Iterator {
         type Item (TreapIterator kc k) = k;
-        advance = |TreapIterator { treap: treap, stack: stack }| (
+        advance = |iter| (
+            let TreapIterator { treap: treap, lt_begin: lt_begin, lt_end: lt_end, ascending: ascending, stack: stack } = iter;
+            let iter = iter.set_stack([]); // scapegoat
             loop(
                 stack, |stack|
                 let opt = stack.get_last;
@@ -289,25 +295,51 @@ namespace Treap {
                 let res = opt.as_some;
                 let stack = stack.pop_back;
                 match res {
-                    ok(k) => break $ some $ (TreapIterator { treap: treap, stack: stack }, k),
+                    ok(k) => break $ some $ (iter.set_stack(stack), k),
                     err(node) => (
                         if node == TNodeIndex::empty { continue $ stack };
                         let (prio, key, left, right) = treap[node].iget.to_quad;
-                        let stack = if right == TNodeIndex::empty { stack } else { stack.push_back(err(right)) };
-                        let stack = stack.push_back(ok(key));
-                        let stack = if left == TNodeIndex::empty { stack } else { stack.push_back(err(left)) };
-                        continue $ stack
+                        let key_lt_begin = lt_begin(key);   // key < begin
+                        let end_ge_key = !lt_end(key);      // end <= key
+                        if ascending {
+                            let stack = if right == TNodeIndex::empty || end_ge_key { stack } else { stack.push_back(err(right)) };
+                            let stack = if key_lt_begin || end_ge_key { stack } else { stack.push_back(ok(key)) };
+                            let stack = if left == TNodeIndex::empty || key_lt_begin { stack } else { stack.push_back(err(left)) };
+                            continue $ stack
+                        } else {
+                            let stack = if left == TNodeIndex::empty || key_lt_begin { stack } else { stack.push_back(err(left)) };
+                            let stack = if key_lt_begin || end_ge_key { stack } else { stack.push_back(ok(key)) };
+                            let stack = if right == TNodeIndex::empty || end_ge_key { stack } else { stack.push_back(err(right)) };
+                            continue $ stack
+                        }
                     )
                 }
             )
         );
     }
 
-    _to_iter: Treap kc k -> TreapIterator kc k;
-    _to_iter = |treap| TreapIterator {
-        treap: treap,
-        stack: [err(treap.@root)]
-    };
+    _select_range: [kc: KeyCompare, Key kc = k] Option k -> Option k -> Bool -> Treap kc k -> TreapIterator kc k;
+    _select_range = |begin, end, ascending, treap| (
+        let kc = treap.@kc;
+        let lt_begin = match begin {
+            none() => |x| false,
+            some(begin) => |x| kc.compare(x, begin)
+        };
+        let lt_end   = match end {
+            none() => |x| true,
+            some(end) => |x| kc.compare(x, end)
+        };
+        TreapIterator {
+            treap: treap,
+            lt_begin: lt_begin,
+            lt_end: lt_end,
+            ascending: ascending,
+            stack: [err(treap.@root)]
+        }
+    );
+
+    _to_iter: [kc: KeyCompare, Key kc = k] Treap kc k -> TreapIterator kc k;
+    _to_iter = |treap| treap._select_range(none(), none(), true);
 
     _to_iter_dyn: Treap kc k -> DynIterator k;
     _to_iter_dyn = |treap| treap._to_array.to_iter.to_dyn;
@@ -383,7 +415,7 @@ namespace Treap {
 }
 
 // Implementation of the `Set` trait.
-impl  [kc: KeyCompare, Key kc = k] Treap kc k: Set {
+impl [kc: KeyCompare, Key kc = k] Treap kc k: Set {
     type SetElem (Treap kc k) = k;
     type SetIterator (Treap kc k) x = TreapIterator kc x;
 
@@ -397,4 +429,6 @@ impl  [kc: KeyCompare, Key kc = k] Treap kc k: Set {
     //from_iter = Treap::_from_iter;
 }
 
-
+impl [kc: KeyCompare, Key kc = k] Treap kc k: SortedSetIF {
+    select_range = Treap::_select_range;
+}
