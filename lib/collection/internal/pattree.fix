@@ -121,12 +121,17 @@ namespace PTree {
     );
 
     // Checks whether the Patricia Tree is empty.
-    is_empty: PTree a -> Bool;
-    is_empty = |tree| tree.@_size == 0;
+    _is_empty: PTree a -> Bool;
+    _is_empty = |tree| tree.@_size == 0;
 
     // Gets size (number of key-value pairs) of a Patricia Tree.
-    get_size: PTree a -> I64;
-    get_size = @_size;
+    _get_size: PTree a -> I64;
+    _get_size = @_size;
+
+    _contains_key: Key -> PTree a -> Bool;
+    _contains_key = |key, tree| (
+        tree._find(key).is_some
+    );
 
     // Finds the value which is associated with the key.
     //
@@ -134,23 +139,23 @@ namespace PTree {
     //
     // * `key` - The key to find.
     // * `tree` - A Patricia Tree.
-    find: Key -> PTree a -> Option a;
-    find = |key, tree| (
+    _find: Key -> PTree a -> Option a;
+    _find = |key, tree| (
         let root = tree.@_root;
-        tree._lookup(key, root)
+        tree._find_recursive(key, root)
     );
 
-    _lookup: Key -> PNodeIndex -> PTree a -> Option a;
-    _lookup = |key, node, tree| (
+    _find_recursive: Key -> PNodeIndex -> PTree a -> Option a;
+    _find_recursive = |key, node, tree| (
         match tree._get_node(node) {
             empty() => none(),
             leaf((k, x)) => if k == key { some(x) } else { none() },
             branch((prefix, m, left, right)) => (
                 if !key._match_prefix(prefix, m) { none() };
                 if key <= prefix { // key._zero_bit(m)
-                    tree._lookup(key, left)
+                    tree._find_recursive(key, left)
                 } else {
-                    tree._lookup(key, right)
+                    tree._find_recursive(key, right)
                 }
             )
         }
@@ -242,15 +247,15 @@ namespace PTree {
     // * `new_key` - The key to insert.
     // * `new_value` - The value to insert.
     // * `tree` - A Patricia Tree.
-    insert: Key -> a -> PTree a -> PTree a;
-    insert = |new_key, new_value, tree| (
+    _insert: Key -> a -> PTree a -> PTree a;
+    _insert = |new_key, new_value, tree| (
         let root = tree.@_root;
-        let (tree, root) = tree._insert(new_key, new_value, root);
+        let (tree, root) = tree._insert_recursive(new_key, new_value, root);
         tree.set__root(root)
     );
 
-    _insert: Key -> a -> PNodeIndex -> PTree a -> (PTree a, PNodeIndex);
-    _insert = |new_key, new_value, old_node, tree| (
+    _insert_recursive: Key -> a -> PNodeIndex -> PTree a -> (PTree a, PNodeIndex);
+    _insert_recursive = |new_key, new_value, old_node, tree| (
         match tree._get_node(old_node) {
             empty() => (
                 let (tree, new_node) = tree._make_leaf(new_key, new_value);
@@ -278,11 +283,11 @@ namespace PTree {
                     tree._join(new_key, 0_U64, new_node, prefix, m, old_node)
                 };
                 if new_key <= prefix { // new_key._zero_bit(m)
-                    let (tree, left2) = tree._insert(new_key, new_value, left);
+                    let (tree, left2) = tree._insert_recursive(new_key, new_value, left);
                     let tree = if left != left2 { tree._set_node(old_node, branch $ (prefix, m, left2, right)) } else { tree };
                     (tree, old_node)
                 } else {
-                    let (tree, right2) = tree._insert(new_key, new_value, right);
+                    let (tree, right2) = tree._insert_recursive(new_key, new_value, right);
                     let tree = if right != right2 { tree._set_node(old_node, branch $ (prefix, m, left, right2)) } else { tree };
                     (tree, old_node)
                 }
@@ -297,15 +302,15 @@ namespace PTree {
     //
     // * `key` - The key to erase.
     // * `tree` - A Patricia Tree.
-    erase: Key ->  PTree a -> PTree a;
-    erase = |key, tree| (
+    _erase: Key ->  PTree a -> PTree a;
+    _erase = |key, tree| (
         let root = tree.@_root;
-        let (tree, root) = tree._erase(key, root);
+        let (tree, root) = tree._erase_recursive(key, root);
         tree.set__root(root)
     );
 
-    _erase: Key -> PNodeIndex -> PTree a -> (PTree a, PNodeIndex);
-    _erase = |new_key, node, tree| (
+    _erase_recursive: Key -> PNodeIndex -> PTree a -> (PTree a, PNodeIndex);
+    _erase_recursive = |new_key, node, tree| (
         match tree._get_node(node) {
             empty() => (tree, PNodeIndex::empty),
             leaf((old_key, value)) => (
@@ -320,7 +325,7 @@ namespace PTree {
                     (tree, node)
                 };
                 if new_key <= prefix { // new_key._zero_bit(m)
-                    let (tree, left2) = tree._erase(new_key, left);
+                    let (tree, left2) = tree._erase_recursive(new_key, left);
                     if left2 == PNodeIndex::empty {
                         let tree = tree._free_branch(node);
                         (tree, right)
@@ -328,7 +333,7 @@ namespace PTree {
                     let tree = if left != left2 { tree._set_node(node, branch $ (prefix, m, left2, right)) } else { tree };
                     (tree, node)
                 } else {
-                    let (tree, right2) = tree._erase(new_key, right);
+                    let (tree, right2) = tree._erase_recursive(new_key, right);
                     if right2 == PNodeIndex::empty {
                         let tree = tree._free_branch(node);
                         (tree, left)
@@ -346,18 +351,18 @@ namespace PTree {
     // # Parameters
     //
     // * `tree` - A Patricia Tree.
-    to_array: PTree a -> Array (Key, a);
-    to_array = |tree| (
-        tree._to_array(tree.@_root, [])
+    _to_array: PTree a -> Array (Key, a);
+    _to_array = |tree| (
+        tree._to_array_recursive(tree.@_root, [])
     );
 
-    _to_array: PNodeIndex -> Array (Key, a) -> PTree a -> Array (Key, a);
-    _to_array = |node, arr, tree| (
+    _to_array_recursive: PNodeIndex -> Array (Key, a) -> PTree a -> Array (Key, a);
+    _to_array_recursive = |node, arr, tree| (
         match tree._get_node(node) {
             leaf((key, value)) => arr.push_back((key, value)),
             branch((prefix, m, left, right)) => (
-                let arr = tree._to_array(left, arr);
-                let arr = tree._to_array(right, arr);
+                let arr = tree._to_array_recursive(left, arr);
+                let arr = tree._to_array_recursive(right, arr);
                 arr
             ),
             _ => arr
@@ -385,7 +390,12 @@ namespace PTree {
                 let stack = stack.pop_back;
                 if node == PNodeIndex::empty { continue $ stack };
                 match tree._get_node(node) {
-                    leaf((key, value)) => break $ some $ (iter.set_stack(stack), (key, value)),
+                    leaf((key, value)) => (
+                        if !lt_begin(key) && lt_end(key) {
+                            break $ some $ (iter.set_stack(stack), (key, value))
+                        };
+                        continue $ stack
+                    ),
                     branch((prefix, m, left, right)) => (
                         // keys_of_left <= prefix
                         // prefix < keys_of_right
@@ -426,8 +436,8 @@ namespace PTree {
         }
     );
 
-    to_iter: PTree a -> PTreeIterator a;
-    to_iter = |tree| (
+    _to_iter: PTree a -> PTreeIterator a;
+    _to_iter = |tree| (
         tree._select_range(none(), none(), true)
     );
 
@@ -456,24 +466,28 @@ namespace PTree {
 impl PTree a: Map {
     type MapKey (PTree a) = Key;
     type MapValue (PTree a) = a;
-    type MapIterator (PTree a) = PTreeIterator (Key, a);
+    type MapIterator (PTree a) = PTreeIterator a;
 
     is_empty = PTree::_is_empty;
     get_size = PTree::_get_size;
     contains_key = PTree::_contains_key;
+    find = PTree::_find;
     insert = PTree::_insert;
     erase = PTree::_erase;
     set = |key, opt_v, map| match opt_v { some(v) => map.insert(key, v), none() => map.erase(key) };
     act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
-    find = PTree::_find;
     to_iter = PTree::_to_iter;
     to_array = PTree::_to_array;
     //from_iter = PTree::_from_iter;
 }
 
+impl PTree a: SortedMapIF {
+    select_range = PTree::_select_range;
+}
+
 impl [a: ToString] PTree a: ToString {
     to_string = |tree| (
-        "PTree{ " + tree.PTree::to_array.to_string + " }"
+        "PTree{ " + tree.Map::to_array.to_string + " }"
     );
 }
 

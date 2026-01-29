@@ -16,9 +16,18 @@ trait k : PTreeMapKey {
     from_pattree_key: PatTree::Key -> k;
 }
 
+namespace PTreeMapKey {
+    from_pattree_kv: [k : PTreeMapKey] (PatTree::Key, v) -> (k, v);
+    from_pattree_kv = |(key, v)| (key.from_pattree_key, v);
+}
+
+pattree_key_offset: U64;
+pattree_key_offset = 1_U64.shift_left(63_U64);
+//pattree_key_offset = 0_U64;     // for debug
+
 impl I64: PTreeMapKey {
-    to_pattree_key = |i64| i64.to_U64 + 1_U64.shift_left(63_U64);
-    from_pattree_key = |u64| (u64 - 1_U64.shift_left(63_U64)).to_I64;
+    to_pattree_key = |i64| i64.to_U64 + pattree_key_offset;
+    from_pattree_key = |u64| (u64 - pattree_key_offset).to_I64;
 }
 
 impl U64: PTreeMapKey {
@@ -27,7 +36,7 @@ impl U64: PTreeMapKey {
 }
 
 type PTreeMap k v = unbox struct {
-    tree: PatTree v,
+    tree: PTree v,
 };
 
 type PTreeMapI64 = PTreeMap I64;
@@ -39,17 +48,27 @@ empty = PTreeMap { tree: empty };
 impl [k: PTreeMapKey] PTreeMap k v: Map {
     type MapKey (PTreeMap k v) = k;
     type MapValue (PTreeMap k v) = v;
-    type MapIterator (PTreeMap k v) = MapIterator (PTreeIterator (PatTree::Key, v)) (PatTree::Key, v) (k, v);
+    type MapIterator (PTreeMap k v) = Std::Iterator::MapIterator (PTreeIterator v) (PatTree::Key, v) (k, v);
 
-    is_empty = PTree::_is_empty;
-    get_size = PTree::_get_size;
-    contains_key = PTree::_contains_key;
-    insert = PTree::_insert;
-    erase = PTree::_erase;
-    set = |key, opt_v, map| match opt_v { some(v) => map.insert(key, v), none() => map.erase(key) };
-    act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
-    find = PTree::_find;
-    to_iter = PTree::_to_iter;
-    to_array = PTree::_to_array;
+    is_empty = |map| map.@tree.is_empty;
+    get_size = |map| map.@tree.get_size;
+    contains_key = |k, map| map.@tree.contains_key(k.to_pattree_key);
+    find = |k, map| map.@tree.find(k.to_pattree_key);
+    insert = |k, v, map| map.mod_tree(insert(k.to_pattree_key, v));
+    erase = |k, map| map.mod_tree(erase(k.to_pattree_key));
+    set = |k, opt_v, map| map.mod_tree(set(k.to_pattree_key, opt_v));
+    act = |k, fun, map| map.act_tree(act(k.to_pattree_key, fun));
+    to_iter = |map| map.@tree.to_iter.Iterator::map(from_pattree_kv);
+    to_array = |map| map.@tree.to_array.Functor::map(from_pattree_kv);
     //from_iter = PTree::_from_iter;
 }
+
+impl [k: PTreeMapKey] PTreeMap k v: SortedMapIF {
+    select_range = |begin, end, ascending, map| (
+        let begin = begin.Functor::map(to_pattree_key);
+        let end = end.Functor::map(to_pattree_key);
+        map.@tree.select_range(begin, end, ascending)
+        .Iterator::map(from_pattree_kv)
+    );
+}
+

@@ -2,7 +2,8 @@ module PatTreeTest;
 //module PatTree3Test;
 
 import Minilib.Collection.Internal.PatTree;
-//import Minilib.Monad.Yield;
+import Minilib.Collection.Trait.Map;
+import Minilib.Collection.Trait.SortedMap;
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;

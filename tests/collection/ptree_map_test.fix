@@ -1,0 +1,20 @@
+module PTreeMapTest;
+
+import Minilib.Collection.PTreeMap;
+import Minilib.Collection.Trait.Map;
+import Minilib.Collection.Trait.SortedMap;
+import Minilib.Testing.UnitTest;
+
+import MapTests;
+import SortedMapTests;
+
+main: IO ();
+main = (
+    let empty_map: PTreeMap I64 String = PTreeMap::empty;
+    [
+        MapTests::map_tests(empty_map),
+        SortedMapTests::sorted_map_tests(empty_map),
+    ]
+    .run_test_driver
+);
+

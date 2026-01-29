@@ -5,9 +5,11 @@ import Minilib.Testing.UnitTest;
 import DequeTest;
 import OrderedMapTest;
 import RbtreeTest;
+import PTreeMapTest;
 import TreapTest;
 import TreeMapTest;
 import TreeSetTest;
+import PatTreeTest;
 
 testsuite: TestSuite;
 testsuite = [
@@ -17,6 +19,8 @@ testsuite = [
     ("TreeMapTest", TreeMapTest::main),
     ("TreeSetTest", TreeSetTest::main),
     ("TreapTest", TreapTest::main),
+    ("PTreeMapTest", PTreeMapTest::main),
+    // ("PatTreeTest", PatTreeTest::main),  // TODO: update tests
 ];
 
 

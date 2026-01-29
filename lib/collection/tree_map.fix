@@ -214,11 +214,11 @@ impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: Map {
     is_empty = TreeMap::_is_empty;
     get_size = TreeMap::_get_size;
     contains_key = TreeMap::_contains_key;
+    find = TreeMap::_find;
     insert = TreeMap::_insert;
     erase = TreeMap::_erase;
     set = |key, opt_v, map| match opt_v { some(v) => map.insert(key, v), none() => map.erase(key) };
     act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
-    find = TreeMap::_find;
     to_iter = TreeMap::_to_iter;
     to_array = TreeMap::_to_array;
     //from_iter = TreeMap::_from_iter;
