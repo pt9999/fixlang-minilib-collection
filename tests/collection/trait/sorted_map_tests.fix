@@ -1,0 +1,50 @@
+// Tests for Minilib.Collection.Trait.SortedMap
+module SortedMapTests;
+
+import Minilib.Collection.Trait.Map;
+import Minilib.Collection.Trait.SortedMap;
+import Minilib.Testing.UnitTest;
+import Minilib.Testing.TestUtilArray;
+import Minilib.Trait.Traversable;
+
+test_select_range:
+    [map: SortedMap, MapKey map = I64, MapValue map = String, Map::MapIterator map (I64, String) = iter, iter: Iterator, Item iter = (I64, String)]
+    map -> TestCase;
+test_select_range = |empty_map| (
+    let keys_sorted = Iterator::range(0, 30).to_array;
+    let keyvalues_sorted = keys_sorted.Functor::map(|k| (k, (k*10).to_string));
+    let keyvalues_shuffled = keyvalues_sorted.reorder(shuffle(345));
+    let map = keyvalues_shuffled.to_iter.fold(
+        empty_map, |(k, v), map|
+        map.insert(k, v)
+    );
+    make_table_test("test_select_range",
+        [
+            (some(3), some(6), [(3,"30"),(4,"40"),(5,"50")]),
+            (some(5), some(6), [(5,"50")]),
+            (some(5), some(5), []),
+            (some(-1), some(1), [(0,"0")]),
+            (some(29), some(31), [(29,"290")]),
+            (some(11), some(14), [(11,"110"), (12,"120"), (13,"130")]),
+            (some(28), none(), [(28,"280"), (29,"290")]),
+            (none(), some(2), [(0,"0"), (1,"10")]),
+            (none(), none(), keyvalues_sorted),
+        ],
+        |(begin, end, expected)|
+        let actual = map.select_range(begin, end, true).to_array;
+        assert_equal("ascending", expected, actual);;
+        let actual = map.select_range(begin, end, false).to_array;
+        assert_equal("decending", expected.reverse, actual);;
+        pure()
+    )
+);
+
+sorted_map_tests:
+    [map: SortedMap, MapKey map = I64, MapValue map = String, Map::MapIterator map (I64, String) = iter, iter: Iterator, Item iter = (I64, String)]
+    map -> TestCase;
+sorted_map_tests = |empty_map| (
+    [
+        test_select_range(empty_map),
+    ]
+    .run_tests
+);

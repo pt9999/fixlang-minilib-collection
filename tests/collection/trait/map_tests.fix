@@ -1,5 +1,5 @@
 // Tests for Minilib.Collection.Trait.Map
-module AbstractMapTests;
+module MapTests;
 
 import Random;
 import Minilib.Collection.Trait.Map;
@@ -95,7 +95,7 @@ test_insert_erase_ok = |empty_map, (n, insert_reorder, erase_reorder)| (
     pure()      // success
 );
 
-test_insert_erase: 
+test_insert_erase:
     [map: Map, MapKey map = I64, MapValue map = String]
     map -> TestCase;
 test_insert_erase = |empty_map| (
@@ -108,7 +108,7 @@ test_insert_erase = |empty_map| (
 );
 
 
-test_get_size: 
+test_get_size:
     [map: Map, MapKey map = I64, MapValue map = String]
     map -> TestCase;
 test_get_size = |empty_map| (
@@ -163,10 +163,10 @@ test_get_size = |empty_map| (
     )
 );
 
-abstract_map_tests:
+map_tests:
     [map: Map, MapKey map = I64, MapValue map = String, Map::MapIterator map (I64, String) = iter, iter: Iterator, Item iter = (I64, String)]
     map -> TestCase;
-abstract_map_tests = |empty_map| (
+map_tests = |empty_map| (
     [
         test_to_iter(empty_map),
         test_to_array(empty_map),

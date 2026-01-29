@@ -3,14 +3,15 @@ module TreeMapTest;
 import Random;
 import Minilib.Collection.TreeMap;
 import Minilib.Collection.Trait.Map;
+import Minilib.Collection.Trait.SortedMap;
 import Minilib.Collection.RBTree::RBNode::{ get_size };
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
 import Minilib.Trait.Traversable;
 
-import AbstractMapTests;
-
+import MapTests;
+import SortedMapTests;
 
 test_upsert: TestCase;
 test_upsert = (
@@ -29,7 +30,6 @@ test_upsert = (
     assert_equal("eq", some([31]), map.find(3));;
     pure()
 );
-
 
 test_find_range: TestCase;
 test_find_range = (
@@ -65,7 +65,8 @@ main: IO ();
 main = (
     let empty_map: TreeMap I64 String = TreeMap::make();
      [
-        AbstractMapTests::abstract_map_tests(empty_map),
+        MapTests::map_tests(empty_map),
+        SortedMapTests::sorted_map_tests(empty_map),
         test_upsert,
         test_find_range,
         TestCase::empty

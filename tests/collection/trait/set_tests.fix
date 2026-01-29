@@ -1,6 +1,6 @@
 
 // Tests for Minilib.Collection.Trait.Set
-module AbstractSetTests;
+module SetTests;
 
 import Random;
 import Minilib.Collection.Trait.Set;
@@ -20,8 +20,8 @@ test_to_iter = |empty_set| (
     pure()
 );
 
-test_to_array: 
-    [set: Set, SetElem set = I64] 
+test_to_array:
+    [set: Set, SetElem set = I64]
     set ->  TestCase;
 test_to_array = |empty_set| (
     make_test("test_to_array") $ |_|
@@ -75,7 +75,7 @@ test_insert_erase_ok = |empty_set, (n, insert_reorder, erase_reorder)| (
     pure()      // success
 );
 
-test_insert_erase: 
+test_insert_erase:
     [set: Set, SetElem set = I64]
     set -> TestCase;
 test_insert_erase = |empty_set| (
@@ -87,7 +87,7 @@ test_insert_erase = |empty_set| (
     }.run_tests
 );
 
-test_get_size: 
+test_get_size:
     [set: Set, SetElem set = I64]
     set -> TestCase;
 test_get_size = |empty_set| (
@@ -136,7 +136,7 @@ test_get_size = |empty_set| (
 
 // `test_perf` for the abstract type is a little slower than `test_perf` for the concrete type. why?
 
-test_perf: 
+test_perf:
     [set: Set, SetElem set = I64]
     set -> I64 -> TestCase;
 test_perf = |empty_set, n| (
@@ -176,10 +176,10 @@ test_perf = |empty_set, n| (
     pure()
 );
 
-abstract_set_tests:
+set_tests:
     [set: Set, SetElem set = I64, SetIterator set I64 = iter, iter: Iterator, Item iter = I64]
     set -> TestCase;
-abstract_set_tests = |empty_set| (
+set_tests = |empty_set| (
     [
         test_to_iter(empty_set),
         test_to_array(empty_set),

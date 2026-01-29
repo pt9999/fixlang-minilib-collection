@@ -10,36 +10,8 @@ import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
 import Minilib.Trait.Traversable;
 
-import AbstractSetTests;
-
-test_select_range: TestCase;
-test_select_range = (
-    let keys_sorted = Iterator::range(0, 30).to_array;
-    let keys_shuffled = keys_sorted.reorder(shuffle(345));
-    let set = keys_shuffled.to_iter.fold(
-        TreeSet::make(), |x, set|
-        set.insert(x)
-    );
-    make_table_test("test_select_range",
-        [
-            (some(3), some(6), [3, 4, 5]),
-            (some(5), some(6), [5]),
-            (some(5), some(5), []),
-            (some(-1), some(1), [0]),
-            (some(29), some(31), [29]),
-            (some(11), some(14), [11, 12, 13]),
-            (some(28), none(), [28, 29]),
-            (none(), some(2), [0, 1]),
-            (none(), none(), keys_sorted),
-        ],
-        |(begin, end, expected)|
-        let actual = set.select_range(begin, end, true).to_array;
-        assert_equal("ascending", expected, actual);;
-        let actual = set.select_range(begin, end, false).to_array;
-        assert_equal("descending", expected.reverse, actual);;
-        pure()
-    )
-);
+import SetTests;
+import SortedSetTests;
 
 test_find_range: TestCase;
 test_find_range = (
@@ -159,8 +131,8 @@ main: IO ();
 main = (
     let empty_set = TreeSet::make(): TreeSet I64;
     [
-        AbstractSetTests::abstract_set_tests(empty_set),
-        test_select_range,
+        SetTests::set_tests(empty_set),
+        SortedSetTests::sorted_set_tests(empty_set),
         test_find_range,
         test_find_range_descending,
         test_equivalence,

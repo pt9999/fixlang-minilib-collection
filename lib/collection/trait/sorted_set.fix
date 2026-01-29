@@ -4,7 +4,10 @@ module Minilib.Collection.Trait.SortedSet;
 import Minilib.Collection.Trait.Set;
 
 // The trait for sorted sets.
-trait set: SortedSet {
+trait SortedSet = Set + SortedSetIF;
+
+// The interface for sorted sets.
+trait set: SortedSetIF {
     // Finds all elements in the specified range.
     //
     // The lower and upper bound of the range is specified by `begin` and `end`.

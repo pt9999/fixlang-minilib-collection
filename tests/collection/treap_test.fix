@@ -6,7 +6,7 @@ import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
 
-import AbstractSetTests;
+import SetTests;
 
 test_simple: TestCase;
 test_simple = (
@@ -102,7 +102,7 @@ main: IO ();
 main = (
     let empty_set = Treap::empty: Treap (KeyLessThan I64) I64;
     [
-        AbstractSetTests::abstract_set_tests(empty_set),
+        SetTests::set_tests(empty_set),
         test_simple,
         test_kc,
         //test_perf,

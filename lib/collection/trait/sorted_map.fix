@@ -4,8 +4,10 @@ module Minilib.Collection.Trait.SortedMap;
 import Minilib.Collection.Trait.Map;
 
 // The trait for sorted maps.
-// It should also implement `Minilib.Collection.Trait.Map`.
-trait map: SortedMap {
+trait SortedMap = Map + SortedMapIF;
+
+// The interface for sorted maps.
+trait map: SortedMapIF {
     // Finds all entries in the specified range.
     //
     // The lower and upper bound of the range is specified by `begin` and `end`.
@@ -26,5 +28,5 @@ trait map: SortedMap {
     // map.select_range(some(5), none(), true)    // finds all entries where 5 <= key in ascending order
     // map.select_range(none(), none(), true)    // finds all entries in ascending order
     // ```
-    select_range: Option (MapKey map) -> Option (MapKey map) -> Bool -> map -> Map::MapIterator map (k, v);
+    select_range: Option (MapKey map) -> Option (MapKey map) -> Bool -> map -> Map::MapIterator map (MapKey map, MapValue map);
 }

@@ -1,5 +1,8 @@
 // TreeSet is a set that manages elements in sorted order.
 //
+// `TreeSet` implements the `Set` and `SortedSet` trait, so if you use `TreeSet`,
+// you may also need to import `Minilib.Collection.Trait.Set` and `Minilib.Collection.Trait.SortedSet`.
+//
 // The elements of a TreeSet must have a partial order,
 // and `less_than` is the comparison function for that partial order.
 //
@@ -258,7 +261,7 @@ impl [a: TreeSetElem] TreeSet a: Set {
     //from_iter = TreeSet::_from_iter;
 }
 
-impl [a: TreeSetElem] TreeSet a: SortedSet {
+impl [a: TreeSetElem] TreeSet a: SortedSetIF {
     //find_range = TreeSet::_find_range;
     //find_range_descending = TreeSet::_find_range_descending;
     select_range = TreeSet::_select_range;
