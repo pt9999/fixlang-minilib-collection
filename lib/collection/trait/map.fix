@@ -25,6 +25,35 @@ trait map: Map {
     // - `map`: a map
     erase: MapKey map -> map -> map;
 
+    // Inserts an entry to a map, or erases an entry from a map.
+    //
+    // Semantically, `map.set(key, opt_v)` is equivalent to
+    // `match opt_v { some(v) => map.insert(key, v), none() => map.erase(key) }`.
+    //
+    // # Parameters
+    // - `key`: A key
+    // - `opt_value`: If `some(v)`, an element is inserted. if `none()`, any element for `key` is erased.
+    // - `map`: A map
+    set: MapKey map -> (Option (MapValue map)) -> map -> map;
+
+    // Modifies a map by a functorial action.
+    //
+    // Semantically, `map.act(key, fun)` is equivalent to
+    // `fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v))`.
+    //
+    // `action` is a function which takes an `Option v` as an argument and returns an `f (Option v)`,
+    //  where `v` is equal to `MapValue map`.
+    //  The argument of `action` is `some(old_value)` if there is an entry for the specified key, `none()` if there is no entry.
+    //  `action` should return a lifted value for `f` of `some(new_value)`
+    //   if you want to keep the entry (with or without changing the value),
+    //   or return a lifted value for `f` of `none()` if you want to remove the entry.
+    //
+    // # Parameters
+    // - `key`: A key
+    // - `action`: The functorial action to be performed on the value for the key `key`.
+    // - `map`: A map
+    act: [f: Functor] MapKey map -> (Option (MapValue map) -> f (Option (MapValue map))) -> map -> f map;
+
     // Checks whether a map is empty.
     //
     // # Parameters
@@ -58,6 +87,12 @@ trait map: Map {
     // # Parameters
     // - `map`: a map
     to_iter: map -> Map::MapIterator map (MapKey map, MapValue map);
+
+    // Converts a map into an array of entries.
+    //
+    // # Parameters
+    // - `map`: a map
+    to_array: map -> Array (MapKey map, MapValue map);
 
     //from_iter: [it: Iterator, Iterator::Item it = (k, v), MapKey map = k, MapValue map = v] it -> map;
 }
