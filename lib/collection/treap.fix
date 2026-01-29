@@ -274,8 +274,43 @@ namespace Treap {
         inner(treap.@root, [])
     );
 
-    _to_iter: Treap kc k -> DynIterator k;
-    _to_iter = |treap| treap._to_array.to_iter.to_dyn;
+    type TreapIterator kc k = unbox struct {
+        treap: Treap kc k,
+        stack: Array (Result TNodeIndex k),
+    };
+
+    impl TreapIterator kc k: Iterator {
+        type Item (TreapIterator kc k) = k;
+        advance = |TreapIterator { treap: treap, stack: stack }| (
+            loop(
+                stack, |stack|
+                let opt = stack.get_last;
+                if opt.is_none { break $ none() };
+                let res = opt.as_some;
+                let stack = stack.pop_back;
+                match res {
+                    ok(k) => break $ some $ (TreapIterator { treap: treap, stack: stack }, k),
+                    err(node) => (
+                        if node == TNodeIndex::empty { continue $ stack };
+                        let (prio, key, left, right) = treap[node].iget.to_quad;
+                        let stack = if right == TNodeIndex::empty { stack } else { stack.push_back(err(right)) };
+                        let stack = stack.push_back(ok(key));
+                        let stack = if left == TNodeIndex::empty { stack } else { stack.push_back(err(left)) };
+                        continue $ stack
+                    )
+                }
+            )
+        );
+    }
+
+    _to_iter: Treap kc k -> TreapIterator kc k;
+    _to_iter = |treap| TreapIterator {
+        treap: treap,
+        stack: [err(treap.@root)]
+    };
+
+    _to_iter_dyn: Treap kc k -> DynIterator k;
+    _to_iter_dyn = |treap| treap._to_array.to_iter.to_dyn;
 
     _debug_to_string: [k: ToString] Treap kc k -> String;
     _debug_to_string = |treap| (
@@ -350,7 +385,7 @@ namespace Treap {
 // Implementation of the `Set` trait.
 impl  [kc: KeyCompare, Key kc = k] Treap kc k: Set {
     type SetElem (Treap kc k) = k;
-    type SetIterator (Treap kc k) x = DynIterator x;
+    type SetIterator (Treap kc k) x = TreapIterator kc x;
 
     insert = Treap::_insert;
     erase = Treap::_erase;
