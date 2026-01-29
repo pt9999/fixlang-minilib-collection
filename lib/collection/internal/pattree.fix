@@ -456,7 +456,7 @@ namespace PTree {
 impl PTree a: Map {
     type MapKey (PTree a) = Key;
     type MapValue (PTree a) = a;
-    type MapIterator (PTree a) x = PTreeIterator x;
+    type MapIterator (PTree a) = PTreeIterator (Key, a);
 
     is_empty = PTree::_is_empty;
     get_size = PTree::_get_size;

@@ -28,5 +28,5 @@ trait set: SortedSetIF {
     // set.select_range(some(5), none(), true)    // finds all elements where 5 <= key in ascending order
     // set.select_range(none(), none(), true)    // finds all elements in ascending order
     // ```
-    select_range: Option (SetElem set) -> Option (SetElem set) -> Bool -> set -> Set::SetIterator set (SetElem set);
+    select_range: Option (SetElem set) -> Option (SetElem set) -> Bool -> set -> Set::SetIterator set;
 }

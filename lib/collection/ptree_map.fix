@@ -1,0 +1,55 @@
+// PTreeMap is a map that manages keys in sorted order.
+//
+// `PTreeMap` implements the `Map` and `SortedMap` trait, so if you use `PTreeMap`,
+// you may also need to import `Minilib.Collection.Trait.Map` and `Minilib.Collection.Trait.SortedMap`.
+//
+// The keys of a PTreeMap are one of I64, U64.
+module Minilib.Collection.PTreeMap;
+
+import Minilib.Collection.Internal.PatTree;
+import Minilib.Collection.Trait.Map;
+import Minilib.Collection.Trait.SortedMap;
+import Minilib.Text.StringEx;
+
+trait k : PTreeMapKey {
+    to_pattree_key: k -> PatTree::Key;
+    from_pattree_key: PatTree::Key -> k;
+}
+
+impl I64: PTreeMapKey {
+    to_pattree_key = |i64| i64.to_U64 + 1_U64.shift_left(63_U64);
+    from_pattree_key = |u64| (u64 - 1_U64.shift_left(63_U64)).to_I64;
+}
+
+impl U64: PTreeMapKey {
+    to_pattree_key = |u64| u64;
+    from_pattree_key = |u64| u64;
+}
+
+type PTreeMap k v = unbox struct {
+    tree: PatTree v,
+};
+
+type PTreeMapI64 = PTreeMap I64;
+type PTreeMapU64 = PTreeMap U64;
+
+empty: [k: PTreeMapKey] PTreeMap k v;
+empty = PTreeMap { tree: empty };
+
+impl [k: PTreeMapKey] PTreeMap k v: Map {
+    type MapKey (PTreeMap k v) = k;
+    type MapValue (PTreeMap k v) = v;
+    type MapIterator (PTreeMap k v) = MapIterator (PTreeIterator (PatTree::Key, v)) (PatTree::Key, v) (k, v);
+
+    is_empty = PTree::_is_empty;
+    get_size = PTree::_get_size;
+    contains_key = PTree::_contains_key;
+    insert = PTree::_insert;
+    erase = PTree::_erase;
+    set = |key, opt_v, map| match opt_v { some(v) => map.insert(key, v), none() => map.erase(key) };
+    act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
+    find = PTree::_find;
+    to_iter = PTree::_to_iter;
+    to_array = PTree::_to_array;
+    //from_iter = PTree::_from_iter;
+}

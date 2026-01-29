@@ -7,7 +7,7 @@ import Minilib.Testing.TestUtilArray;
 import Minilib.Testing.UnitTest;
 
 test_select_range:
-    [set: SortedSet, SetElem set = I64, SetIterator set I64 = iter, iter: Iterator, Item iter = I64]
+    [set: SortedSet, SetElem set = I64, SetIterator set = iter, iter: Iterator, Item iter = I64]
     set ->  TestCase;
 test_select_range = |empty_set| (
     let keys_sorted = Iterator::range(0, 30).to_array;
@@ -38,7 +38,7 @@ test_select_range = |empty_set| (
 );
 
 sorted_set_tests:
-    [set: SortedSet, SetElem set = I64, SetIterator set I64 = iter, iter: Iterator, Item iter = I64]
+    [set: SortedSet, SetElem set = I64, SetIterator set = iter, iter: Iterator, Item iter = I64]
     set -> TestCase;
 sorted_set_tests = |empty_set| (
     [

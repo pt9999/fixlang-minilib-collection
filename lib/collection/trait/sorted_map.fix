@@ -28,5 +28,5 @@ trait map: SortedMapIF {
     // map.select_range(some(5), none(), true)    // finds all entries where 5 <= key in ascending order
     // map.select_range(none(), none(), true)    // finds all entries in ascending order
     // ```
-    select_range: Option (MapKey map) -> Option (MapKey map) -> Bool -> map -> Map::MapIterator map (MapKey map, MapValue map);
+    select_range: Option (MapKey map) -> Option (MapKey map) -> Bool -> map -> Map::MapIterator map;
 }

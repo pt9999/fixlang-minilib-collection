@@ -417,7 +417,7 @@ namespace Treap {
 // Implementation of the `Set` trait.
 impl [kc: KeyCompare, Key kc = k] Treap kc k: Set {
     type SetElem (Treap kc k) = k;
-    type SetIterator (Treap kc k) x = TreapIterator kc x;
+    type SetIterator (Treap kc k) = TreapIterator kc k;
 
     insert = Treap::_insert;
     erase = Treap::_erase;

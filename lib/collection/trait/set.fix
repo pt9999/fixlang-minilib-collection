@@ -6,7 +6,8 @@ trait set: Set {
     // The type of the elements.
     type SetElem set;
     // The type of the iterator returned by `to_iter`.
-    type SetIterator set a;
+    // `Item (SetIterator set)` should be equal to `SetElem set`.
+    type SetIterator set;
 
     // Checks whether a set is empty.
     //
@@ -45,7 +46,7 @@ trait set: Set {
     //
     // # Parameters
     // - `set`: a set
-    to_iter: set -> SetIterator set (SetElem set);
+    to_iter: set -> SetIterator set;
 
     // Converts a set into an array.
     //

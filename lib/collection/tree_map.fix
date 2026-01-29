@@ -3,7 +3,7 @@
 // `TreeMap` implements the `Map` and `SortedMap` trait, so if you use `TreeMap`,
 // you may also need to import `Minilib.Collection.Trait.Map` and `Minilib.Collection.Trait.SortedMap`.
 //
-// The keys of a TreeSet must have a partial order,
+// The keys of a TreeMap must have a partial order,
 // and `less_than` is the comparison function for that partial order.
 //
 // NOTE: `less_than()` function must meet following conditions.
@@ -209,7 +209,7 @@ namespace TreeMap {
 impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: Map {
     type MapKey (TreeMap k v) = k;
     type MapValue (TreeMap k v) = v;
-    type MapIterator (TreeMap k v) a = DynIterator a;
+    type MapIterator (TreeMap k v) = DynIterator (k, v);
 
     is_empty = TreeMap::_is_empty;
     get_size = TreeMap::_get_size;

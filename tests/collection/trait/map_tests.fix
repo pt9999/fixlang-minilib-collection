@@ -9,7 +9,7 @@ import Minilib.Testing.TestUtilArray;
 import Minilib.Trait.Traversable;
 
 test_to_iter:
-    [map: Map, MapKey map = I64, MapValue map = String, Map::MapIterator map (I64, String) = iter, iter: Iterator, Item iter = (I64, String)]
+    [map: Map, MapKey map = I64, MapValue map = String, Map::MapIterator map = iter, iter: Iterator, Item iter = (I64, String)]
     map -> TestCase;
 test_to_iter = |empty_map| (
     make_test("test_to_iter") $ |_|
@@ -164,7 +164,7 @@ test_get_size = |empty_map| (
 );
 
 map_tests:
-    [map: Map, MapKey map = I64, MapValue map = String, Map::MapIterator map (I64, String) = iter, iter: Iterator, Item iter = (I64, String)]
+    [map: Map, MapKey map = I64, MapValue map = String, Map::MapIterator map = iter, iter: Iterator, Item iter = (I64, String)]
     map -> TestCase;
 map_tests = |empty_map| (
     [

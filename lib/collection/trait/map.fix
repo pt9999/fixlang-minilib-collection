@@ -8,7 +8,8 @@ trait map: Map {
     // The type of the values.
     type MapValue map;
     // The type of the iterator returned by `to_iter`.
-    type MapIterator map a;
+    // `Item (MapIterator map)` should be equal to `(MapKey map, MapValue map)`.
+    type MapIterator map;
 
     // Checks whether a map is empty.
     //
@@ -86,7 +87,7 @@ trait map: Map {
     //
     // # Parameters
     // - `map`: a map
-    to_iter: map -> Map::MapIterator map (MapKey map, MapValue map);
+    to_iter: map -> Map::MapIterator map;
 
     // Converts a map into an array of entries.
     //

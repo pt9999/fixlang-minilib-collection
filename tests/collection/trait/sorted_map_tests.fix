@@ -8,7 +8,7 @@ import Minilib.Testing.TestUtilArray;
 import Minilib.Trait.Traversable;
 
 test_select_range:
-    [map: SortedMap, MapKey map = I64, MapValue map = String, Map::MapIterator map (I64, String) = iter, iter: Iterator, Item iter = (I64, String)]
+    [map: SortedMap, MapKey map = I64, MapValue map = String, Map::MapIterator map = iter, iter: Iterator, Item iter = (I64, String)]
     map -> TestCase;
 test_select_range = |empty_map| (
     let keys_sorted = Iterator::range(0, 30).to_array;
@@ -40,7 +40,7 @@ test_select_range = |empty_map| (
 );
 
 sorted_map_tests:
-    [map: SortedMap, MapKey map = I64, MapValue map = String, Map::MapIterator map (I64, String) = iter, iter: Iterator, Item iter = (I64, String)]
+    [map: SortedMap, MapKey map = I64, MapValue map = String, Map::MapIterator map = iter, iter: Iterator, Item iter = (I64, String)]
     map -> TestCase;
 sorted_map_tests = |empty_map| (
     [
