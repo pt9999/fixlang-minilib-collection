@@ -137,7 +137,7 @@ test_get_size = |empty_set| (
 // `test_perf` for the abstract type is a little slower than `test_perf` for the concrete type. why?
 
 test_perf:
-    [set: Set, SetElem set = I64]
+    [set: Set, SetElem set = I64, SetIterator set I64 = iter, iter: Iterator, Item iter = I64]
     set -> I64 -> TestCase;
 test_perf = |empty_set, n| (
     make_test("test_perf") $ |_|
@@ -151,14 +151,12 @@ test_perf = |empty_set, n| (
     }).lift;
     println(" insert: " + insert_time.to_string + " seconds").lift;;
     assert_equal("size", n, set.get_size);;
-    /*
     let (ans1, ans1_time) = *consumed_time_while_io(do {
         pure();;
-        pure $ set.to_iter.to_array
+        pure $ set.to_iter.Iterator::to_array
     }).lift;
     println(" to_iter.to_array: " + ans1_time.to_string + " seconds").lift;;
     assert_equal("eq", ans1, array);;
-    */
     let (ans2, ans2_time) = *consumed_time_while_io(do {
         pure();;
         pure $ set.to_array
@@ -185,7 +183,7 @@ set_tests = |empty_set| (
         test_to_array(empty_set),
         test_insert_erase(empty_set),
         test_get_size(empty_set),
-        //test_perf(empty_set, 1000000),
+        test_perf(empty_set, 1000000),
     ]
     .run_tests
 );
