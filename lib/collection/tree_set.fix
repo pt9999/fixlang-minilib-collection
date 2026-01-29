@@ -15,6 +15,7 @@ module Minilib.Collection.TreeSet;
 
 import Minilib.Collection.RBTree;
 import Minilib.Collection.Trait.Set;
+import Minilib.Collection.Trait.SortedSet;
 
 namespace TreeSet {
     // A trait of the element. Currently `ToString` is required.
@@ -93,6 +94,23 @@ namespace TreeSet {
         ts.@root.find(x, ts.@less_than).is_some
     );
 
+    _select_range: [a: TreeSetElem] Option a -> Option a -> Bool -> TreeSet a -> DynIterator a;
+    _select_range = |begin, end, ascending, ts| (
+        let less_than = ts.@less_than;
+        let lt_begin = match begin {
+            none() => |x| false,
+            some(begin) => |x| less_than(x, begin)
+        };
+        let lt_end   = match end {
+            none() => |x| true,
+            some(end) => |x| less_than(x, end)
+        };
+        if ascending { ts.@root.find_range(lt_begin, lt_end) }
+        else { ts.@root.find_range_descending(lt_begin, lt_end) }
+    );
+
+    // Deprecated: use `select_range`.
+    //
     // `ts.find_range(begin, end)` finds all elements `x`
     // where `!less_than(x, begin) && less_than(x, end)` is true.
     // In default `LessThan` ordering, that condition is same as `begin <= x && x < end`.
@@ -109,6 +127,8 @@ namespace TreeSet {
         ts.@root.find_range(lt_begin, lt_end)
     );
 
+    // Deprecated: use `select_range`.
+    //
     // `ts.find_range(begin, end)` finds all elements `x`
     // where `!less_than(x, begin) && less_than(x, end)` is true,  in descending order.
     // In default `LessThan` ordering, that condition is same as `begin <= x && x < end`.
@@ -236,6 +256,12 @@ impl [a: TreeSetElem] TreeSet a: Set {
     to_iter = TreeSet::_to_iter;
     to_array = TreeSet::_to_array;
     //from_iter = TreeSet::_from_iter;
+}
+
+impl [a: TreeSetElem] TreeSet a: SortedSet {
+    //find_range = TreeSet::_find_range;
+    //find_range_descending = TreeSet::_find_range_descending;
+    select_range = TreeSet::_select_range;
 }
 
 // Converts a TreeSet into a String.

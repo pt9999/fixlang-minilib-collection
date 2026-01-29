@@ -16,6 +16,8 @@ files = [
     "lib/collection/tree_set.fix",
     "lib/collection/trait/set.fix",
     "lib/collection/trait/map.fix",
+    "lib/collection/trait/sorted_set.fix",
+    "lib/collection/trait/sorted_map.fix",
 ]
 
 [build.test]

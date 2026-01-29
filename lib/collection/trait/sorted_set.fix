@@ -1,0 +1,29 @@
+// The trait for sorted sets.
+module Minilib.Collection.Trait.SortedSet;
+
+import Minilib.Collection.Trait.Set;
+
+// The trait for sorted sets.
+trait set: SortedSet {
+    // Finds all elements in the specified range.
+    //
+    // The lower and upper bound of the range is specified by `begin` and `end`.
+    // If `begin` is `none()`, the range has no lower bound.
+    // If `end` is `none()`, the range has no upper bound.
+    //
+    // # Parameters
+    // - `begin`: the lower bound of the range (inclusive)
+    // - `end`: the upper bound of the range (exclusive)
+    // - `ascending`: order of elements (true: ascending, false: descending)
+    // - `set`: a set
+    //
+    // Example:
+    // ```
+    // set.select_range(some(5), some(10), true)    // finds all elements where 5 <= key < 10 in ascending order
+    // set.select_range(some(5), some(10), false)   // finds all elements where 5 <= key < 10 in descending order
+    // set.select_range(none(), some(10), true)    // finds all elements where key < 10 in ascending order
+    // set.select_range(some(5), none(), true)    // finds all elements where 5 <= key in ascending order
+    // set.select_range(none(), none(), true)    // finds all elements in ascending order
+    // ```
+    select_range: Option (SetElem set) -> Option (SetElem set) -> Bool -> set -> Set::SetIterator set (SetElem set);
+}

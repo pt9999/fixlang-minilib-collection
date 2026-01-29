@@ -1,0 +1,30 @@
+// The trait for sorted maps.
+module Minilib.Collection.Trait.SortedMap;
+
+import Minilib.Collection.Trait.Map;
+
+// The trait for sorted maps.
+// It should also implement `Minilib.Collection.Trait.Map`.
+trait map: SortedMap {
+    // Finds all entries in the specified range.
+    //
+    // The lower and upper bound of the range is specified by `begin` and `end`.
+    // If `begin` is `none()`, the range has no lower bound.
+    // If `end` is `none()`, the range has no upper bound.
+    //
+    // # Parameters
+    // - `begin`: the lower bound of the range (inclusive)
+    // - `end`: the upper bound of the range (exclusive)
+    // - `ascending`: order of entries (true: ascending, false: descending)
+    // - `map`: a map
+    //
+    // Example:
+    // ```
+    // map.select_range(some(5), some(10), true)    // finds all entries where 5 <= key < 10 in ascending order
+    // map.select_range(some(5), some(10), false)   // finds all entries where 5 <= key < 10 in descending order
+    // map.select_range(none(), some(10), true)    // finds all entries where key < 10 in ascending order
+    // map.select_range(some(5), none(), true)    // finds all entries where 5 <= key in ascending order
+    // map.select_range(none(), none(), true)    // finds all entries in ascending order
+    // ```
+    select_range: Option (MapKey map) -> Option (MapKey map) -> Bool -> map -> Map::MapIterator map (k, v);
+}
