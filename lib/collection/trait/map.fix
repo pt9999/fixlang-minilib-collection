@@ -10,6 +10,34 @@ trait map: Map {
     // The type of the iterator returned by `to_iter`.
     type MapIterator map a;
 
+    // Checks whether a map is empty.
+    //
+    // # Parameters
+    // - `map`: a map
+    is_empty: map -> Bool;
+
+    // Gets the number of entries in a map.
+    //
+    // # Parameters
+    // - `map`: a map
+    get_size: map -> I64;
+
+    // Checks whether any entry exists whose key is equivalent to the specified key.
+    //
+    // # Parameters
+    // - `key`: a key
+    // - `map`: a map
+    contains_key: MapKey map -> map -> Bool;
+
+    // Finds an entry whose key is equivalent to the specified key.
+    // If an entry is found, returns `some(v)` where `v` is the value.
+    // If no entry is found, returns `none()`.
+    //
+    // # Parameters
+    // - `key`: a key
+    // - `map`: a map
+    find: MapKey map -> map -> Option (MapValue map);
+
     // Inserts an entry into a map.
     //
     // # Parameters
@@ -53,34 +81,6 @@ trait map: Map {
     // - `action`: The functorial action to be performed on the value for the key `key`.
     // - `map`: A map
     act: [f: Functor] MapKey map -> (Option (MapValue map) -> f (Option (MapValue map))) -> map -> f map;
-
-    // Checks whether a map is empty.
-    //
-    // # Parameters
-    // - `map`: a map
-    is_empty: map -> Bool;
-
-    // Gets the number of entries in a map.
-    //
-    // # Parameters
-    // - `map`: a map
-    get_size: map -> I64;
-
-    // Checks whether any entry exists whose key is equivalent to the specified key.
-    //
-    // # Parameters
-    // - `key`: a key
-    // - `map`: a map
-    contains_key: MapKey map -> map -> Bool;
-
-    // Finds an entry whose key is equivalent to the specified key.
-    // If an entry is found, returns `some(v)` where `v` is the value.
-    // If no entry is found, returns `none()`.
-    //
-    // # Parameters
-    // - `key`: a key
-    // - `map`: a map
-    find: MapKey map -> map -> Option (MapValue map);
 
     // Converts a map into an iterator of entries.
     //

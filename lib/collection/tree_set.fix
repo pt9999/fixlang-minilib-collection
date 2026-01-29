@@ -248,11 +248,11 @@ impl [a: TreeSetElem] TreeSet a: Set {
     type SetElem (TreeSet a) = a;
     type SetIterator (TreeSet a) x = DynIterator x;
 
-    insert = TreeSet::_insert;
-    erase = TreeSet::_erase;
     is_empty = TreeSet::_is_empty;
     get_size = TreeSet::_get_size;
     contains = TreeSet::_contains;
+    insert = TreeSet::_insert;
+    erase = TreeSet::_erase;
     to_iter = TreeSet::_to_iter;
     to_array = TreeSet::_to_array;
     //from_iter = TreeSet::_from_iter;

@@ -8,20 +8,6 @@ trait set: Set {
     // The type of the iterator returned by `to_iter`.
     type SetIterator set a;
 
-    // Inserts an element into a set.
-    //
-    // # Parameters
-    // - `elem`: a element
-    // - `set`: a set
-    insert: SetElem set -> set -> set;
-
-    // Erases all elements which is equivalent to the specified element.
-    //
-    // # Parameters
-    // - `elem`: a element
-    // - `set`: a set
-    erase: SetElem set -> set -> set;
-
     // Checks whether a set is empty.
     //
     // # Parameters
@@ -40,6 +26,20 @@ trait set: Set {
     // - `elem`: a element
     // - `set`: a set
     contains: SetElem set -> set -> Bool;
+
+    // Inserts an element into a set.
+    //
+    // # Parameters
+    // - `elem`: a element
+    // - `set`: a set
+    insert: SetElem set -> set -> set;
+
+    // Erases all elements which is equivalent to the specified element.
+    //
+    // # Parameters
+    // - `elem`: a element
+    // - `set`: a set
+    erase: SetElem set -> set -> set;
 
     // Converts a set into an iterator.
     //

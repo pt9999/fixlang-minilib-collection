@@ -121,14 +121,12 @@ test_get_size = |empty_map| (
             (1237, 10, 10),
         ],
         |(seed, n, max_op)|
-        let debug_eprintln = if false { debug_eprintln } else { |_| () };
-        eval debug_eprintln ("--- test_get_size (seed, n, max_op)=" + (seed, n, max_op).to_string);
         let random = Random::init_by_seed(seed.to_U64);
         let mask = Array::fill(n, false);
         let size = 0;
-        let tm = empty_map;
+        let map = empty_map;
         loop_m(
-            (random, mask, size, tm, 0), |(random, mask, size, tm, i)|
+            (random, mask, size, map, 0), |(random, mask, size, map, i)|
             if i >= n * 10 { break_m $ () };
             let (random, k) = random.generate_U64;
             let (random, v) = random.generate_U64;
@@ -139,33 +137,27 @@ test_get_size = |empty_map| (
             if op == 0 {
                 let size = if mask.@(k) { size } else { size + 1 };
                 let mask = mask.set(k, true);
-                let tm = tm.insert(k, v);
-                eval debug_eprintln("insert " + (k, size).to_string);
-                assert_equal("insert", size, tm.get_size);;
-                //assert_equal("insert root get_size", tm.@root.get_size, tm.get_size);;
-                continue_m $ (random, mask, size, tm, i + 1)
+                let map = map.insert(k, v);
+                assert_equal("insert", size, map.get_size);;
+                continue_m $ (random, mask, size, map, i + 1)
             } else if op == 1 {
                 let size = if mask.@(k) { size } else { size + 1 };
                 let mask = mask.set(k, true);
-                let tm = tm.act(k, |opt_v|
-                    if false { err("") };
-                    ok $ match opt_v {
+                let map = map.act(k, |opt_v|
+                    let opt_v = match opt_v {
                         none() => some(v),
                         some(vv) => some(vv + "123")
-                    }
-                ).as_ok;
-                eval debug_eprintln("act " + (k, size).to_string);
-                assert_equal("act", size, tm.get_size);;
-                //assert_equal("act root get_size", tm.@root.get_size, tm.get_size);;
-                continue_m $ (random, mask, size, tm, i + 1)
+                    };
+                    Identity{ data: opt_v }
+                ).@data;
+                assert_equal("act", size, map.get_size);;
+                continue_m $ (random, mask, size, map, i + 1)
             } else {    // op == 2 or above
                 let size = if !mask.@(k) { size } else { size - 1 };
                 let mask = mask.set(k, false);
-                let tm = tm.erase(k);
-                eval debug_eprintln("erase " + (k, size).to_string);
-                assert_equal("erase", size, tm.get_size);;
-                //assert_equal("erase root get_size", tm.@root.get_size, tm.get_size);;
-                continue_m $ (random, mask, size, tm, i + 1)
+                let map = map.erase(k);
+                assert_equal("erase", size, map.get_size);;
+                continue_m $ (random, mask, size, map, i + 1)
             }
         )
     )

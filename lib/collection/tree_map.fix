@@ -190,13 +190,13 @@ impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: Map {
     type MapValue (TreeMap k v) = v;
     type MapIterator (TreeMap k v) a = DynIterator a;
 
+    is_empty = _is_empty;
+    get_size = _get_size;
+    contains_key = _contains_key;
     insert = _insert;
     erase = _erase;
     set = |key, opt_v, map| match opt_v { some(v) => map.insert(key, v), none() => map.erase(key) };
     act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
-    is_empty = _is_empty;
-    get_size = _get_size;
-    contains_key = _contains_key;
     find = _find;
     to_iter = _to_iter;
     to_array = _to_array;
