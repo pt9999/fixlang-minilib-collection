@@ -2,25 +2,29 @@ module Test;
 
 import Minilib.Testing.UnitTest;
 
+import RbtreeTest;
+import PatTreeTest;
+
 import DequeTest;
 import OrderedMapTest;
-import RbtreeTest;
 import PTreeMapTest;
+import PTreeSetTest;
 import TreapTest;
 import TreeMapTest;
 import TreeSetTest;
-import PatTreeTest;
 
 testsuite: TestSuite;
 testsuite = [
+    ("RbtreeTest", RbtreeTest::main),
+    // ("PatTreeTest", PatTreeTest::main),  // TODO: update tests
+
     ("DequeTest", DequeTest::main),
     ("OrderedMapTest", OrderedMapTest::main),
-    ("RbtreeTest", RbtreeTest::main),
+    ("PTreeMapTest", PTreeMapTest::main),
+    ("PTreeSetTest", PTreeSetTest::main),
+    ("TreapTest", TreapTest::main),
     ("TreeMapTest", TreeMapTest::main),
     ("TreeSetTest", TreeSetTest::main),
-    ("TreapTest", TreapTest::main),
-    ("PTreeMapTest", PTreeMapTest::main),
-    // ("PatTreeTest", PatTreeTest::main),  // TODO: update tests
 ];
 
 

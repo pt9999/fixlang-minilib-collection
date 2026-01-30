@@ -1,0 +1,21 @@
+module PTreeSetTest;
+
+import Minilib.Collection.PTreeSet;
+import Minilib.Collection.Trait.Set;
+import Minilib.Collection.Trait.SortedSet;
+import Minilib.Testing.UnitTest;
+
+import SetTests;
+import SortedSetTests;
+
+main: IO ();
+main = (
+    let empty_set: PTreeSet I64 = PTreeSet::empty;
+    [
+        SetTests::set_tests(empty_set),
+        SortedSetTests::sorted_set_tests(empty_set),
+    ]
+    .run_test_driver;;
+    println("done")
+);
+

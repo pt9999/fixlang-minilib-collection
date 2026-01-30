@@ -2,8 +2,13 @@
 ### ** BREAKING CHANGES **
 - Moved `Minilib.Collection.RBTree` to `Minilib.Collection.Internal.RBTree`.
 ### Added
-- Added `Minilib.Collection.Treap`.
-- Added `Minilib.Collection.Trait.Set`, `Minilib.Collection.Trait.Map`.
+- Added following modules:
+  * `Minilib.Collection.PTreeMap`
+  * `Minilib.Collection.PTreeSet`
+  * `Minilib.Collection.Treap`
+  * `Minilib.Collection.Trait.Set`
+  * `Minilib.Collection.Trait.Map`
+  * `Minilib.Collection.Internal.PatTree`
 ### Changed
 - Minilib.Collection.Treap: Implemented `Minilib.Collection.Trait.Set`.
   If you use `Treap`, you should also import `Minilib.Collection.Trait.Set`.
