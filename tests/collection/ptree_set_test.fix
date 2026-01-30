@@ -8,14 +8,41 @@ import Minilib.Testing.UnitTest;
 import SetTests;
 import SortedSetTests;
 
+test_element_type: [e: PTreeSetElem] PTreeSet e -> String -> TestCase;
+test_element_type = |empty_set, name| (
+    make_test("test_element_type(" + name + ")") $ |_|
+    let set = empty_set;
+    let set = set.insert(_from_pattree_key(255_U64));
+    let set = set.insert(_from_pattree_key(128_U64));
+    assert_equal("contains", true, set.contains(_from_pattree_key(255_U64)));;
+    assert_equal("size", 2, set.get_size);;
+    let set = set.erase(_from_pattree_key(255_U64));
+    assert_equal("size", 1, set.get_size);;
+    pure()
+);
+
+test_element_types: TestCase;
+test_element_types = (
+    [
+        test_element_type(PTreeSet::empty: PTreeSet I64, "I64"),
+        test_element_type(PTreeSet::empty: PTreeSet I32, "I32"),
+        test_element_type(PTreeSet::empty: PTreeSet I16, "I16"),
+        test_element_type(PTreeSet::empty: PTreeSet I8, "I8"),
+        test_element_type(PTreeSet::empty: PTreeSet U64, "U64"),
+        test_element_type(PTreeSet::empty: PTreeSet U32, "U32"),
+        test_element_type(PTreeSet::empty: PTreeSet U16, "U16"),
+        test_element_type(PTreeSet::empty: PTreeSet U8, "U8"),
+    ].run_tests
+);
+
 main: IO ();
 main = (
     let empty_set: PTreeSet I64 = PTreeSet::empty;
     [
         SetTests::set_tests(empty_set),
         SortedSetTests::sorted_set_tests(empty_set),
+        test_element_types,
     ]
-    .run_test_driver;;
-    println("done")
+    .run_test_driver
 );
 

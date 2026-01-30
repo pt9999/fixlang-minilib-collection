@@ -8,12 +8,41 @@ import Minilib.Testing.UnitTest;
 import MapTests;
 import SortedMapTests;
 
+test_key_type: [k: PTreeMapKey] PTreeMap k String -> String -> TestCase;
+test_key_type = |empty_map, name| (
+    make_test("test_key_type(" + name + ")") $ |_|
+    let map = empty_map;
+    let map = map.insert(_from_pattree_key(255_U64), "abc");
+    let map = map.insert(_from_pattree_key(128_U64), "def");
+    assert_equal("contains_key", true, map.contains_key(_from_pattree_key(255_U64)));;
+    assert_equal("find", some("abc"), map.find(_from_pattree_key(255_U64)));;
+    assert_equal("size", 2, map.get_size);;
+    let map = map.erase(_from_pattree_key(255_U64));
+    assert_equal("size", 1, map.get_size);;
+    pure()
+);
+
+test_key_types: TestCase;
+test_key_types = (
+    [
+        test_key_type(PTreeMap::empty: PTreeMap I64 String,"I64"),
+        test_key_type(PTreeMap::empty: PTreeMap I32 String,"I32"),
+        test_key_type(PTreeMap::empty: PTreeMap I16 String,"I16"),
+        test_key_type(PTreeMap::empty: PTreeMap I8 String,"I8"),
+        test_key_type(PTreeMap::empty: PTreeMap U64 String,"U64"),
+        test_key_type(PTreeMap::empty: PTreeMap U32 String,"U32"),
+        test_key_type(PTreeMap::empty: PTreeMap U16 String,"U16"),
+        test_key_type(PTreeMap::empty: PTreeMap U8 String,"U8"),
+    ].run_tests
+);
+
 main: IO ();
 main = (
     let empty_map: PTreeMap I64 String = PTreeMap::empty;
     [
         MapTests::map_tests(empty_map),
         SortedMapTests::sorted_map_tests(empty_map),
+        test_key_types,
     ]
     .run_test_driver
 );

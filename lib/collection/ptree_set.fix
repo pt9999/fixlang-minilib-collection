@@ -1,6 +1,7 @@
 // `PTreeSet` is a set that manages keys in sorted order.
 //
-// The elements of a `PTreeSet` are `I64`, or `U64`. It's limited, but fast.
+// The elements of a `PTreeSet` can be of type `I64`, `I32`, `I16`, `I8`, `U64`,
+// `U32`, `U16`, or `U8`. It's limited, but fast.
 //
 // `PTreeSet` implements the `Set` and `SortedSet` trait, so if you import this module,
 // you should also import `Minilib.Collection.Trait.Set` and `Minilib.Collection.Trait.SortedSet`.
@@ -19,16 +20,16 @@ import Minilib.Collection.Trait.SortedMap;
 import Minilib.Text.StringEx;
 
 // The trait of elements of a PTreeSet.
-trait k : PTreeSetKey {
-    // Converts from `k` to an internal key.
-    _to_pattree_key: k -> PatTree::Key;
-    // Converts from an internal key to `k`.
-    _from_pattree_key: PatTree::Key -> k;
+trait e : PTreeSetElem {
+    // Converts from `e` to an internal key.
+    _to_pattree_key: e -> PatTree::Key;
+    // Converts from an internal key to `e`.
+    _from_pattree_key: PatTree::Key -> e;
 }
 
-namespace PTreeSetKey {
-    // Converts from `(PatTree::Key, v)` to `k`.
-    _from_pattree_kv: [k : PTreeSetKey] (PatTree::Key, v) -> k;
+namespace PTreeSetElem {
+    // Converts from `(PatTree::Key, v)` to `e`.
+    _from_pattree_kv: [e : PTreeSetElem] (PatTree::Key, v) -> e;
     _from_pattree_kv = |(key, v)| key._from_pattree_key;
 }
 
@@ -37,47 +38,71 @@ _pattree_key_offset: U64;
 _pattree_key_offset = 1_U64.shift_left(63_U64);
 //_pattree_key_offset = 0_U64;     // for debug
 
-impl I64: PTreeSetKey {
+impl I64: PTreeSetElem {
     _to_pattree_key = |i64| i64.to_U64 + _pattree_key_offset;
     _from_pattree_key = |u64| (u64 - _pattree_key_offset).to_I64;
 }
 
-impl U64: PTreeSetKey {
+impl I32: PTreeSetElem {
+    _to_pattree_key = |i32| i32.to_U64 + _pattree_key_offset;
+    _from_pattree_key = |u64| (u64 - _pattree_key_offset).to_I32;
+}
+
+impl I16: PTreeSetElem {
+    _to_pattree_key = |i16| i16.to_U64 + _pattree_key_offset;
+    _from_pattree_key = |u64| (u64 - _pattree_key_offset).to_I16;
+}
+
+impl I8: PTreeSetElem {
+    _to_pattree_key = |i8| i8.to_U64 + _pattree_key_offset;
+    _from_pattree_key = |u64| (u64 - _pattree_key_offset).to_I8;
+}
+
+impl U64: PTreeSetElem {
     _to_pattree_key = |u64| u64;
     _from_pattree_key = |u64| u64;
 }
 
+impl U32: PTreeSetElem {
+    _to_pattree_key = |u32| u32.to_U64;
+    _from_pattree_key = |u64| u64.to_U32;
+}
+
+impl U16: PTreeSetElem {
+    _to_pattree_key = |u16| u16.to_U64;
+    _from_pattree_key = |u64| u64.to_U16;
+}
+
+impl U8: PTreeSetElem {
+    _to_pattree_key = |u8| u8.to_U64;
+    _from_pattree_key = |u64| u64.to_U8;
+}
+
 // The type of Patricia Tree Sets.
-type PTreeSet k = unbox struct {
+type PTreeSet e = unbox struct {
     // The internal Patricia Tree.
     tree: PTree (),
 };
 
-// The type of Patricia Tree Sets whose key is `I64`.
-type PTreeSetI64 = PTreeSet I64;
-
-// The type of Patricia Tree Sets whose key is `U64`.
-type PTreeSetU64 = PTreeSet U64;
-
 // An empty PTreeSet.
-empty: [k: PTreeSetKey] PTreeSet k;
+empty: [e: PTreeSetElem] PTreeSet e;
 empty = PTreeSet { tree: empty };
 
-impl [k: PTreeSetKey] PTreeSet k: Set {
-    type SetElem (PTreeSet k) = k;
-    type SetIterator (PTreeSet k) = Std::Iterator::MapIterator (PTreeIterator ()) (PatTree::Key, ()) k;
+impl [e: PTreeSetElem] PTreeSet e: Set {
+    type SetElem (PTreeSet e) = e;
+    type SetIterator (PTreeSet e) = Std::Iterator::MapIterator (PTreeIterator ()) (PatTree::Key, ()) e;
 
     is_empty = |set| set.@tree.is_empty;
     get_size = |set| set.@tree.get_size;
-    contains = |k, set| set.@tree.contains_key(k._to_pattree_key);
-    insert = |k, set| set.mod_tree(insert(k._to_pattree_key, ()));
-    erase = |k, set| set.mod_tree(erase(k._to_pattree_key));
+    contains = |e, set| set.@tree.contains_key(e._to_pattree_key);
+    insert = |e, set| set.mod_tree(insert(e._to_pattree_key, ()));
+    erase = |e, set| set.mod_tree(erase(e._to_pattree_key));
     to_iter = |set| set.@tree.to_iter.Iterator::map(_from_pattree_kv);
     to_array = |set| set.@tree.to_array.Functor::map(_from_pattree_kv);
     //from_iter = PTree::_from_iter;
 }
 
-impl [k: PTreeSetKey] PTreeSet k: SortedSetIF {
+impl [e: PTreeSetElem] PTreeSet e: SortedSetIF {
     select_range = |begin, end, ascending, set| (
         let begin = begin.Functor::map(_to_pattree_key);
         let end = end.Functor::map(_to_pattree_key);
