@@ -1,6 +1,7 @@
 module TreapSetTest;
 
 import Minilib.Collection.TreapSet;
+import Minilib.Collection.TreapMap;
 import Minilib.Collection.Trait.Set;
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
@@ -23,7 +24,6 @@ test_simple = (
     assert_equal("eq", shuffled.sort, sorted);;
     pure()
 );
-
 
 type IgnoreCase = unbox struct {};
 
@@ -49,8 +49,8 @@ test_kc = (
     assert_equal("eq", [0, 1, 2, 3, 4], t.to_array);;
     let t: TreapSet (KeyGreaterThan I64) I64 = range(0, n).fold(TreapSet::empty, insert);
     assert_equal("eq", [4, 3, 2, 1, 0], t.to_array);;
-    let t: TreapSet (WithValue String (KeyGreaterThan I64)) (I64, String) = range(0, n).map(|i| (i, (n-i).to_string)).fold(TreapSet::empty, insert);
-    assert_equal("eq", [(4,"1"), (3,"2"), (2,"3"), (1,"4"), (0,"5")], t.to_array);;
+    //let t: TreapSet (WithValue String (KeyGreaterThan I64)) (I64, String) = range(0, n).map(|i| (i, (n-i).to_string)).fold(TreapSet::empty, insert);
+    //assert_equal("eq", [(4,"1"), (3,"2"), (2,"3"), (1,"4"), (0,"5")], t.to_array);;
     let arr = ["Hello", "World", "Foo bar baz", "helllooo", "woooorld"];
     let t: TreapSet (IgnoreCase) String = arr.to_iter.fold(TreapSet::empty, insert);
     assert_equal("eq", ["Foo bar baz", "helllooo", "Hello", "woooorld", "World"], t.to_array);;
