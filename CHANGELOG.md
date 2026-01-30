@@ -5,17 +5,20 @@
 - Added following modules:
   * `Minilib.Collection.PTreeMap`
   * `Minilib.Collection.PTreeSet`
-  * `Minilib.Collection.Treap`
-  * `Minilib.Collection.Trait.Set`
+  * `Minilib.Collection.TreapSet`
   * `Minilib.Collection.Trait.Map`
+  * `Minilib.Collection.Trait.Set`
+  * `Minilib.Collection.Trait.SortedMap`
+  * `Minilib.Collection.Trait.SortedSet`
   * `Minilib.Collection.Internal.PatTree`
 ### Changed
-- Minilib.Collection.Treap: Implemented `Minilib.Collection.Trait.Set`.
-  If you use `Treap`, you should also import `Minilib.Collection.Trait.Set`.
-- Minilib.Collection.TreeSet: Implemented `Minilib.Collection.Trait.Set`.
-  If you use `TreeSet`, you should also import `Minilib.Collection.Trait.Set`.
-- Minilib.Collection.TreeMap: Implemented `Minilib.Collection.Trait.Map`.
-  If you use `TreeMap`, you should also import `Minilib.Collection.Trait.Map`.
+- These types implements traits defined in `Minilib.Collection.Trait.*`.
+  If you use these types, you may need to import the appropriate trait modules.
+    - `Minilib.Collection.PTreeSet::PTreeSet`
+    - `Minilib.Collection.PTreeMap::PTreeMap`
+    - `Minilib.Collection.TreapSet::TreapSet`
+    - `Minilib.Collection.TreeSet::TreeSet`
+    - `Minilib.Collection.TreeMap::TreeMap`
 
 ## 0.6.5
 ### Changed
