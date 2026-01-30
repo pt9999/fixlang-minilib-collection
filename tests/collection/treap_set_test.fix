@@ -1,6 +1,6 @@
 module TreapTest;
 
-import Minilib.Collection.Treap;
+import Minilib.Collection.TreapSet;
 import Minilib.Collection.Trait.Set;
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
@@ -15,7 +15,7 @@ test_simple = (
     let n = 30;
     let shuffled = Array::from_map(n, |i| (i * 1234567) % n);
     //println("shuffled=" + shuffled.to_string).lift;;
-    let t: Treap (KeyLessThan I64) I64 = Treap::empty;
+    let t: TreapSet (KeyLessThan I64) I64 = TreapSet::empty;
     let t = shuffled.to_iter.fold(t, insert);
     let sorted = t.to_array;
     //println("sorted=" + sorted.to_string).lift;;
@@ -45,17 +45,17 @@ test_kc: TestCase;
 test_kc = (
     make_test("test_kc") $ |_|
     let n = 5;
-    let t: Treap (KeyLessThan I64) I64 = range(0, n).fold(Treap::empty, insert);
+    let t: TreapSet (KeyLessThan I64) I64 = range(0, n).fold(TreapSet::empty, insert);
     assert_equal("eq", [0, 1, 2, 3, 4], t.to_array);;
-    let t: Treap (KeyGreaterThan I64) I64 = range(0, n).fold(Treap::empty, insert);
+    let t: TreapSet (KeyGreaterThan I64) I64 = range(0, n).fold(TreapSet::empty, insert);
     assert_equal("eq", [4, 3, 2, 1, 0], t.to_array);;
-    let t: Treap (WithValue String (KeyGreaterThan I64)) (I64, String) = range(0, n).map(|i| (i, (n-i).to_string)).fold(Treap::empty, insert);
+    let t: TreapSet (WithValue String (KeyGreaterThan I64)) (I64, String) = range(0, n).map(|i| (i, (n-i).to_string)).fold(TreapSet::empty, insert);
     assert_equal("eq", [(4,"1"), (3,"2"), (2,"3"), (1,"4"), (0,"5")], t.to_array);;
     let arr = ["Hello", "World", "Foo bar baz", "helllooo", "woooorld"];
-    let t: Treap (IgnoreCase) String = arr.to_iter.fold(Treap::empty, insert);
+    let t: TreapSet (IgnoreCase) String = arr.to_iter.fold(TreapSet::empty, insert);
     assert_equal("eq", ["Foo bar baz", "helllooo", "Hello", "woooorld", "World"], t.to_array);;
     let kc: WithFunc I64 = WithFunc{ func: less_than };
-    let t: Treap (WithFunc I64) I64 = range(0, n).fold(Treap::make(kc), insert);
+    let t: TreapSet (WithFunc I64) I64 = range(0, n).fold(TreapSet::make(kc), insert);
     assert_equal("eq", [0, 1, 2, 3, 4], t.to_array);;
     pure()
 );
@@ -70,7 +70,7 @@ test_perf = (
     let shuffled = array.reorder(shuffle(5432));
     let (tree, from_iter_time) = *consumed_time_while_io(do {
         pure();;
-        pure $ shuffled.to_iter.Treap::from_iter
+        pure $ shuffled.to_iter.TreapSet::from_iter
     }).lift;
     println(" from_iter: " + from_iter_time.to_string + " seconds").lift;;
     assert_equal("size", n, tree.get_size);;
@@ -101,7 +101,7 @@ test_perf = (
 
 main: IO ();
 main = (
-    let empty_set = Treap::empty: Treap (KeyLessThan I64) I64;
+    let empty_set = TreapSet::empty: TreapSet (KeyLessThan I64) I64;
     [
         SetTests::set_tests(empty_set),
         SortedSetTests::sorted_set_tests(empty_set),
