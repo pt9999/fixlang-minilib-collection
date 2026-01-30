@@ -9,7 +9,8 @@ import DequeTest;
 import OrderedMapTest;
 import PTreeMapTest;
 import PTreeSetTest;
-import TreapTest;
+import TreapMapTest;
+import TreapSetTest;
 import TreeMapTest;
 import TreeSetTest;
 
@@ -22,7 +23,8 @@ testsuite = [
     ("OrderedMapTest", OrderedMapTest::main),
     ("PTreeMapTest", PTreeMapTest::main),
     ("PTreeSetTest", PTreeSetTest::main),
-    ("TreapTest", TreapTest::main),
+    ("TreapMapTest", TreapMapTest::main),
+    ("TreapSetTest", TreapSetTest::main),
     ("TreeMapTest", TreeMapTest::main),
     ("TreeSetTest", TreeSetTest::main),
 ];
