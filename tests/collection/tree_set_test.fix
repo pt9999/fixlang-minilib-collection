@@ -4,7 +4,6 @@ import Random;
 import Minilib.Collection.TreeSet;
 import Minilib.Collection.Trait.Set;
 import Minilib.Collection.Trait.SortedSet;
-import Minilib.Collection.RBTree::RBNode::{ get_size };
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;

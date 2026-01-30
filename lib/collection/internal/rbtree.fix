@@ -14,7 +14,7 @@
 // - Transitivity:  for all `x, y, z`, if `less_than(x,y)` is true and `less_than(y,z)` is true,
 //                  then `less_than(x,z)` must be true.
 //
-module Minilib.Collection.RBTree;
+module Minilib.Collection.Internal.RBTree;
 
 // 上記の和訳:
 //

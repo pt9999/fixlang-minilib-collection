@@ -1,4 +1,6 @@
 ## 0.x.x
+### ** BREAKING CHANGES **
+- Moved `Minilib.Collection.RBTree` to `Minilib.Collection.Internal.RBTree`.
 ### Added
 - Added `Minilib.Collection.Treap`.
 - Added `Minilib.Collection.Trait.Set`, `Minilib.Collection.Trait.Map`.

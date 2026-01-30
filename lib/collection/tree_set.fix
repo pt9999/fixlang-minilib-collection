@@ -16,7 +16,7 @@
 // then `x` and `y` are considered equivalent.
 module Minilib.Collection.TreeSet;
 
-import Minilib.Collection.RBTree;
+import Minilib.Collection.Internal.RBTree;
 import Minilib.Collection.Trait.Set;
 import Minilib.Collection.Trait.SortedSet;
 
