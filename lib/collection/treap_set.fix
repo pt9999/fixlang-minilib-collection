@@ -1,3 +1,10 @@
+// TreapSet is a set that manages keys in sorted order.
+//
+// A treap is a type of random binary search tree.
+// Searches, insertions, and deletions have high probability of time complexity `O(log n)`.
+//
+// `TreapSet` implements the `Set` and `SortedSet` trait, so if you use `TreapSet`,
+// you may also need to import `Minilib.Collection.Trait.Set` and `Minilib.Collection.Trait.SortedSet`.
 module Minilib.Collection.TreapSet;
 
 import Minilib.Common.Common;
@@ -5,14 +12,18 @@ import Minilib.Collection.Trait.Set;
 import Minilib.Collection.Trait.SortedSet;
 import Minilib.Text.StringEx;
 
+// The trait of key comparators.
 trait kc : KeyCompare {
+    // The type of keys.
     type Key kc;
 
+    // An empty key comparator.
     empty: kc;
     // Returns false iff the first key should appear after the second key.
     compare : Key kc -> Key kc -> kc -> Bool;
 }
 
+// The type of key comparators which compares keys with `LessThan::less_than`.
 type KeyLessThan k = unbox struct {};
 
 impl [k: LessThan] KeyLessThan k: KeyCompare {
@@ -21,16 +32,7 @@ impl [k: LessThan] KeyLessThan k: KeyCompare {
     compare = |x, y, kc| x < y;
 }
 
-/*
-type KeyLessThanOrEq k = unbox struct {};
-
-impl [k: LessThanOrEq] KeyLessThanOrEq k: KeyCompare {
-    type Key (KeyLessThanOrEq k) = k;
-    empty = KeyLessThanOrEq {};
-    compare = |x, y, kc| x <= y;
-}
-*/
-
+// The type of key comparators which compares keys with `LessThan::less_than` in reversed order.
 type KeyGreaterThan k = unbox struct {};
 
 impl [k: LessThan] KeyGreaterThan k: KeyCompare {
@@ -47,10 +49,10 @@ impl [kc: KeyCompare] WithValue v kc: KeyCompare {
     compare = |(x, _), (y, _), wkc| wkc.@kc.compare(x, y);
 }
 
-// The priority type. (used internally)
+// (used internally) The priority type. 
 type Priority = U64;
 
-// The type of treap nodes.
+// (used internally) The type of treap nodes.
 type TNode k = unbox struct {
     priority: Priority,
     key: Option k,
@@ -59,11 +61,11 @@ type TNode k = unbox struct {
 };
 
 namespace TNode {
-    to_quad: TNode k -> (Priority, k, TNodeIndex, TNodeIndex);
-    to_quad = |n| (n.@priority, n.@key.as_some, n.@left, n.@right);
+    _to_quad: TNode k -> (Priority, k, TNodeIndex, TNodeIndex);
+    _to_quad = |n| (n.@priority, n.@key.as_some, n.@left, n.@right);
 }
 
-// The type of index of the node array.
+// (used internally) The type of index of the node array.
 type TNodeIndex = I64;
 
 namespace TNodeIndex {
@@ -73,11 +75,17 @@ namespace TNodeIndex {
 
 // The type of TreapSet.
 type TreapSet kc k = box struct {
+    // The root node.
     root: TNodeIndex,
+    // The key comparator.
     kc: kc,
+    // The number of elements.
     size: I64,
+    // The random seed.
     seed: Priority,
+    // The array of nodes.
     nodes: Array (TNode k),
+    // The free list.
     freelist: Array TNodeIndex,
 };
 
@@ -88,11 +96,16 @@ impl TreapSet kc k : Indexable {
 }
 
 namespace TreapSet {
+    // An empty TreapSet.
     empty: [kc: KeyCompare, Key kc = k] TreapSet kc k;
     empty = (
         TreapSet::make(KeyCompare::empty)
     );
 
+    // Makes an empty TreapSet.
+    //
+    // # Parameters
+    // # - `kc`: a key comparator
     make: [kc: KeyCompare, Key kc = k] kc -> TreapSet kc k;
     make = |kc| TreapSet {
         root: TNodeIndex::empty,
@@ -103,6 +116,7 @@ namespace TreapSet {
         freelist: [],
     };
 
+    // makes a node
     _make_node: TNode k -> TreapSet kc k -> (TreapSet kc k, TNodeIndex);
     _make_node = |nodedata, treap| (
         match treap.@freelist.get_last {
@@ -119,12 +133,14 @@ namespace TreapSet {
         }
     );
 
+    // marks a node as free
     _free_node: TNodeIndex -> TreapSet kc k -> TreapSet kc k;
     _free_node = |node, treap| (
         let treap = treap[node][^key].iset(none());
         treap[^freelist].imod(push_back(node))
     );
 
+    // makes a branch node
     _make_branch: Priority -> k -> TNodeIndex -> TNodeIndex -> TreapSet kc k -> (TreapSet kc k, TNodeIndex);
     _make_branch = |priority, key, left, right, treap| (
         let treap = treap[^size].imod(add(1));
@@ -132,12 +148,14 @@ namespace TreapSet {
         treap._make_node(b)
     );
 
+    // marks a branch as free
     _free_branch: TNodeIndex -> TreapSet kc k -> TreapSet kc k;
     _free_branch = |node, treap| (
         let treap = treap[^size].imod(add(-1));
         treap._free_node(node)
     );
 
+    // generates a random priority
     _generate_random_priority: TreapSet kc k -> (TreapSet kc k, Priority);
     _generate_random_priority = |treap| (
         treap.act_seed(|x|
@@ -149,12 +167,15 @@ namespace TreapSet {
         ).swap
     );
 
+    // Checks whether a set is empty.
     _is_empty: TreapSet kc k -> Bool;
     _is_empty = |treap| treap.@size == 0;
 
+    // Gets the number of elements in a set.
     _get_size: TreapSet kc k -> I64;
     _get_size = @size;
 
+    // Checks whether a set contains the specified element.
     _contains: [kc: KeyCompare, Key kc = k] k -> TreapSet kc k -> Bool;
     _contains = |key, treap| (
         treap._contains_recursive(key, treap.@root)
@@ -165,7 +186,7 @@ namespace TreapSet {
         if node == TNodeIndex::empty {
             false
         };
-        let (prio, key, left, right) = treap[node].iget.to_quad;
+        let (prio, key, left, right) = treap[node].iget._to_quad;
         if treap.@kc.compare(key, key_to_find) { // key < key_to_find
             treap._contains_recursive(key_to_find, right)
         } else if treap.@kc.compare(key_to_find, key) { // key_to_find < key
@@ -175,6 +196,7 @@ namespace TreapSet {
         }
     );
 
+    // Inserts an element into a set.
     _insert: [kc: KeyCompare, Key kc = k] k -> TreapSet kc k -> TreapSet kc k;
     _insert = |key, treap| (
         let (treap, prio) = treap._generate_random_priority : (TreapSet kc k, Priority);
@@ -187,10 +209,10 @@ namespace TreapSet {
         if old_node == TNodeIndex::empty {
             treap._make_branch(new_prio, new_key, TNodeIndex::empty, TNodeIndex::empty)
         };
-        let (old_prio, old_key, left, right) = treap[old_node].iget.to_quad;
+        let (old_prio, old_key, left, right) = treap[old_node].iget._to_quad;
         if treap.@kc.compare(old_key, new_key) { // old_key < new_key
             let (treap, up_node) = treap._insert_recursive(new_prio, new_key, right);
-            let (up_prio, up_key, up_left, up_right) = treap[up_node].iget.to_quad;
+            let (up_prio, up_key, up_left, up_right) = treap[up_node].iget._to_quad;
             if old_prio < up_prio {
                 let treap = treap[old_node][^right].iset(up_left);
                 let treap = treap[up_node][^left].iset(old_node);
@@ -201,7 +223,7 @@ namespace TreapSet {
             }
         } else if treap.@kc.compare(new_key, old_key) { // new_key < old_key
             let (treap, up_node) = treap._insert_recursive(new_prio, new_key, left);
-            let (up_prio, up_key, up_left, up_right) = treap[up_node].iget.to_quad;
+            let (up_prio, up_key, up_left, up_right) = treap[up_node].iget._to_quad;
             if old_prio < up_prio {
                 let treap = treap[old_node][^left].iset(up_right);
                 let treap = treap[up_node][^right].iset(old_node);
@@ -216,6 +238,7 @@ namespace TreapSet {
         }
     );
 
+    // Erases all elements which is equivalent to the specified element.
     _erase: [kc: KeyCompare, Key kc = k] k -> TreapSet kc k -> TreapSet kc k;
     _erase = |key, treap| (
         let (treap, root) = treap._erase_recursive(key, treap.@root);
@@ -227,7 +250,7 @@ namespace TreapSet {
         if old_node == TNodeIndex::empty {
             (treap, TNodeIndex::empty)
         };
-        let (old_prio, old_key, left, right) = treap[old_node].iget.to_quad;
+        let (old_prio, old_key, left, right) = treap[old_node].iget._to_quad;
         if treap.@kc.compare(old_key, key) { // old_key < key
             let (treap, right2) = treap._erase_recursive(key, right);
             let treap = if right == right2 { treap } else { treap[old_node][^right].iset(right2) };
@@ -261,6 +284,7 @@ namespace TreapSet {
         }
     );
 
+    // Converts a set into an array.
     _to_array: TreapSet kc k -> Array k;
     _to_array = |treap| (
         let inner = fix $ |inner, node, arr| (
@@ -275,6 +299,7 @@ namespace TreapSet {
         inner(treap.@root, [])
     );
 
+    // Type type of iterators which are returned by `to_iter`, `select_range`.
     type TreapIterator kc k = unbox struct {
         treap: TreapSet kc k,
         lt_begin: k -> Bool,
@@ -298,7 +323,7 @@ namespace TreapSet {
                     ok(k) => break $ some $ (iter.set_stack(stack), k),
                     err(node) => (
                         if node == TNodeIndex::empty { continue $ stack };
-                        let (prio, key, left, right) = treap[node].iget.to_quad;
+                        let (prio, key, left, right) = treap[node].iget._to_quad;
                         let key_lt_begin = lt_begin(key);   // key < begin
                         let end_ge_key = !lt_end(key);      // end <= key
                         if ascending {
@@ -338,12 +363,14 @@ namespace TreapSet {
         }
     );
 
+    // Converts a set into an iterator.
     _to_iter: [kc: KeyCompare, Key kc = k] TreapSet kc k -> TreapIterator kc k;
     _to_iter = |treap| treap._select_range(none(), none(), true);
 
     _to_iter_dyn: TreapSet kc k -> DynIterator k;
     _to_iter_dyn = |treap| treap._to_array.to_iter.to_dyn;
 
+    // Converts a TreapSet into a string describing the hierarchy of nodes.
     _debug_to_string: [k: ToString] TreapSet kc k -> String;
     _debug_to_string = |treap| (
         let inner = fix $ |inner, indent, node, str: String| (
@@ -359,6 +386,7 @@ namespace TreapSet {
         inner(0, treap.@root, "")
     );
 
+    // Converts an iterator to a TreapSet.
     from_iter: [k: LessThan, i: Iterator, Item i = k] i -> TreapSet (KeyLessThan k) k;
     from_iter = |iter| (
         iter.from_iter_kc(KeyLessThan{})
@@ -371,6 +399,7 @@ namespace TreapSet {
         )
     );
 
+    // Converts an iterator to a TreapSet.
     from_iter_kc: [kc: KeyCompare, Key kc = k, i: Iterator, Item i = k] kc -> i -> TreapSet kc k;
     from_iter_kc = |kc, iter| (
         let treap = TreapSet::make(kc);
@@ -402,7 +431,7 @@ namespace TreapSet {
             };
             treap
         };
-        let (old_prio, old_key, left, right) = treap[old_node].iget.to_quad;
+        let (old_prio, old_key, left, right) = treap[old_node].iget._to_quad;
         if treap.@kc.compare(old_key, new_key) { // old_key < new_key
             treap._insert_to_leaf(new_prio, new_key, right, old_node, 1_I8)
         } else if treap.@kc.compare(new_key, old_key) { // new_key < old_key
@@ -429,6 +458,7 @@ impl [kc: KeyCompare, Key kc = k] TreapSet kc k: Set {
     //from_iter = TreapSet::_from_iter;
 }
 
+// Implementation of the `SortedSetIF` trait.
 impl [kc: KeyCompare, Key kc = k] TreapSet kc k: SortedSetIF {
     select_range = TreapSet::_select_range;
 }

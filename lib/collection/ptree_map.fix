@@ -1,9 +1,14 @@
-// PTreeMap is a map that manages keys in sorted order.
+// `PTreeMap` is a map that manages keys in sorted order.
 //
-// `PTreeMap` implements the `Map` and `SortedMap` trait, so if you use `PTreeMap`,
-// you may also need to import `Minilib.Collection.Trait.Map` and `Minilib.Collection.Trait.SortedMap`.
+// The keys of a `PTreeMap` are `I64`, or `U64`. It's limited, but fast.
 //
-// The keys of a PTreeMap are one of I64, U64.
+// `PTreeMap` implements the `Map` and `SortedMap` trait, so if you import this module,
+// you should also import `Minilib.Collection.Trait.Map` and `Minilib.Collection.Trait.SortedMap`.
+//
+// `PTreeMap` is built upon [a Patricia Tree](https://en.wikipedia.org/wiki/Radix_tree).
+// In particular, I implemented the Patricia Tree with reference to the following paper:
+// [Chris Okasaki and Andy Gill, "Fast Mergeable Integer Maps"](https://web.archive.org/web/20150417234429/https://ittc.ku.edu/~andygill/papers/IntMap98.pdf).
+//
 module Minilib.Collection.PTreeMap;
 
 import Minilib.Collection.Internal.PatTree;
@@ -11,37 +16,48 @@ import Minilib.Collection.Trait.Map;
 import Minilib.Collection.Trait.SortedMap;
 import Minilib.Text.StringEx;
 
+// The trait of keys of a PTreeMap.
 trait k : PTreeMapKey {
-    to_pattree_key: k -> PatTree::Key;
-    from_pattree_key: PatTree::Key -> k;
+    // Converts from `k` to an internal key.
+    _to_pattree_key: k -> PatTree::Key;
+    // Converts from an internal key to `k`.
+    _from_pattree_key: PatTree::Key -> k;
 }
 
 namespace PTreeMapKey {
-    from_pattree_kv: [k : PTreeMapKey] (PatTree::Key, v) -> (k, v);
-    from_pattree_kv = |(key, v)| (key.from_pattree_key, v);
+    // Converts from `(PatTree::Key, v)` to `(k, v)`.
+    _from_pattree_kv: [k : PTreeMapKey] (PatTree::Key, v) -> (k, v);
+    _from_pattree_kv = |(key, v)| (key._from_pattree_key, v);
 }
 
-pattree_key_offset: U64;
-pattree_key_offset = 1_U64.shift_left(63_U64);
-//pattree_key_offset = 0_U64;     // for debug
+// An offset from I64 to U64.
+_pattree_key_offset: U64;
+_pattree_key_offset = 1_U64.shift_left(63_U64);
+//_pattree_key_offset = 0_U64;     // for debug
 
 impl I64: PTreeMapKey {
-    to_pattree_key = |i64| i64.to_U64 + pattree_key_offset;
-    from_pattree_key = |u64| (u64 - pattree_key_offset).to_I64;
+    _to_pattree_key = |i64| i64.to_U64 + _pattree_key_offset;
+    _from_pattree_key = |u64| (u64 - _pattree_key_offset).to_I64;
 }
 
 impl U64: PTreeMapKey {
-    to_pattree_key = |u64| u64;
-    from_pattree_key = |u64| u64;
+    _to_pattree_key = |u64| u64;
+    _from_pattree_key = |u64| u64;
 }
 
+// The type of Patricia Tree Maps.
 type PTreeMap k v = unbox struct {
+    // The internal Patricia Tree.
     tree: PTree v,
 };
 
+// The type of Patricia Tree Maps whose key is `I64`.
 type PTreeMapI64 = PTreeMap I64;
+
+// The type of Patricia Tree Maps whose key is `U64`.
 type PTreeMapU64 = PTreeMap U64;
 
+// An empty PTreeMap.
 empty: [k: PTreeMapKey] PTreeMap k v;
 empty = PTreeMap { tree: empty };
 
@@ -52,23 +68,22 @@ impl [k: PTreeMapKey] PTreeMap k v: Map {
 
     is_empty = |map| map.@tree.is_empty;
     get_size = |map| map.@tree.get_size;
-    contains_key = |k, map| map.@tree.contains_key(k.to_pattree_key);
-    find = |k, map| map.@tree.find(k.to_pattree_key);
-    insert = |k, v, map| map.mod_tree(insert(k.to_pattree_key, v));
-    erase = |k, map| map.mod_tree(erase(k.to_pattree_key));
-    set = |k, opt_v, map| map.mod_tree(set(k.to_pattree_key, opt_v));
-    act = |k, fun, map| map.act_tree(act(k.to_pattree_key, fun));
-    to_iter = |map| map.@tree.to_iter.Iterator::map(from_pattree_kv);
-    to_array = |map| map.@tree.to_array.Functor::map(from_pattree_kv);
+    contains_key = |k, map| map.@tree.contains_key(k._to_pattree_key);
+    find = |k, map| map.@tree.find(k._to_pattree_key);
+    insert = |k, v, map| map.mod_tree(insert(k._to_pattree_key, v));
+    erase = |k, map| map.mod_tree(erase(k._to_pattree_key));
+    set = |k, opt_v, map| map.mod_tree(set(k._to_pattree_key, opt_v));
+    act = |k, fun, map| map.act_tree(act(k._to_pattree_key, fun));
+    to_iter = |map| map.@tree.to_iter.Iterator::map(_from_pattree_kv);
+    to_array = |map| map.@tree.to_array.Functor::map(_from_pattree_kv);
     //from_iter = PTree::_from_iter;
 }
 
 impl [k: PTreeMapKey] PTreeMap k v: SortedMapIF {
     select_range = |begin, end, ascending, map| (
-        let begin = begin.Functor::map(to_pattree_key);
-        let end = end.Functor::map(to_pattree_key);
+        let begin = begin.Functor::map(_to_pattree_key);
+        let end = end.Functor::map(_to_pattree_key);
         map.@tree.select_range(begin, end, ascending)
-        .Iterator::map(from_pattree_kv)
+        .Iterator::map(_from_pattree_kv)
     );
 }
-
