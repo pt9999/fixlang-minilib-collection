@@ -1,4 +1,4 @@
-module TreapTest;
+module TreapSetTest;
 
 import Minilib.Collection.TreapSet;
 import Minilib.Collection.Trait.Set;

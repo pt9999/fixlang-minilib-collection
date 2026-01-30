@@ -1,0 +1,480 @@
+// TreapMap is a map that manages keys in sorted order.
+//
+// A treap is a type of random binary search tree.
+// Searches, insertions, and deletions have high probability of time complexity `O(log n)`.
+//
+// `TreapMap` implements the `Map` and `SortedMap` trait, so if you use `TreapMap`,
+// you may also need to import `Minilib.Collection.Trait.Map` and `Minilib.Collection.Trait.SortedMap`.
+module Minilib.Collection.TreapMap;
+
+import Minilib.Common.Common;
+import Minilib.Collection.Trait.Map;
+import Minilib.Collection.Trait.SortedMap;
+import Minilib.Text.StringEx;
+
+// The trait of key comparators.
+trait kc : KeyCompare {
+    // The type of keys.
+    type Key kc;
+
+    // An empty key comparator.
+    empty: kc;
+    // Returns false iff the first key should appear after the second key.
+    compare : Key kc -> Key kc -> kc -> Bool;
+}
+
+// The type of key comparators which compares keys with `LessThan::less_than`.
+type KeyLessThan k = unbox struct {};
+
+impl [k: LessThan] KeyLessThan k: KeyCompare {
+    type Key (KeyLessThan k) = k;
+    empty = KeyLessThan {};
+    compare = |x, y, kc| x < y;
+}
+
+// The type of key comparators which compares keys with `LessThan::less_than` in reversed order.
+type KeyGreaterThan k = unbox struct {};
+
+impl [k: LessThan] KeyGreaterThan k: KeyCompare {
+    type Key (KeyGreaterThan k) = k;
+    empty = KeyGreaterThan {};
+    compare = |x, y, kc| y < x;
+}
+
+type WithValue v kc = unbox struct { kc: kc };
+
+// (used internally) The priority type. 
+type Priority = U64;
+
+// (used internally) The type of treap nodes.
+type TNode k v = unbox struct {
+    prio: Priority,
+    key: Option k,
+    value: Option v,
+    left: TNodeIndex,
+    right: TNodeIndex
+};
+
+/*
+namespace TNode {
+    _to_tuple: TNode k v -> (Priority, k, v, TNodeIndex, TNodeIndex);
+    _to_tuple = |n| (n.@prio, n.@key.as_some, n.@value.as_some, n.@left, n.@right);
+}
+*/
+
+// (used internally) The type of index of the node array.
+type TNodeIndex = I64;
+
+namespace TNodeIndex {
+    // A special index which represents an empty node.
+    empty: TNodeIndex = -1;
+}
+
+// The type of TreapMap.
+type TreapMap kc k v = box struct {
+    // The root node.
+    root: TNodeIndex,
+    // The key comparator.
+    kc: kc,
+    // The number of elements.
+    size: I64,
+    // The random seed.
+    seed: Priority,
+    // The array of nodes.
+    nodes: Array (TNode k v),
+    // The free list.
+    freelist: Array TNodeIndex,
+};
+
+impl TreapMap kc k v : Indexable {
+    type Elem (TreapMap kc k v) = TNode k v;
+    type Index (TreapMap kc k v) = I64;
+    act_at_index = |i, f, treap| treap[^nodes][i].iact(f);
+}
+
+namespace TreapMap {
+    // An empty TreapMap.
+    empty: [kc: KeyCompare, Key kc = k] TreapMap kc k v;
+    empty = (
+        TreapMap::make(KeyCompare::empty)
+    );
+
+    // Makes an empty TreapMap.
+    //
+    // # Parameters
+    // # - `kc`: a key comparator
+    make: [kc: KeyCompare, Key kc = k] kc -> TreapMap kc k v;
+    make = |kc| TreapMap {
+        root: TNodeIndex::empty,
+        kc: kc,
+        size: 0,
+        seed: 0x0123456789abcdef_U64,
+        nodes: [],
+        freelist: [],
+    };
+
+    // makes a node
+    _make_node: TNode k v -> TreapMap kc k v -> (TreapMap kc k v, TNodeIndex);
+    _make_node = |nodedata, treap| (
+        match treap.@freelist.get_last {
+            some(node) => (
+                let treap = treap[^freelist].imod(pop_back);
+                let treap = treap[^nodes][node].iset(nodedata);
+                (treap, node)
+            ),
+            none() => (
+                let node = treap.@nodes.get_size;
+                let treap = treap[^nodes].imod(push_back(nodedata));
+                (treap, node)
+            )
+        }
+    );
+
+    // marks a node as free
+    _free_node: TNodeIndex -> TreapMap kc k v -> TreapMap kc k v;
+    _free_node = |node, treap| (
+        let treap = treap[node].imod(|b| b.set_key(none()).set_value(none()));
+        treap[^freelist].imod(push_back(node))
+    );
+
+    // makes a branch node
+    _make_branch: Priority -> k -> v -> TNodeIndex -> TNodeIndex -> TreapMap kc k v -> (TreapMap kc k v, TNodeIndex);
+    _make_branch = |prio, key, value, left, right, treap| (
+        let treap = treap[^size].imod(add(1));
+        let b = TNode { prio:prio, key:some(key), value:some(value), left:left, right:right };
+        treap._make_node(b)
+    );
+
+    // marks a branch as free
+    _free_branch: TNodeIndex -> TreapMap kc k v -> TreapMap kc k v;
+    _free_branch = |node, treap| (
+        let treap = treap[^size].imod(add(-1));
+        treap._free_node(node)
+    );
+
+    // generates a random priority
+    _generate_random_priority: TreapMap kc k v -> (TreapMap kc k v, Priority);
+    _generate_random_priority = |treap| (
+        treap.act_seed(|x|
+            // generate random number using XORSHIFT
+            let x = x.bit_xor(x.shift_left(13_U64));
+            let x = x.bit_xor(x.shift_right(7_U64));
+            let x = x.bit_xor(x.shift_left(17_U64));
+            (x, x)
+        ).swap
+    );
+
+    // Checks whether a map is empty.
+    _is_empty: TreapMap kc k v -> Bool;
+    _is_empty = |treap| treap.@size == 0;
+
+    // Gets the number of elements in a map.
+    _get_size: TreapMap kc k v -> I64;
+    _get_size = @size;
+
+    // Checks whether a map contains the specified key.
+    _contains_key: [kc: KeyCompare, Key kc = k] k -> TreapMap kc k v -> Bool;
+    _contains_key = |key, treap| (
+        treap._find(key).is_some
+    );
+
+    _find: [kc: KeyCompare, Key kc = k] k -> TreapMap kc k v -> Option v;
+    _find = |key, treap| (
+        treap._find_recursive(key, treap.@root)
+    );
+
+    _find_recursive: [kc: KeyCompare, Key kc = k] k -> TNodeIndex -> TreapMap kc k v -> Option v;
+    _find_recursive = |key_to_find, node, treap| (
+        if node == TNodeIndex::empty {
+            none()
+        };
+        let b = treap[node].iget;
+        let key = b.@key.as_some;
+        if treap.@kc.compare(key, key_to_find) { // key < key_to_find
+            treap._find_recursive(key_to_find, b.@right)
+        } else if treap.@kc.compare(key_to_find, key) { // key_to_find < key
+            treap._find_recursive(key_to_find, b.@left)
+        } else {
+            some $ b.@value.as_some
+        }
+    );
+
+    // Inserts an entry into a map.
+    _insert: [kc: KeyCompare, Key kc = k] k -> v -> TreapMap kc k v -> TreapMap kc k v;
+    _insert = |key, value, treap| (
+        let (treap, prio) = treap._generate_random_priority : (TreapMap kc k v, Priority);
+        let (treap, root) = treap._insert_recursive(prio, key, value, treap.@root) : (TreapMap kc k v, TNodeIndex);
+        treap.set_root(root)
+    );
+
+    _insert_recursive: [kc: KeyCompare, Key kc = k] Priority -> k -> v -> TNodeIndex -> TreapMap kc k v -> (TreapMap kc k v, TNodeIndex);
+    _insert_recursive = |new_prio, new_key, new_value, old_node, treap| (
+        if old_node == TNodeIndex::empty {
+            treap._make_branch(new_prio, new_key, new_value, TNodeIndex::empty, TNodeIndex::empty)
+        };
+        let old = treap[old_node].iget;
+        let old_prio = old.@prio;
+        let old_key = old.@key.as_some;
+        if treap.@kc.compare(old_key, new_key) { // old_key < new_key
+            let (treap, up_node) = treap._insert_recursive(new_prio, new_key, new_value, old.@right);
+            let up = treap[up_node].iget;
+            if old_prio < up.@prio {
+                let treap = treap[old_node][^right].iset(up.@left);
+                let treap = treap[up_node][^left].iset(old_node);
+                (treap, up_node)
+            } else {
+                let treap = treap[old_node][^right].iset(up_node);
+                (treap, old_node)
+            }
+        } else if treap.@kc.compare(new_key, old_key) { // new_key < old_key
+            let (treap, up_node) = treap._insert_recursive(new_prio, new_key, new_value, old.@left);
+            let up = treap[up_node].iget;
+            if old_prio < up.@prio {
+                let treap = treap[old_node][^left].iset(up.@right);
+                let treap = treap[up_node][^right].iset(old_node);
+                (treap, up_node)
+            } else {
+                let treap = treap[old_node][^left].iset(up_node);
+                (treap, old_node)
+            }
+        } else {    // replace key and value
+            let treap = treap[old_node].imod(|b| b.set_key(some $ new_key).set_value(some $ new_value));
+            (treap, old_node)
+        }
+    );
+
+    // Erases all entries whose key is equivalent to the specified key.
+    _erase: [kc: KeyCompare, Key kc = k] k -> TreapMap kc k v -> TreapMap kc k v;
+    _erase = |key, treap| (
+        let (treap, root) = treap._erase_recursive(key, treap.@root);
+        treap.set_root(root)
+    );
+
+    _erase_recursive: [kc: KeyCompare, Key kc = k] k -> TNodeIndex -> TreapMap kc k v -> (TreapMap kc k v, TNodeIndex);
+    _erase_recursive = |key, old_node, treap| (
+        if old_node == TNodeIndex::empty {
+            (treap, TNodeIndex::empty)
+        };
+        let old = treap[old_node].iget;
+        let old_key = old.@key.as_some;
+        let old_left = old.@left;
+        let old_right = old.@right;
+        if treap.@kc.compare(old_key, key) { // old_key < key
+            let (treap, right2) = treap._erase_recursive(key, old_right);
+            let treap = if old_right == right2 { treap } else { treap[old_node][^right].iset(right2) };
+            (treap, old_node)
+        } else if treap.@kc.compare(key, old_key) { // key < old_key
+            let (treap, left2) = treap._erase_recursive(key, old_left);
+            let treap = if old_left == left2 { treap } else { treap[old_node][^left].iset(left2) };
+            (treap, old_node)
+        } else {    // erase this node
+            let treap = treap._free_branch(old_node);
+            treap._join(old_left, old_right)
+        }
+    );
+
+    _join: [kc: KeyCompare, Key kc = k] TNodeIndex -> TNodeIndex -> TreapMap kc k v -> (TreapMap kc k v, TNodeIndex);
+    _join = |left, right, treap| (
+        if left == TNodeIndex::empty { (treap, right) };
+        if right == TNodeIndex::empty { (treap, left) };
+        let left_prio = treap[left][^prio].iget;
+        let right_prio = treap[right][^prio].iget;
+        if left_prio >= right_prio {
+            let left_right = treap[left][^right].iget;
+            let (treap, left_right) = treap._join(left_right, right);
+            let treap = treap[left][^right].iset(left_right);
+            (treap, left)
+        } else {
+            let right_left = treap[right][^left].iget;
+            let (treap, right_left) = treap._join(left, right_left);
+            let treap = treap[right][^left].iset(right_left);
+            (treap, right)
+        }
+    );
+
+    // Converts a map into an array.
+    _to_array: TreapMap kc k v -> Array (k, v);
+    _to_array = |treap| (
+        let inner = fix $ |inner, node, arr| (
+            if node == TNodeIndex::empty { arr };
+            let TNode{ prio:prio, key:key, value:value, left:left, right:right } = treap[node].iget;
+            let arr = inner(left, arr);
+            let arr = arr.push_back((key.as_some, value.as_some));
+            let arr = inner(right, arr);
+            arr
+        );
+        inner(treap.@root, [])
+    );
+
+    // Type type of iterators which are returned by `to_iter`, `select_range`.
+    type TreapMapIterator kc k v = unbox struct {
+        treap: TreapMap kc k v,
+        lt_begin: k -> Bool,
+        lt_end: k -> Bool,
+        ascending: Bool,
+        stack: Array (Result TNodeIndex (k, v)),
+    };
+
+    impl [kc: KeyCompare, Key kc = k] TreapMapIterator kc k v: Iterator {
+        type Item (TreapMapIterator kc k v) = (k, v);
+        advance = |iter| (
+            let TreapMapIterator { treap: treap, lt_begin: lt_begin, lt_end: lt_end, ascending: ascending, stack: stack } = iter;
+            let iter = iter.set_stack([]); // scapegoat
+            loop(
+                stack, |stack|
+                let opt = stack.get_last;
+                if opt.is_none { break $ none() };
+                let res = opt.as_some;
+                let stack = stack.pop_back;
+                match res {
+                    ok(kv) => break $ some $ (iter.set_stack(stack), kv),
+                    err(node) => (
+                        if node == TNodeIndex::empty { continue $ stack };
+                        let b = treap[node].iget;
+                        let key = b.@key.as_some;
+                        let value = b.@value.as_some;
+                        let left = b.@left;
+                        let right = b.@right;
+                        let key_lt_begin = lt_begin(key);   // key < begin
+                        let end_ge_key = !lt_end(key);      // end <= key
+                        if ascending {
+                            let stack = if right == TNodeIndex::empty || end_ge_key { stack } else { stack.push_back(err(right)) };
+                            let stack = if key_lt_begin || end_ge_key { stack } else { stack.push_back(ok $ (key, value)) };
+                            let stack = if left == TNodeIndex::empty || key_lt_begin { stack } else { stack.push_back(err(left)) };
+                            continue $ stack
+                        } else {
+                            let stack = if left == TNodeIndex::empty || key_lt_begin { stack } else { stack.push_back(err(left)) };
+                            let stack = if key_lt_begin || end_ge_key { stack } else { stack.push_back(ok $ (key, value)) };
+                            let stack = if right == TNodeIndex::empty || end_ge_key { stack } else { stack.push_back(err(right)) };
+                            continue $ stack
+                        }
+                    )
+                }
+            )
+        );
+    }
+
+    _select_range: [kc: KeyCompare, Key kc = k] Option k -> Option k -> Bool -> TreapMap kc k v -> TreapMapIterator kc k v;
+    _select_range = |begin, end, ascending, treap| (
+        let kc = treap.@kc;
+        let lt_begin = match begin {
+            none() => |x| false,
+            some(begin) => |x| kc.compare(x, begin)
+        };
+        let lt_end   = match end {
+            none() => |x| true,
+            some(end) => |x| kc.compare(x, end)
+        };
+        TreapMapIterator {
+            treap: treap,
+            lt_begin: lt_begin,
+            lt_end: lt_end,
+            ascending: ascending,
+            stack: [err(treap.@root)]
+        }
+    );
+
+    // Converts a map into an iterator.
+    _to_iter: [kc: KeyCompare, Key kc = k] TreapMap kc k v -> TreapMapIterator kc k v;
+    _to_iter = |treap| treap._select_range(none(), none(), true);
+
+    _to_iter_dyn: TreapMap kc k v -> DynIterator k;
+    _to_iter_dyn = |treap| treap._to_array.to_iter.to_dyn;
+
+    // Converts a TreapMap into a string describing the hierarchy of nodes.
+    _debug_to_string: [k: ToString, v: ToString] TreapMap kc k v -> String;
+    _debug_to_string = |treap| (
+        let inner = fix $ |inner, indent, node, str: String| (
+            if node == TNodeIndex::empty { str };
+            let b = treap[node].iget;
+            let (prio, key, value, left, right) = (b.@prio, b.@key, b.@value, b.@left, b.@right);
+            let s_indent = Array::fill(indent, ' ').push_back('\0').from_bytes.as_ok;
+            let str: String = inner(indent + 2, left, str);
+            let str: String = str + s_indent + (prio, key.as_some, value.as_some).format("prio={} key={} value={}\n");
+            let str: String = inner(indent + 2, right, str);
+            str
+        );
+        inner(0, treap.@root, "")
+    );
+
+    // Converts an iterator to a TreapMap.
+    from_iter: [k: LessThan, i: Iterator, Item i = (k, v)] i -> TreapMap (KeyLessThan k) k v;
+    from_iter = |iter| (
+        iter.from_iter_kc(KeyLessThan{})
+    );
+
+    from_iter_kc_non_optimized: [kc: KeyCompare, Key kc = k, i: Iterator, Item i = (k, v)] kc -> i -> TreapMap kc k v;
+    from_iter_kc_non_optimized = |kc, iter| (
+        iter.fold(
+            TreapMap::make(kc), insert
+        )
+    );
+
+    // Converts an iterator to a TreapMap.
+    from_iter_kc: [kc: KeyCompare, Key kc = k, i: Iterator, Item i = (k, v)] kc -> i -> TreapMap kc k v;
+    from_iter_kc = |kc, iter| (
+        let treap = TreapMap::make(kc);
+        let (treap, arr) = iter.fold(
+            (treap, []), |kv, (treap, arr)|
+            let (treap, prio) = treap._generate_random_priority : (TreapMap kc k v, Priority);
+            (treap, arr.push_back((prio, kv)))
+        );
+        // sort by priority descending
+        let arr = arr.sort_by(|((prio0, kv0), (prio1, kv1))| prio0 > prio1);
+        arr.to_iter.fold(
+            treap, |(new_prio, new_key), treap|
+            treap._insert_to_leaf(new_prio, new_kv.@0, new_kv.@1, treap.@root, TNodeIndex::empty, 0_I8)
+        )
+    );
+
+    _insert_to_leaf: [kc: KeyCompare, Key kc = k] Priority -> k -> v -> TNodeIndex -> TNodeIndex -> I8 -> TreapMap kc k v -> TreapMap kc k v;
+    _insert_to_leaf = |new_prio, new_key, new_value, old_node, parent_node, dir, treap| (
+        if old_node == TNodeIndex::empty {
+            let (treap, new_node) = treap._make_branch(new_prio, new_key, new_value, TNodeIndex::empty, TNodeIndex::empty);
+            let treap = if parent_node == TNodeIndex::empty {
+                treap.set_root(new_node)
+            } else {
+                if dir > 0_I8 {
+                    treap[parent_node][^right].iset(new_node)
+                } else {
+                    treap[parent_node][^left].iset(new_node)
+                }
+            };
+            treap
+        };
+        let old = treap[old_node].iget;
+        let old_key = old.@key.as_some;
+        if treap.@kc.compare(old_key, new_key) { // old_key < new_key
+            treap._insert_to_leaf(new_prio, new_key, new_value, old.@right, old_node, 1_I8)
+        } else if treap.@kc.compare(new_key, old_key) { // new_key < old_key
+            treap._insert_to_leaf(new_prio, new_key, new_value, old.@left, old_node, -1_I8)
+        } else {    // replace key and value
+            let treap = treap[old_node].imod(|b| b.set_key(some $ new_key).set_value(some $ new_value));
+            treap
+        }
+    );
+}
+
+// Implementation of the `Map` trait.
+impl [kc: KeyCompare, Key kc = k] TreapMap kc k v: Map {
+    type MapKey (TreapMap kc k v) = k;
+    type MapValue (TreapMap kc k v) = v;
+    type MapIterator (TreapMap kc k v) = TreapMapIterator kc k v;
+
+    is_empty = TreapMap::_is_empty;
+    get_size = TreapMap::_get_size;
+    contains_key = TreapMap::_contains_key;
+    find = TreapMap::_find;
+    insert = TreapMap::_insert;
+    erase = TreapMap::_erase;
+    set = |key, opt_v, map| match opt_v { some(v) => map.insert(key, v), none() => map.erase(key) };
+    act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
+    to_iter = TreapMap::_to_iter;
+    to_array = TreapMap::_to_array;
+    //from_iter = TreapMap::_from_iter;
+}
+
+// Implementation of the `SortedMapIF` trait.
+impl [kc: KeyCompare, Key kc = k] TreapMap kc k v: SortedMapIF {
+    select_range = TreapMap::_select_range;
+}
