@@ -2,6 +2,7 @@
 module MapTests;
 
 import Random;
+import Minilib.Common.Common;
 import Minilib.Collection.Trait.Map;
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
@@ -163,6 +164,44 @@ test_get_size = |empty_map| (
     )
 );
 
+test_perf:
+    [map: Map, MapKey map = I64, MapValue map = String, Map::MapIterator map = iter, iter: Iterator, Item iter = (I64, String)]
+    map -> I64 -> TestCase;
+test_perf = |empty_map, n| (
+    make_test("test_perf") $ |_|
+    //let n = 1000000;
+    println("test_perf (n=" + n.to_string + ")").lift;;
+    let array = Iterator::range(0, n).map(|k| (k, k.to_string)).to_array;
+    let shuffled = array.reorder(shuffle(5432));
+    let (map, insert_time) = *consumed_time_while_io(do {
+        pure();;
+        pure $ shuffled.to_iter.fold(empty_map, Map::insert.uncurry)
+    }).lift;
+    println(" insert: " + insert_time.to_string + " seconds").lift;;
+    assert_equal("size", n, map.get_size);;
+    let (ans1, ans1_time) = *consumed_time_while_io(do {
+        pure();;
+        pure $ map.to_iter.Iterator::to_array
+    }).lift;
+    println(" to_iter.to_array: " + ans1_time.to_string + " seconds").lift;;
+    assert_equal("eq", ans1, array);;
+    let (ans2, ans2_time) = *consumed_time_while_io(do {
+        pure();;
+        pure $ map.to_array
+    }).lift;
+    println(" to_array: " + ans2_time.to_string + " seconds").lift;;
+    assert_equal("eq", ans2, array);;
+    let (map, erase_time) = *consumed_time_while_io(do {
+        pure();;
+        pure $ shuffled.to_iter.fold(
+            map, |(k, v)| erase(k)
+        )
+    }).lift;
+    println(" erase: " + erase_time.to_string + " seconds").lift;;
+    assert_equal("size", 0, map.get_size);;
+    pure()
+);
+
 map_tests:
     [map: Map, MapKey map = I64, MapValue map = String, Map::MapIterator map = iter, iter: Iterator, Item iter = (I64, String)]
     map -> TestCase;
@@ -172,7 +211,7 @@ map_tests = |empty_map| (
         test_to_array(empty_map),
         test_insert_erase(empty_map),
         test_get_size(empty_map),
-        //test_perf(empty_map, 1000000),
+        test_perf(empty_map, 1000000),
     ]
     .run_tests
 );
