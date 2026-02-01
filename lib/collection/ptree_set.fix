@@ -6,6 +6,9 @@
 // `PTreeSet` implements the `Set` and `SortedSet` trait.
 //  If you import this module, you should also import `Minilib.Collection.Trait`.
 //
+// `PTreeSet` manages elements as a node array.
+// If you modify the `PTreeSet`, make sure it is unique, otherwise the entire node array will be copied.
+//
 // `PTreeSet` is built upon [a Patricia Tree](https://en.wikipedia.org/wiki/Radix_tree).
 // In particular, I implemented the Patricia Tree with reference to the following paper:
 // [Chris Okasaki and Andy Gill, "Fast Mergeable Integer Maps"](https://web.archive.org/web/20150417234429/https://ittc.ku.edu/~andygill/papers/IntMap98.pdf).

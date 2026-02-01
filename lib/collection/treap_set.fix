@@ -1,10 +1,13 @@
-// `TreapSet` is a set that manages keys in sorted order.
+// `TreapSet` is a set that manages elements in sorted order.
 //
 // A treap is a randomized binary search tree.
-// Searches, insertions, and deletions have high probability of time complexity `O(log n)`.
+// The time complexity of a single search, insertion, or deletion is `O(log n)` with high probability.
 //
 // `TreapSet` implements the `Set` and `SortedSet` trait.
 //  If you import this module, you should also import `Minilib.Collection.Trait`.
+//
+// `TreapSet` manages elements as a node array.
+// If you modify the `TreapSet`, make sure it is unique, otherwise the entire node array will be copied.
 //
 // ## Benchmark Result
 // ```

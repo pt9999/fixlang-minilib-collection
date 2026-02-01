@@ -1,10 +1,13 @@
 // `PTreeMap` is a map that manages keys in sorted order.
 //
-// The keys of a `PTreeSet` can be of type `I64`, `I32`, `I16`, `I8`, `U64`,
+// The keys of a `PTreeMap` can be of type `I64`, `I32`, `I16`, `I8`, `U64`,
 // `U32`, `U16`, or `U8`. It's limited, but fast.
 //
 // `PTreeMap` implements the `Map` and `SortedMap` trait.
 //  If you import this module, you should also import `Minilib.Collection.Trait`.
+//
+// `PTreeMap` manages entries as a node array.
+// If you modify the `PTreeMap`, make sure it is unique, otherwise the entire node array will be copied.
 //
 // `PTreeMap` is built upon [a Patricia Tree](https://en.wikipedia.org/wiki/Radix_tree).
 // In particular, I implemented the Patricia Tree with reference to the following paper:
