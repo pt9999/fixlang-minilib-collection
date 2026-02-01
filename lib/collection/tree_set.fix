@@ -1,7 +1,7 @@
 // TreeSet is a set that manages elements in sorted order.
 //
-// `TreeSet` implements the `Set` and `SortedSet` trait, so if you use `TreeSet`,
-// you may also need to import `Minilib.Collection.Trait.Set` and `Minilib.Collection.Trait.SortedSet`.
+// `TreeSet` implements the `Set` and `SortedSet` trait.
+//  If you import this module, you should also import `Minilib.Collection.Trait`.
 //
 // The elements of a TreeSet must have a partial order,
 // and `less_than` is the comparison function for that partial order.
@@ -17,8 +17,7 @@
 module Minilib.Collection.TreeSet;
 
 import Minilib.Collection.Internal.RBTree;
-import Minilib.Collection.Trait.Set;
-import Minilib.Collection.Trait.SortedSet;
+import Minilib.Collection.Trait;
 
 namespace TreeSet {
     // A trait of the element. Currently `ToString` is required.

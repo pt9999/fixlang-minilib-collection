@@ -1,9 +1,9 @@
-// Tests for Minilib.Collection.Trait.Map
+// Tests for Minilib.Collection.Trait::Map
 module MapTests;
 
 import Random;
 import Minilib.Common.Common;
-import Minilib.Collection.Trait.Map;
+import Minilib.Collection.Trait;
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
@@ -15,7 +15,7 @@ test_to_iter:
 test_to_iter = |empty_map| (
     make_test("test_to_iter") $ |_|
     let iter = Iterator::range(0, 10).map(|i| (i, i.to_string));
-    let map = iter.fold(empty_map, |(k,v), map| map.insert(k, v));
+    let map = iter.fold(empty_map, insert);
     assert_equal("eq", iter.to_array, map.to_iter.Iterator::to_array);;
     pure()
 );
@@ -26,7 +26,7 @@ test_to_array:
 test_to_array = |empty_map| (
     make_test("test_to_array") $ |_|
     let iter = Iterator::range(0, 10).map(|i| (i, i.to_string));
-    let map = iter.fold(empty_map, |(k,v), map| map.insert(k, v));
+    let map = iter.fold(empty_map, insert);
     assert_equal("eq", iter.to_array, map.to_array);;
     pure()
 );
@@ -45,7 +45,7 @@ test_insert_erase_ok = |empty_map, (n, insert_reorder, erase_reorder)| (
     let keys_shuffled = keys_sorted.reorder(insert_reorder);
     let map = keys_shuffled.to_iter.fold(
         empty_map, |k, map|
-        map.insert(k, "value-1-" + k.to_string )
+        map.insert((k, "value-1-" + k.to_string ))
     );
 
     // assert that the size is same as keys
@@ -65,7 +65,7 @@ test_insert_erase_ok = |empty_map, (n, insert_reorder, erase_reorder)| (
     // change values
     let map = keys_shuffled.to_iter.fold(
         map, |k, map|
-        map.insert(k, "value-2-" + k.to_string )
+        map.insert((k, "value-2-" + k.to_string ))
     );
 
     // assert that the size is same as keys
@@ -138,7 +138,7 @@ test_get_size = |empty_map| (
             if op == 0 {
                 let size = if mask.@(k) { size } else { size + 1 };
                 let mask = mask.set(k, true);
-                let map = map.insert(k, v);
+                let map = map.insert((k, v));
                 assert_equal("insert", size, map.get_size);;
                 continue_m $ (random, mask, size, map, i + 1)
             } else if op == 1 {
@@ -175,7 +175,7 @@ test_perf = |empty_map, n| (
     let shuffled = array.reorder(shuffle(5432));
     let (map, insert_time) = *consumed_time_while_io(do {
         pure();;
-        pure $ shuffled.to_iter.fold(empty_map, Map::insert.uncurry)
+        pure $ shuffled.to_iter.fold(empty_map, insert)
     }).lift;
     println(" insert: " + insert_time.to_string + " seconds").lift;;
     assert_equal("size", n, map.get_size);;

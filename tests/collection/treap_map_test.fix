@@ -1,8 +1,7 @@
 module TreapMapTest;
 
 import Minilib.Collection.TreapMap;
-import Minilib.Collection.Trait.Map;
-import Minilib.Collection.Trait.SortedMap;
+import Minilib.Collection.Trait;
 import Minilib.Testing.UnitTest;
 
 import MapTests;

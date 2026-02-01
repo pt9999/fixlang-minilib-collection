@@ -1,8 +1,7 @@
-// Tests for Minilib.Collection.Trait.SortedSet
+// Tests for Minilib.Collection.Trait::SortedSet
 module SortedSetTests;
 
-import Minilib.Collection.Trait.Set;
-import Minilib.Collection.Trait.SortedSet;
+import Minilib.Collection.Trait;
 import Minilib.Testing.TestUtilArray;
 import Minilib.Testing.UnitTest;
 

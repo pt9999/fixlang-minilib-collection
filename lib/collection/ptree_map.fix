@@ -3,8 +3,8 @@
 // The keys of a `PTreeSet` can be of type `I64`, `I32`, `I16`, `I8`, `U64`,
 // `U32`, `U16`, or `U8`. It's limited, but fast.
 //
-// `PTreeMap` implements the `Map` and `SortedMap` trait, so if you import this module,
-// you should also import `Minilib.Collection.Trait.Map` and `Minilib.Collection.Trait.SortedMap`.
+// `PTreeMap` implements the `Map` and `SortedMap` trait.
+//  If you import this module, you should also import `Minilib.Collection.Trait`.
 //
 // `PTreeMap` is built upon [a Patricia Tree](https://en.wikipedia.org/wiki/Radix_tree).
 // In particular, I implemented the Patricia Tree with reference to the following paper:
@@ -13,8 +13,7 @@
 module Minilib.Collection.PTreeMap;
 
 import Minilib.Collection.Internal.PatTree;
-import Minilib.Collection.Trait.Map;
-import Minilib.Collection.Trait.SortedMap;
+import Minilib.Collection.Trait;
 import Minilib.Text.StringEx;
 
 // The trait of keys of a PTreeMap.
@@ -101,7 +100,7 @@ impl [k: PTreeMapKey] PTreeMap k v: Map {
     get_size = |map| map.@tree.get_size;
     contains_key = |k, map| map.@tree.contains_key(k._to_pattree_key);
     find = |k, map| map.@tree.find(k._to_pattree_key);
-    insert = |k, v, map| map.mod_tree(insert(k._to_pattree_key, v));
+    insert = |(k, v), map| map.mod_tree(insert((k._to_pattree_key, v)));
     erase = |k, map| map.mod_tree(erase(k._to_pattree_key));
     set = |k, opt_v, map| map.mod_tree(set(k._to_pattree_key, opt_v));
     act = |k, fun, map| map.act_tree(act(k._to_pattree_key, fun));

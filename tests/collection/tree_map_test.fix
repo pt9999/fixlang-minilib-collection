@@ -2,8 +2,7 @@ module TreeMapTest;
 
 import Random;
 import Minilib.Collection.TreeMap;
-import Minilib.Collection.Trait.Map;
-import Minilib.Collection.Trait.SortedMap;
+import Minilib.Collection.Trait;
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
@@ -38,7 +37,7 @@ test_find_range = (
     let keys_shuffled = keys_sorted.reorder(shuffle(345));
     let map = keys_shuffled.to_iter.fold(
         TreeMap::make(), |k, map|
-        map.insert(k, k*10)
+        map.insert((k, k*10))
     );
     let test_find_range_ok = |begin, end, expected| (
         let actual = map.find_range(begin, end).to_array;

@@ -1,7 +1,7 @@
 // TreeMap is a map that manages keys in sorted order.
 //
-// `TreeMap` implements the `Map` and `SortedMap` trait, so if you use `TreeMap`,
-// you may also need to import `Minilib.Collection.Trait.Map` and `Minilib.Collection.Trait.SortedMap`.
+// `TreeMap` implements the `Map` and `SortedMap` trait.
+//  If you import this module, you should also import `Minilib.Collection.Trait`.
 //
 // The keys of a TreeMap must have a partial order,
 // and `less_than` is the comparison function for that partial order.
@@ -17,8 +17,7 @@
 module Minilib.Collection.TreeMap;
 
 import Minilib.Collection.Internal.RBTree;
-import Minilib.Collection.Trait.Map;
-import Minilib.Collection.Trait.SortedMap;
+import Minilib.Collection.Trait;
 import Minilib.Text.StringEx;
 
 namespace TreeMap {
@@ -74,8 +73,8 @@ namespace TreeMap {
     // where the key `k1` is equivalent to `k`,
     // ie. `!less_than(k,k1) && !less_than(k1,k)` is true,
     // then `(k1,v1)` is replaced with `(k,v)`.
-    _insert: [k: TreeMapKey, v: TreeMapValue] k -> v -> TreeMap k v -> TreeMap k v;
-    _insert = |k, v, tm| (
+    _insert: [k: TreeMapKey, v: TreeMapValue] (k, v) -> TreeMap k v -> TreeMap k v;
+    _insert = |(k, v), tm| (
        tm._mod_root_and_size(insert_lt((k, v), tm.@entry_less_than))
     );
 
@@ -217,7 +216,7 @@ impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: Map {
     find = TreeMap::_find;
     insert = TreeMap::_insert;
     erase = TreeMap::_erase;
-    set = |key, opt_v, map| match opt_v { some(v) => map.insert(key, v), none() => map.erase(key) };
+    set = |key, opt_v, map| match opt_v { some(v) => map.insert((key, v)), none() => map.erase(key) };
     act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
     to_iter = TreeMap::_to_iter;
     to_array = TreeMap::_to_array;

@@ -12,10 +12,7 @@
 module Minilib.Collection.Internal.PatTree;
 //module Minilib.Collection.PatTree3;
 
-//import Minilib.Monad.Yield;
-import Minilib.Collection.Trait.Map;
-import Minilib.Collection.Trait.SortedMap;
-
+import Minilib.Collection.Trait;
 
 // The key type of Patricia Trees.
 type Key = U64;
@@ -247,8 +244,8 @@ namespace PTree {
     // * `new_key` - The key to insert.
     // * `new_value` - The value to insert.
     // * `tree` - A Patricia Tree.
-    _insert: Key -> a -> PTree a -> PTree a;
-    _insert = |new_key, new_value, tree| (
+    _insert: (Key, a) -> PTree a -> PTree a;
+    _insert = |(new_key, new_value), tree| (
         let root = tree.@_root;
         let (tree, root) = tree._insert_recursive(new_key, new_value, root);
         tree.set__root(root)
@@ -474,8 +471,10 @@ impl PTree a: Map {
     find = PTree::_find;
     insert = PTree::_insert;
     erase = PTree::_erase;
-    set = |key, opt_v, map| match opt_v { some(v) => map.insert(key, v), none() => map.erase(key) };
-    act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
+    //set = |key, opt_v, map| match opt_v { some(v) => map.insert((key, v)), none() => map.erase(key) };
+    //act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
+    set = Map::Default::default_set;
+    act = Map::Default::default_act;
     to_iter = PTree::_to_iter;
     to_array = PTree::_to_array;
     //from_iter = PTree::_from_iter;

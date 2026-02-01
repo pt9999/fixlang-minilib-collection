@@ -3,16 +3,13 @@
 // A treap is a type of random binary search tree.
 // Searches, insertions, and deletions have high probability of time complexity `O(log n)`.
 //
-// `TreapSet` implements the `Set` and `SortedSet` trait, so if you use `TreapSet`,
-// you may also need to import `Minilib.Collection.Trait.Set` and `Minilib.Collection.Trait.SortedSet`.
+// `TreapSet` implements the `Set` and `SortedSet` trait.
+//  If you import this module, you should also import `Minilib.Collection.Trait`.
 module Minilib.Collection.TreapSet;
 
 import Minilib.Common.Common;
 import Minilib.Collection.TreapMap;
-import Minilib.Collection.Trait.Set;
-import Minilib.Collection.Trait.SortedSet;
-import Minilib.Collection.Trait.Map;
-import Minilib.Collection.Trait.SortedMap;
+import Minilib.Collection.Trait;
 import Minilib.Text.StringEx;
 
 // The type of TreapSet.
@@ -42,7 +39,7 @@ impl [kc: KeyCompare, Key kc = k] TreapSet kc k: Set {
     type SetElem (TreapSet kc k) = k;
     type SetIterator (TreapSet kc k) = Std::Iterator::MapIterator (TreapMapIterator kc k ()) (k, ()) k;
 
-    insert = |k, set| set.mod_map(insert(k,()));
+    insert = |k, set| set.mod_map(insert((k,())));
     erase = |k, set| set.mod_map(erase(k));
     is_empty = |set| set.@map.is_empty;
     get_size = |set| set.@map.get_size;

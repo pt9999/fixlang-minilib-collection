@@ -3,13 +3,12 @@
 // A treap is a type of random binary search tree.
 // Searches, insertions, and deletions have high probability of time complexity `O(log n)`.
 //
-// `TreapMap` implements the `Map` and `SortedMap` trait, so if you use `TreapMap`,
-// you may also need to import `Minilib.Collection.Trait.Map` and `Minilib.Collection.Trait.SortedMap`.
+// `TreapMap` implements the `Map` and `SortedMap` trait.
+//  If you import this module, you should also import `Minilib.Collection.Trait`.
 module Minilib.Collection.TreapMap;
 
 import Minilib.Common.Common;
-import Minilib.Collection.Trait.Map;
-import Minilib.Collection.Trait.SortedMap;
+import Minilib.Collection.Trait;
 import Minilib.Text.StringEx;
 
 // The trait of key comparators.
@@ -199,8 +198,8 @@ namespace TreapMap {
     );
 
     // Inserts an entry into a map.
-    _insert: [kc: KeyCompare, Key kc = k] k -> v -> TreapMap kc k v -> TreapMap kc k v;
-    _insert = |key, value, treap| (
+    _insert: [kc: KeyCompare, Key kc = k] (k, v) -> TreapMap kc k v -> TreapMap kc k v;
+    _insert = |(key, value), treap| (
         let (treap, prio) = treap._generate_random_priority : (TreapMap kc k v, Priority);
         let (treap, root) = treap._insert_recursive(prio, key, value, treap.@root) : (TreapMap kc k v, TNodeIndex);
         treap.set_root(root)
@@ -455,7 +454,7 @@ impl [kc: KeyCompare, Key kc = k] TreapMap kc k v: Map {
     find = TreapMap::_find;
     insert = TreapMap::_insert;
     erase = TreapMap::_erase;
-    set = |key, opt_v, map| match opt_v { some(v) => map.insert(key, v), none() => map.erase(key) };
+    set = |key, opt_v, map| match opt_v { some(v) => map.insert((key, v)), none() => map.erase(key) };
     act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
     to_iter = TreapMap::_to_iter;
     to_array = TreapMap::_to_array;

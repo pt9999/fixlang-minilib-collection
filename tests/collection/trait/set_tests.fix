@@ -1,9 +1,9 @@
 
-// Tests for Minilib.Collection.Trait.Set
+// Tests for Minilib.Collection.Trait::Set
 module SetTests;
 
 import Random;
-import Minilib.Collection.Trait.Set;
+import Minilib.Collection.Trait;
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;

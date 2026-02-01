@@ -2,7 +2,7 @@ module TreapSetTest;
 
 import Minilib.Collection.TreapSet;
 import Minilib.Collection.TreapMap;
-import Minilib.Collection.Trait.Set;
+import Minilib.Collection.Trait;
 import Minilib.Text.StringEx;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;

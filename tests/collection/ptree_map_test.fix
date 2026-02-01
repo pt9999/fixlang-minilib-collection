@@ -1,8 +1,7 @@
 module PTreeMapTest;
 
 import Minilib.Collection.PTreeMap;
-import Minilib.Collection.Trait.Map;
-import Minilib.Collection.Trait.SortedMap;
+import Minilib.Collection.Trait;
 import Minilib.Testing.UnitTest;
 
 import MapTests;
@@ -12,8 +11,8 @@ test_key_type: [k: PTreeMapKey] PTreeMap k String -> String -> TestCase;
 test_key_type = |empty_map, name| (
     make_test("test_key_type(" + name + ")") $ |_|
     let map = empty_map;
-    let map = map.insert(_from_pattree_key(255_U64), "abc");
-    let map = map.insert(_from_pattree_key(128_U64), "def");
+    let map = map.insert((_from_pattree_key(255_U64), "abc"));
+    let map = map.insert((_from_pattree_key(128_U64), "def"));
     assert_equal("contains_key", true, map.contains_key(_from_pattree_key(255_U64)));;
     assert_equal("find", some("abc"), map.find(_from_pattree_key(255_U64)));;
     assert_equal("size", 2, map.get_size);;

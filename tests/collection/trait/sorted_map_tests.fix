@@ -1,8 +1,7 @@
-// Tests for Minilib.Collection.Trait.SortedMap
+// Tests for Minilib.Collection.Trait::SortedMap
 module SortedMapTests;
 
-import Minilib.Collection.Trait.Map;
-import Minilib.Collection.Trait.SortedMap;
+import Minilib.Collection.Trait;
 import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
 import Minilib.Trait.Traversable;
@@ -14,10 +13,7 @@ test_select_range = |empty_map| (
     let keys_sorted = Iterator::range(0, 30).to_array;
     let keyvalues_sorted = keys_sorted.Functor::map(|k| (k, (k*10).to_string));
     let keyvalues_shuffled = keyvalues_sorted.reorder(shuffle(345));
-    let map = keyvalues_shuffled.to_iter.fold(
-        empty_map, |(k, v), map|
-        map.insert(k, v)
-    );
+    let map = keyvalues_shuffled.to_iter.fold(empty_map, insert);
     make_table_test("test_select_range",
         [
             (some(3), some(6), [(3,"30"),(4,"40"),(5,"50")]),

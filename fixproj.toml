@@ -12,16 +12,13 @@ files = [
     "lib/collection/ordered_map.fix",
     "lib/collection/ptree_map.fix",
     "lib/collection/ptree_set.fix",
+    "lib/collection/trait.fix",
     "lib/collection/treap_map.fix",
     "lib/collection/treap_set.fix",
     "lib/collection/tree_map.fix",
     "lib/collection/tree_set.fix",
     "lib/collection/internal/pattree.fix",
     "lib/collection/internal/rbtree.fix",
-    "lib/collection/trait/set.fix",
-    "lib/collection/trait/map.fix",
-    "lib/collection/trait/sorted_set.fix",
-    "lib/collection/trait/sorted_map.fix",
 ]
 
 [build.test]
