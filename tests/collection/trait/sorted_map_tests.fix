@@ -16,15 +16,17 @@ test_select_range = |empty_map| (
     let map = keyvalues_shuffled.to_iter.fold(empty_map, insert);
     make_table_test("test_select_range",
         [
-            (some(3), some(6), [(3,"30"),(4,"40"),(5,"50")]),
-            (some(5), some(6), [(5,"50")]),
-            (some(5), some(5), []),
-            (some(-1), some(1), [(0,"0")]),
-            (some(29), some(31), [(29,"290")]),
-            (some(11), some(14), [(11,"110"), (12,"120"), (13,"130")]),
-            (some(28), none(), [(28,"280"), (29,"290")]),
-            (none(), some(2), [(0,"0"), (1,"10")]),
-            (none(), none(), keyvalues_sorted),
+            (included(3), excluded(6), [(3,"30"),(4,"40"),(5,"50")]),
+            (excluded(3), included(6), [(4,"40"),(5,"50"),(6,"60")]),
+            (included(5), excluded(6), [(5,"50")]),
+            (included(5), included(5), [(5,"50")]),
+            (included(5), excluded(5), []),
+            (included(-1), excluded(1), [(0,"0")]),
+            (excluded(28), excluded(31), [(29,"290")]),
+            (excluded(10), excluded(14), [(11,"110"), (12,"120"), (13,"130")]),
+            (included(28), unbound(), [(28,"280"), (29,"290")]),
+            (unbound(), excluded(2), [(0,"0"), (1,"10")]),
+            (unbound(), unbound(), keyvalues_sorted),
         ],
         |(begin, end, expected)|
         let actual = map.select_range(begin, end, true).to_array;

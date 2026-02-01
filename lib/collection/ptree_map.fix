@@ -110,10 +110,10 @@ impl [k: PTreeMapKey] PTreeMap k v: Map {
 }
 
 impl [k: PTreeMapKey] PTreeMap k v: SortedMapIF {
-    select_range = |begin, end, ascending, map| (
-        let begin = begin.Functor::map(_to_pattree_key);
-        let end = end.Functor::map(_to_pattree_key);
-        map.@tree.select_range(begin, end, ascending)
+    select_range = |lower_bound, upper_bound, ascending, map| (
+        let lower_bound = lower_bound.Functor::map(_to_pattree_key);
+        let upper_bound = upper_bound.Functor::map(_to_pattree_key);
+        map.@tree.select_range(lower_bound, upper_bound, ascending)
         .Iterator::map(_from_pattree_kv)
     );
 }

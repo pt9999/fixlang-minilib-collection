@@ -368,8 +368,8 @@ namespace PTree {
 
     type PTreeIterator a = unbox struct {
         tree: PTree a,
-        lt_begin: PKey -> Bool,
-        lt_end: PKey -> Bool,
+        lower_bound: Bound PKey,
+        upper_bound: Bound PKey,
         ascending: Bool,
         stack: Array PNodeIndex,
     };
@@ -377,7 +377,7 @@ namespace PTree {
     impl PTreeIterator a: Iterator {
         type Item (PTreeIterator a) = (PKey, a);
         advance = |iter| (
-            let PTreeIterator { tree: tree, lt_begin: lt_begin, lt_end: lt_end, ascending: ascending, stack: stack } = iter;
+            let PTreeIterator { tree: tree, lower_bound: lower_bound, upper_bound: upper_bound, ascending: ascending, stack: stack } = iter;
             let iter = iter.set_stack([]); // scapegoat
             loop(
                 stack, |stack|
@@ -386,9 +386,10 @@ namespace PTree {
                 let node = opt.as_some;
                 let stack = stack.pop_back;
                 if node == PNodeIndex::empty { continue $ stack };
+                let kc: KeyLessThan PKey = KeyCompare::empty;
                 match tree._get_node(node) {
                     leaf((key, value)) => (
-                        if !lt_begin(key) && lt_end(key) {
+                        if kc.above_lower_bound(lower_bound, key) && kc.below_upper_bound(upper_bound, key) {
                             break $ some $ (iter.set_stack(stack), (key, value))
                         };
                         continue $ stack
@@ -396,15 +397,15 @@ namespace PTree {
                     branch((prefix, m, left, right)) => (
                         // keys_of_left <= prefix
                         // prefix < keys_of_right
-                        let prefix_lt_begin = lt_begin(prefix);   // keys_of_left <= prefix < begin
-                        let end_ge_prefix = !lt_end(prefix);      // end <= prefix < keys_of_right
+                        let too_small = !kc.above_lower_bound(lower_bound, prefix);     // keys_of_left <= prefix < lower_bound
+                        let too_large = !kc.below_upper_bound(upper_bound, prefix);     // upper_bound <= prefix < keys_of_right
                         if ascending {
-                            let stack = if right == PNodeIndex::empty || end_ge_prefix { stack } else { stack.push_back(right) };
-                            let stack = if left == PNodeIndex::empty || prefix_lt_begin { stack } else { stack.push_back(left) };
+                            let stack = if right == PNodeIndex::empty || too_large { stack } else { stack.push_back(right) };
+                            let stack = if left == PNodeIndex::empty || too_small { stack } else { stack.push_back(left) };
                             continue $ stack
                         } else {
-                            let stack = if left == PNodeIndex::empty || prefix_lt_begin { stack } else { stack.push_back(left) };
-                            let stack = if right == PNodeIndex::empty || end_ge_prefix { stack } else { stack.push_back(right) };
+                            let stack = if left == PNodeIndex::empty || too_small { stack } else { stack.push_back(left) };
+                            let stack = if right == PNodeIndex::empty || too_large { stack } else { stack.push_back(right) };
                             continue $ stack
                         }
                     ),
@@ -414,20 +415,12 @@ namespace PTree {
         );
     }
 
-    _select_range: Option PKey -> Option PKey -> Bool -> PTree a -> PTreeIterator a;
-    _select_range = |begin, end, ascending, tree| (
-        let lt_begin = match begin {
-            none() => |x| false,
-            some(begin) => |x| x < begin,
-        };
-        let lt_end   = match end {
-            none() => |x| true,
-            some(end) => |x| x < end,
-        };
+    _select_range: Bound PKey -> Bound PKey -> Bool -> PTree a -> PTreeIterator a;
+    _select_range = |lower_bound, upper_bound, ascending, tree| (
         PTreeIterator {
             tree: tree,
-            lt_begin: lt_begin,
-            lt_end: lt_end,
+            lower_bound: lower_bound,
+            upper_bound: upper_bound,
             ascending: ascending,
             stack: [tree.@_root]
         }
@@ -435,7 +428,7 @@ namespace PTree {
 
     _to_iter: PTree a -> PTreeIterator a;
     _to_iter = |tree| (
-        tree._select_range(none(), none(), true)
+        tree._select_range(unbound(), unbound(), true)
     );
 
     // Shows the hierarchy of the tree. (for debugging)

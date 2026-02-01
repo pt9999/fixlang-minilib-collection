@@ -140,17 +140,12 @@ namespace TreeMap {
         iter.get_first.map(|entry| entry.@1)
     );
 
-    _select_range: [k: TreeMapKey, v: TreeMapValue] Option k -> Option k -> Bool -> TreeMap k v -> DynIterator (k, v);
-    _select_range = |begin, end, ascending, tm| (
+    _select_range: [k: TreeMapKey, v: TreeMapValue] Bound k -> Bound k -> Bool -> TreeMap k v -> DynIterator (k, v);
+    _select_range = |lower_bound, upper_bound, ascending, tm| (
         let less_than = tm.@key_less_than;
-        let lt_begin = match begin {
-            none() => |_| false,
-            some(begin) => |(ent_k,_)| less_than(ent_k, begin)
-        };
-        let lt_end   = match end {
-            none() => |_| true,
-            some(end) => |(ent_k,_)| less_than(ent_k, end)
-        };
+        let kc: KeyCompareWithFunc k = KeyCompareWithFunc::make(less_than);
+        let lt_begin = |(k, v)| !kc.above_lower_bound(lower_bound, k);
+        let lt_end   = |(k, v)| kc.below_upper_bound(upper_bound, k);
         if ascending { tm.@root.find_range(lt_begin, lt_end) }
         else { tm.@root.find_range_descending(lt_begin, lt_end) }
     );

@@ -96,17 +96,12 @@ namespace TreeSet {
         ts.@root.find(x, ts.@less_than).is_some
     );
 
-    _select_range: [a: TreeSetElem] Option a -> Option a -> Bool -> TreeSet a -> DynIterator a;
-    _select_range = |begin, end, ascending, ts| (
+    _select_range: [a: TreeSetElem] Bound a -> Bound a -> Bool -> TreeSet a -> DynIterator a;
+    _select_range = |lower_bound, upper_bound, ascending, ts| (
         let less_than = ts.@less_than;
-        let lt_begin = match begin {
-            none() => |x| false,
-            some(begin) => |x| less_than(x, begin)
-        };
-        let lt_end   = match end {
-            none() => |x| true,
-            some(end) => |x| less_than(x, end)
-        };
+        let kc: KeyCompareWithFunc a = KeyCompareWithFunc::make(less_than);
+        let lt_begin = |x| !kc.above_lower_bound(lower_bound, x);
+        let lt_end   = |x| kc.below_upper_bound(upper_bound, x);
         if ascending { ts.@root.find_range(lt_begin, lt_end) }
         else { ts.@root.find_range_descending(lt_begin, lt_end) }
     );

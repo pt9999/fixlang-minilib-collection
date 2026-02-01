@@ -17,15 +17,17 @@ test_select_range = |empty_set| (
     );
     make_table_test("test_select_range",
         [
-            (some(3), some(6), [3, 4, 5]),
-            (some(5), some(6), [5]),
-            (some(5), some(5), []),
-            (some(-1), some(1), [0]),
-            (some(29), some(31), [29]),
-            (some(11), some(14), [11, 12, 13]),
-            (some(28), none(), [28, 29]),
-            (none(), some(2), [0, 1]),
-            (none(), none(), keys_sorted),
+            (included(3), excluded(6), [3, 4, 5]),
+            (excluded(3), included(6), [4, 5, 6]),
+            (included(5), excluded(6), [5]),
+            (included(5), included(5), [5]),
+            (included(5), excluded(5), []),
+            (included(-1), excluded(1), [0]),
+            (excluded(28), excluded(31), [29]),
+            (excluded(10), excluded(14), [11, 12, 13]),
+            (included(28), unbound(), [28, 29]),
+            (unbound(), excluded(2), [0, 1]),
+            (unbound(), unbound(), keys_sorted),
         ],
         |(begin, end, expected)|
         let actual = set.select_range(begin, end, true).Iterator::to_array;

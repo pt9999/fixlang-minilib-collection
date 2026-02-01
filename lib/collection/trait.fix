@@ -1,4 +1,4 @@
-// Trait definitions and default implementations for collections.
+// Trait definitions and default implementations for `Minilib.Collection.*`.
 module Minilib.Collection.Trait;
 
 //---------------------------------------------------------------------------
@@ -72,25 +72,21 @@ trait SortedSet = Set + SortedSetIF;
 trait set: SortedSetIF {
     // Finds all elements in the specified range.
     //
-    // The lower and upper bound of the range is specified by `begin` and `end`.
-    // If `begin` is `none()`, the range has no lower bound.
-    // If `end` is `none()`, the range has no upper bound.
-    //
     // # Parameters
-    // - `begin`: the lower bound of the range (inclusive)
-    // - `end`: the upper bound of the range (exclusive)
+    // - `lower_bound`: the lower bound of the range
+    // - `upper_bound`: the upper bound of the range
     // - `ascending`: order of elements (true: ascending, false: descending)
     // - `set`: a set
     //
     // Example:
     // ```
-    // set.select_range(some(5), some(10), true)    // finds all elements where 5 <= key < 10 in ascending order
-    // set.select_range(some(5), some(10), false)   // finds all elements where 5 <= key < 10 in descending order
-    // set.select_range(none(), some(10), true)    // finds all elements where key < 10 in ascending order
-    // set.select_range(some(5), none(), true)    // finds all elements where 5 <= key in ascending order
-    // set.select_range(none(), none(), true)    // finds all elements in ascending order
+    // set.select_range(included(5), excluded(10), true)    // finds all elements where 5 <= key < 10 in ascending order
+    // set.select_range(excluded(5), included(10), false)   // finds all elements where 5 < key <= 10 in descending order
+    // set.select_range(unbound(), excluded(10), true)    // finds all elements where key < 10 in ascending order
+    // set.select_range(included(5), unbound(), true)    // finds all elements where 5 <= key in ascending order
+    // set.select_range(unbound(), unbound(), true)    // finds all elements in ascending order
     // ```
-    select_range: Option (SetElem set) -> Option (SetElem set) -> Bool -> set -> Set::SetIterator set;
+    select_range: Bound (SetElem set) -> Bound (SetElem set) -> Bool -> set -> Set::SetIterator set;
 }
 
 //---------------------------------------------------------------------------
@@ -216,25 +212,51 @@ trait SortedMap = Map + SortedMapIF;
 trait map: SortedMapIF {
     // Finds all entries in the specified range.
     //
-    // The lower and upper bound of the range is specified by `begin` and `end`.
-    // If `begin` is `none()`, the range has no lower bound.
-    // If `end` is `none()`, the range has no upper bound.
-    //
     // # Parameters
-    // - `begin`: the lower bound of the range (inclusive)
-    // - `end`: the upper bound of the range (exclusive)
+    // - `lower_bound`: the lower bound of the range
+    // - `upper_bound`: the upper bound of the range
     // - `ascending`: order of entries (true: ascending, false: descending)
     // - `map`: a map
     //
     // Example:
     // ```
-    // map.select_range(some(5), some(10), true)    // finds all entries where 5 <= key < 10 in ascending order
-    // map.select_range(some(5), some(10), false)   // finds all entries where 5 <= key < 10 in descending order
-    // map.select_range(none(), some(10), true)    // finds all entries where key < 10 in ascending order
-    // map.select_range(some(5), none(), true)    // finds all entries where 5 <= key in ascending order
-    // map.select_range(none(), none(), true)    // finds all entries in ascending order
+    // map.select_range(included(5), excluded(10), true)    // finds all entries where 5 <= key < 10 in ascending order
+    // map.select_range(excluded(5), included(10), false)   // finds all entries where 5 < key <= 10 in descending order
+    // map.select_range(unbound(), excluded(10), true)    // finds all entries where key < 10 in ascending order
+    // map.select_range(included(5), unbound(), true)    // finds all entries where 5 <= key in ascending order
+    // map.select_range(unbound(), unbound(), true)    // finds all entries in ascending order
     // ```
-    select_range: Option (MapKey map) -> Option (MapKey map) -> Bool -> map -> Map::MapIterator map;
+    select_range: Bound (MapKey map) -> Bound (MapKey map) -> Bool -> map -> Map::MapIterator map;
+}
+
+//---------------------------------------------------------------------------
+//  Bound
+//---------------------------------------------------------------------------
+
+// A bound of a range, used in `SortedMap` and `SortedSet`.
+type Bound a = unbox union {
+    // The bound is included
+    included: a,
+    // The bound is excluded
+    excluded: a,
+    // Unbound
+    unbound: ()
+};
+
+impl Bound: Functor {
+    map = |f, bound| match bound {
+        included(a) => included(f(a)),
+        excluded(a) => excluded(f(a)),
+        unbound() => unbound(),
+    };
+}
+
+impl [a: ToString] Bound a: ToString {
+    to_string = |bound| match bound {
+        included(a) => "included(" + a.to_string + ")",
+        excluded(a) => "excluded(" + a.to_string + ")",
+        unbound() => "unbound()",
+    };
 }
 
 //---------------------------------------------------------------------------
@@ -248,8 +270,40 @@ trait kc : KeyCompare {
 
     // An empty key comparator.
     empty: kc;
-    // Returns false iff the first key should appear after the second key.
+    // Returns false if and only if the first key should appear after the second key.
     compare : Key kc -> Key kc -> kc -> Bool;
+}
+
+namespace KeyCompare {
+    // Checks if the key is above the lower bound.
+    //
+    // # Parameters
+    // - `lower_bound`: a lower bound.
+    // - `key`: a key.
+    // - `kc`: a key comparator.
+    above_lower_bound: [kc: KeyCompare, Key kc = k] Bound k -> k -> kc -> Bool;
+    above_lower_bound = |lower_bound, key, kc| (
+        match lower_bound {
+            unbound() =>  true,
+            included(bound) => !kc.compare(key, bound),
+            excluded(bound) => kc.compare(bound, key),
+        }
+    );
+
+    // Checks if the key is below the uppwer bound.
+    //
+    // # Parameters
+    // - `upper_bound`: a upper bound.
+    // - `key`: a key.
+    // - `kc`: a key comparator.
+    below_upper_bound: [kc: KeyCompare, Key kc = k] Bound k -> k -> kc -> Bool;
+    below_upper_bound = |upper_bound, key, kc| (
+        match upper_bound {
+            unbound() => true,
+            included(bound) => !kc.compare(bound, key),
+            excluded(bound) => kc.compare(key, bound),
+        }
+    );
 }
 
 // The type of key comparators which compares keys with `LessThan::less_than`.
@@ -295,3 +349,4 @@ impl KeyCompareWithFunc k: KeyCompare {
     };
     compare = |x, y, kc| (kc.@compare)(x, y);
 }
+

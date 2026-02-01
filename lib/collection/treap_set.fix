@@ -1,6 +1,6 @@
-// TreapSet is a set that manages keys in sorted order.
+// `TreapSet` is a set that manages keys in sorted order.
 //
-// A treap is a type of random binary search tree.
+// A treap is a randomized binary search tree.
 // Searches, insertions, and deletions have high probability of time complexity `O(log n)`.
 //
 // `TreapSet` implements the `Set` and `SortedSet` trait.
@@ -51,7 +51,7 @@ impl [kc: KeyCompare, Key kc = k] TreapSet kc k: Set {
 
 // Implementation of the `SortedSetIF` trait.
 impl [kc: KeyCompare, Key kc = k] TreapSet kc k: SortedSetIF {
-    select_range = |begin, end, ascending, set| (
-        set.@map.select_range(begin, end, ascending).Iterator::map(|(k,_)| k)
+    select_range = |lower_bound, upper_bound, ascending, set| (
+        set.@map.select_range(lower_bound, upper_bound, ascending).Iterator::map(|(k,_)| k)
     );
 }

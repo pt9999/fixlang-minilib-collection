@@ -1,6 +1,6 @@
-// TreapMap is a map that manages keys in sorted order.
+// `TreapMap` is a map that manages keys in sorted order.
 //
-// A treap is a type of random binary search tree.
+// A treap is a randomized binary search tree.
 // Searches, insertions, and deletions have high probability of time complexity `O(log n)`.
 //
 // `TreapMap` implements the `Map` and `SortedMap` trait.
@@ -271,8 +271,8 @@ namespace TreapMap {
     // Type type of iterators which are returned by `to_iter`, `select_range`.
     type TreapMapIterator kc k v = unbox struct {
         treap: TreapMap kc k v,
-        lt_begin: k -> Bool,
-        lt_end: k -> Bool,
+        lower_bound: Bound k,
+        upper_bound: Bound k,
         ascending: Bool,
         stack: Array (Result TNodeIndex (k, v)),
     };
@@ -280,7 +280,7 @@ namespace TreapMap {
     impl [kc: KeyCompare, Key kc = k] TreapMapIterator kc k v: Iterator {
         type Item (TreapMapIterator kc k v) = (k, v);
         advance = |iter| (
-            let TreapMapIterator { treap: treap, lt_begin: lt_begin, lt_end: lt_end, ascending: ascending, stack: stack } = iter;
+            let TreapMapIterator { treap: treap, lower_bound: lower_bound, upper_bound: upper_bound, ascending: ascending, stack: stack } = iter;
             let iter = iter.set_stack([]); // scapegoat
             loop(
                 stack, |stack|
@@ -293,17 +293,18 @@ namespace TreapMap {
                     err(node) => (
                         if node == TNodeIndex::empty { continue $ stack };
                         let TNode{ prio:prio, key:key, value:value, left:left, right:right } = treap[node].iget;
-                        let key_lt_begin = lt_begin(key);   // key < begin
-                        let end_ge_key = !lt_end(key);      // end <= key
+                        let kc = treap.@kc;
+                        let too_small = !kc.above_lower_bound(lower_bound, key);
+                        let too_large = !kc.below_upper_bound(upper_bound, key);
                         if ascending {
-                            let stack = if right == TNodeIndex::empty || end_ge_key { stack } else { stack.push_back(err(right)) };
-                            let stack = if key_lt_begin || end_ge_key { stack } else { stack.push_back(ok $ (key, value)) };
-                            let stack = if left == TNodeIndex::empty || key_lt_begin { stack } else { stack.push_back(err(left)) };
+                            let stack = if right == TNodeIndex::empty || too_large { stack } else { stack.push_back(err(right)) };
+                            let stack = if too_small || too_large { stack } else { stack.push_back(ok $ (key, value)) };
+                            let stack = if left == TNodeIndex::empty || too_small { stack } else { stack.push_back(err(left)) };
                             continue $ stack
                         } else {
-                            let stack = if left == TNodeIndex::empty || key_lt_begin { stack } else { stack.push_back(err(left)) };
-                            let stack = if key_lt_begin || end_ge_key { stack } else { stack.push_back(ok $ (key, value)) };
-                            let stack = if right == TNodeIndex::empty || end_ge_key { stack } else { stack.push_back(err(right)) };
+                            let stack = if left == TNodeIndex::empty || too_small { stack } else { stack.push_back(err(left)) };
+                            let stack = if too_small || too_large { stack } else { stack.push_back(ok $ (key, value)) };
+                            let stack = if right == TNodeIndex::empty || too_large { stack } else { stack.push_back(err(right)) };
                             continue $ stack
                         }
                     )
@@ -312,21 +313,12 @@ namespace TreapMap {
         );
     }
 
-    _select_range: [kc: KeyCompare, Key kc = k] Option k -> Option k -> Bool -> TreapMap kc k v -> TreapMapIterator kc k v;
-    _select_range = |begin, end, ascending, treap| (
-        let kc = treap.@kc;
-        let lt_begin = match begin {
-            none() => |x| false,
-            some(begin) => |x| kc.compare(x, begin)
-        };
-        let lt_end   = match end {
-            none() => |x| true,
-            some(end) => |x| kc.compare(x, end)
-        };
+    _select_range: [kc: KeyCompare, Key kc = k] Bound k -> Bound k -> Bool -> TreapMap kc k v -> TreapMapIterator kc k v;
+    _select_range = |lower_bound, upper_bound, ascending, treap| (
         TreapMapIterator {
             treap: treap,
-            lt_begin: lt_begin,
-            lt_end: lt_end,
+            lower_bound: lower_bound,
+            upper_bound: upper_bound,
             ascending: ascending,
             stack: [err(treap.@root)]
         }
@@ -334,7 +326,7 @@ namespace TreapMap {
 
     // Converts a map into an iterator.
     _to_iter: [kc: KeyCompare, Key kc = k] TreapMap kc k v -> TreapMapIterator kc k v;
-    _to_iter = |treap| treap._select_range(none(), none(), true);
+    _to_iter = |treap| treap._select_range(unbound(), unbound(), true);
 
     _to_iter_dyn: TreapMap kc k v -> DynIterator k;
     _to_iter_dyn = |treap| treap._to_array.to_iter.to_dyn;

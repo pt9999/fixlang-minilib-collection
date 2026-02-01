@@ -100,10 +100,10 @@ impl [e: PTreeSetElem] PTreeSet e: Set {
 }
 
 impl [e: PTreeSetElem] PTreeSet e: SortedSetIF {
-    select_range = |begin, end, ascending, set| (
-        let begin = begin.Functor::map(_to_pattree_key);
-        let end = end.Functor::map(_to_pattree_key);
-        set.@tree.select_range(begin, end, ascending)
+    select_range = |lower_bound, upper_bound, ascending, set| (
+        let lower_bound = lower_bound.Functor::map(_to_pattree_key);
+        let upper_bound = upper_bound.Functor::map(_to_pattree_key);
+        set.@tree.select_range(lower_bound, upper_bound, ascending)
         .Iterator::map(_from_pattree_kv)
     );
 }
