@@ -269,3 +269,29 @@ impl [k: LessThan] KeyGreaterThan k: KeyCompare {
     empty = KeyGreaterThan {};
     compare = |x, y, kc| y < x;
 }
+
+// The type of key comparators which uses a function.
+//
+// The implementation of this type for `KeyCompare::empty` is a dummy; do not use it.
+type KeyCompareWithFunc k = unbox struct {
+    compare: k -> k -> Bool
+};
+
+namespace KeyCompareWithFunc {
+    // Creates a key comparator using the specified function.
+    //
+    // # Parameters
+    // - `compare`: a comparator function
+    make: (k -> k -> Bool) -> KeyCompareWithFunc k;
+    make = |compare| KeyCompareWithFunc {
+        compare: compare
+    };
+}
+
+impl KeyCompareWithFunc k: KeyCompare {
+    type Key (KeyCompareWithFunc k) = k;
+    empty = KeyCompareWithFunc { 
+        compare: |_, _| false      // dummy; do not use
+    };
+    compare = |x, y, kc| (kc.@compare)(x, y);
+}

@@ -33,14 +33,6 @@ impl IgnoreCase: KeyCompare {
     compare = |x, y, kc| x.to_lower < y.to_lower;
 }
 
-type WithFunc k = unbox struct { func: k -> k -> Bool };
-
-impl WithFunc k: KeyCompare {
-    type Key (WithFunc k) = k;
-    empty = WithFunc { func: |_, _| false };    // dummy
-    compare = |x, y, kc| (kc.@func)(x, y);
-}
-
 test_kc: TestCase;
 test_kc = (
     make_test("test_kc") $ |_|
@@ -54,8 +46,8 @@ test_kc = (
     let arr = ["Hello", "World", "Foo bar baz", "helllooo", "woooorld"];
     let t: TreapSet (IgnoreCase) String = arr.to_iter.fold(TreapSet::empty, insert);
     assert_equal("eq", ["Foo bar baz", "helllooo", "Hello", "woooorld", "World"], t.to_array);;
-    let kc: WithFunc I64 = WithFunc{ func: less_than };
-    let t: TreapSet (WithFunc I64) I64 = range(0, n).fold(TreapSet::make(kc), insert);
+    let kc: KeyCompareWithFunc I64 = KeyCompareWithFunc::make(less_than);
+    let t: TreapSet (KeyCompareWithFunc I64) I64 = range(0, n).fold(TreapSet::make(kc), insert);
     assert_equal("eq", [0, 1, 2, 3, 4], t.to_array);;
     pure()
 );
