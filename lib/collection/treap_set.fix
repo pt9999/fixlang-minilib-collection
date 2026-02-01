@@ -3,6 +3,8 @@
 // A treap is a randomized binary search tree.
 // The time complexity of a single search, insertion, or deletion is `O(log n)` with high probability.
 //
+// The order of elements can be changed using a key comparator that implements the `KeyCompare` trait.
+//
 // `TreapSet` implements the `Set` and `SortedSet` trait.
 //  If you import this module, you should also import `Minilib.Collection.Trait`.
 //

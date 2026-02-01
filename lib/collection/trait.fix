@@ -1,4 +1,20 @@
-// Trait definitions and default implementations for `Minilib.Collection.*`.
+// Trait definitions, default implementations of traits, and common type definitions for `Minilib.Collection.*`.
+//
+// The following traits are defined in this module.
+// - `Set`: Abstract sets.
+// - `SortedSet`: Sorted sets.
+// - `Map`: Abstract maps.
+// - `SortedMap`: Sorted maps.
+// - `KeyCompare`: Key comparators.
+//
+// Some trait methods have default implementations defined in `{trait-name}::Default` namespaces.
+//
+// The following types are defined in this module.
+// - `Bound`: A bound of a range, used in `SortedMap` and `SortedSet`.
+// - `KeyLessThan`: Key comparators which compares keys with `LessThan::less_than`.
+// - `KeyGreaterThan`: Key comparators which compares keys with `LessThan::less_than` in reversed order.
+// - `KeyCompareWithFunc`: Key comparators which uses a function.
+//
 module Minilib.Collection.Trait;
 
 //---------------------------------------------------------------------------
@@ -9,7 +25,7 @@ module Minilib.Collection.Trait;
 trait set: Set {
     // The type of the elements.
     type SetElem set;
-    // The type of the iterator returned by `to_iter`.
+    // The type of the iterator returned by `to_iter` and `SortedSetIF::select_range`.
     // `Item (SetIterator set)` should be equal to `SetElem set`.
     type SetIterator set;
 
@@ -99,7 +115,7 @@ trait map: Map {
     type MapKey map;
     // The type of the values.
     type MapValue map;
-    // The type of the iterator returned by `to_iter`.
+    // The type of the iterator returned by `to_iter` and `SortedMapIF::select_range`.
     // `Item (MapIterator map)` should be equal to `(MapKey map, MapValue map)`.
     type MapIterator map;
 

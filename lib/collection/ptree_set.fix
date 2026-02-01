@@ -1,7 +1,9 @@
-// `PTreeSet` is a set that manages keys in sorted order.
+// `PTreeSet` is a set that manages elements in sorted order.
 //
 // The elements of a `PTreeSet` can be of type `I64`, `I32`, `I16`, `I8`, `U64`,
 // `U32`, `U16`, or `U8`. It's limited, but fast.
+//
+// The order of elements is fixed to ascending order and cannot be changed to descending order.
 //
 // `PTreeSet` implements the `Set` and `SortedSet` trait.
 //  If you import this module, you should also import `Minilib.Collection.Trait`.

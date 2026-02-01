@@ -1,4 +1,4 @@
-## 0.x.x
+## 0.7.0
 ### ** BREAKING CHANGES **
 - These modules use traits such as `Set` and `Map` defined in `Minilib.Collection.Trait`.
   If you use these modules, you should also import `Minilib.Collection.Trait`.

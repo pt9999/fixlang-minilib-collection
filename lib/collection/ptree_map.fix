@@ -3,6 +3,8 @@
 // The keys of a `PTreeMap` can be of type `I64`, `I32`, `I16`, `I8`, `U64`,
 // `U32`, `U16`, or `U8`. It's limited, but fast.
 //
+// The order of keys is fixed to ascending order and cannot be changed to descending order.
+//
 // `PTreeMap` implements the `Map` and `SortedMap` trait.
 //  If you import this module, you should also import `Minilib.Collection.Trait`.
 //
