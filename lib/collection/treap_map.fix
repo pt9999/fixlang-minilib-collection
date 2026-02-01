@@ -5,13 +5,22 @@
 //
 // `TreapMap` implements the `Map` and `SortedMap` trait.
 //  If you import this module, you should also import `Minilib.Collection.Trait`.
+//
+// ## Benchmark Result
+// ```
+// test_perf (n=1000000)
+//  insert: 2.024756 seconds
+//  to_iter.to_array: 0.224507 seconds
+//  to_array: 0.259296 seconds
+//  erase: 1.731516 seconds
+// ```
 module Minilib.Collection.TreapMap;
 
 import Minilib.Common.Common;
 import Minilib.Collection.Trait;
 import Minilib.Text.StringEx;
 
-// (used internally) The priority type. 
+// (used internally) The priority type.
 type Priority = U64;
 
 // (used internally) The type of treap nodes.

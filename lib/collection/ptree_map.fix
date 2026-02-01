@@ -10,6 +10,14 @@
 // In particular, I implemented the Patricia Tree with reference to the following paper:
 // [Chris Okasaki and Andy Gill, "Fast Mergeable Integer Maps"](https://web.archive.org/web/20150417234429/https://ittc.ku.edu/~andygill/papers/IntMap98.pdf).
 //
+// ## Benchmark Result
+// ```
+// test_perf (n=1000000)
+//  insert: 1.553386 seconds
+//  to_iter.to_array: 0.245620 seconds
+//  to_array: 0.128088 seconds
+//  erase: 1.188062 seconds
+// ```
 module Minilib.Collection.PTreeMap;
 
 import Minilib.Collection.Internal.PatTree;

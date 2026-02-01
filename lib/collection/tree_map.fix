@@ -14,6 +14,15 @@
 //
 // If two keys `x` and `y` are incomparable, i.e. neither `less_than(x,y)` nor `less_than(y,x)` holds,
 // then `x` and `y` are considered equivalent.
+//
+// ## Benchmark Result
+// ```
+// test_perf (n=1000000)
+//  insert: 3.974124 seconds
+//  to_iter.to_array: 1.078280 seconds
+//  to_array: 0.099072 seconds
+//  erase: 9.535200 seconds
+// ```
 module Minilib.Collection.TreeMap;
 
 import Minilib.Collection.Internal.RBTree;

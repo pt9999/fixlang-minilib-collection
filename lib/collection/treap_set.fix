@@ -5,6 +5,15 @@
 //
 // `TreapSet` implements the `Set` and `SortedSet` trait.
 //  If you import this module, you should also import `Minilib.Collection.Trait`.
+//
+// ## Benchmark Result
+// ```
+// test_perf (n=1000000)
+//  insert: 1.365991 seconds
+//  to_iter.to_array: 0.176191 seconds
+//  to_array: 0.216342 seconds
+//  erase: 1.040427 seconds
+// ```
 module Minilib.Collection.TreapSet;
 
 import Minilib.Common.Common;
