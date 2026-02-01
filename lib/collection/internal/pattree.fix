@@ -15,22 +15,22 @@ module Minilib.Collection.Internal.PatTree;
 import Minilib.Collection.Trait;
 
 // The key type of Patricia Trees.
-type Key = U64;
+type PKey = U64;
 
 // The prefix type. (used internally)
 type Prefix = U64;
 
 // The mask type. (used internally)
-type Mask = U64;
+type PMask = U64;
 
 // The type of tree nodes.
 type PNode a = unbox union {
     // An empty node.
     empty: (),
     // A leaf node. (key, data)
-    leaf: (Key, a),
+    leaf: (PKey, a),
     // A branch node. (prefix, mask of the branching bit, left, right)
-    branch: (Prefix, Mask, PNodeIndex, PNodeIndex),
+    branch: (Prefix, PMask, PNodeIndex, PNodeIndex),
 };
 
 // The type of index of the node array.
@@ -81,7 +81,7 @@ namespace PTree {
         tree.mod__freelist(push_back(node)).mod__nodes(set(node, empty()))
     );
 
-    _make_branch: Prefix -> Mask -> PNodeIndex -> PNodeIndex -> PTree a -> (PTree a, PNodeIndex);
+    _make_branch: Prefix -> PMask -> PNodeIndex -> PNodeIndex -> PTree a -> (PTree a, PNodeIndex);
     _make_branch = |prefix, mask, left, right, tree| (
         tree._make_node(branch $ (prefix, mask, left, right))
     );
@@ -89,7 +89,7 @@ namespace PTree {
     _free_branch: PNodeIndex -> PTree a -> PTree a;
     _free_branch = _free_node;
 
-    _make_leaf: Key -> a -> PTree a -> (PTree a, PNodeIndex);
+    _make_leaf: PKey -> a -> PTree a -> (PTree a, PNodeIndex);
     _make_leaf = |key, value, tree| (
         let tree = tree.mod__size(add(1));  // size += 1 when leaf is added
         tree._make_node(leaf $ (key, value))
@@ -125,7 +125,7 @@ namespace PTree {
     _get_size: PTree a -> I64;
     _get_size = @_size;
 
-    _contains_key: Key -> PTree a -> Bool;
+    _contains_key: PKey -> PTree a -> Bool;
     _contains_key = |key, tree| (
         tree._find(key).is_some
     );
@@ -136,13 +136,13 @@ namespace PTree {
     //
     // * `key` - The key to find.
     // * `tree` - A Patricia Tree.
-    _find: Key -> PTree a -> Option a;
+    _find: PKey -> PTree a -> Option a;
     _find = |key, tree| (
         let root = tree.@_root;
         tree._find_recursive(key, root)
     );
 
-    _find_recursive: Key -> PNodeIndex -> PTree a -> Option a;
+    _find_recursive: PKey -> PNodeIndex -> PTree a -> Option a;
     _find_recursive = |key, node, tree| (
         match tree._get_node(node) {
             empty() => none(),
@@ -158,23 +158,23 @@ namespace PTree {
         }
     );
 
-    _zero_bit: Mask -> Key -> Bool;
+    _zero_bit: PMask -> PKey -> Bool;
     _zero_bit = |mask, key| (
         key.bit_and(mask) == 0_U64
     );
 
-    _mask: Mask -> Key -> Mask;
+    _mask: PMask -> PKey -> PMask;
     _mask = |m, key| (
         // big-endian mask
         key.bit_or(m - 1_U64).bit_and(bit_not(m))
     );
 
-    _match_prefix: Prefix -> Mask -> Key -> Bool;
+    _match_prefix: Prefix -> PMask -> PKey -> Bool;
     _match_prefix = |prefix, m, key| (
         key._mask(m) == prefix
     );
 
-    _join: Prefix -> Mask -> PNodeIndex -> Prefix -> Mask -> PNodeIndex -> PTree a -> (PTree a, PNodeIndex);
+    _join: Prefix -> PMask -> PNodeIndex -> Prefix -> PMask -> PNodeIndex -> PTree a -> (PTree a, PNodeIndex);
     _join = |p0, m0, t0, p1, m1, t1, tree| (
         let m = _branching_bit(p0, m0, p1, m1);
         if p0._zero_bit(m) {
@@ -184,12 +184,12 @@ namespace PTree {
         }
     );
 
-    _branching_bit: Prefix -> Mask -> Prefix -> Mask -> Mask;
+    _branching_bit: Prefix -> PMask -> Prefix -> PMask -> PMask;
     _branching_bit = |p0, m0, p1, m1| (
         _highest_bit(p0.bit_xor(p1), max(1_U64, 2_U64 * max(m0, m1)))
     );
 
-    _lowest_bit: Prefix -> Mask;
+    _lowest_bit: Prefix -> PMask;
     _lowest_bit = |x| x.bit_and(x.bit_not + 1_U64);
 
     // Returns a number which has only highest bit of `x` is set.
@@ -200,7 +200,7 @@ namespace PTree {
     // _highb(0x7abc_U64) == 0x4000_U64
     // _highb(0_U64) == 0_U64
     // ```
-    _highb: Prefix -> Mask;
+    _highb: Prefix -> PMask;
     _highb = |x| (
         let m = x._lowest_bit;
         if x == m { m };
@@ -208,7 +208,7 @@ namespace PTree {
     );
 
     // Same as `_highb`, but a bit fast.
-    _highbs: Prefix -> Mask;
+    _highbs: Prefix -> PMask;
     _highbs = |x| (
         let s = 0_U64;
         let hi = x.shift_right(32_U64);
@@ -226,7 +226,7 @@ namespace PTree {
         x.shift_left(s)
     );
 
-    _highest_bit: Prefix -> Mask -> Mask;
+    _highest_bit: Prefix -> PMask -> PMask;
     _highest_bit = |x, m| (
         // zero all bits below m
         let xx = x.bit_and((m - 1_U64).bit_not);
@@ -244,14 +244,14 @@ namespace PTree {
     // * `new_key` - The key to insert.
     // * `new_value` - The value to insert.
     // * `tree` - A Patricia Tree.
-    _insert: (Key, a) -> PTree a -> PTree a;
+    _insert: (PKey, a) -> PTree a -> PTree a;
     _insert = |(new_key, new_value), tree| (
         let root = tree.@_root;
         let (tree, root) = tree._insert_recursive(new_key, new_value, root);
         tree.set__root(root)
     );
 
-    _insert_recursive: Key -> a -> PNodeIndex -> PTree a -> (PTree a, PNodeIndex);
+    _insert_recursive: PKey -> a -> PNodeIndex -> PTree a -> (PTree a, PNodeIndex);
     _insert_recursive = |new_key, new_value, old_node, tree| (
         match tree._get_node(old_node) {
             empty() => (
@@ -299,14 +299,14 @@ namespace PTree {
     //
     // * `key` - The key to erase.
     // * `tree` - A Patricia Tree.
-    _erase: Key ->  PTree a -> PTree a;
+    _erase: PKey ->  PTree a -> PTree a;
     _erase = |key, tree| (
         let root = tree.@_root;
         let (tree, root) = tree._erase_recursive(key, root);
         tree.set__root(root)
     );
 
-    _erase_recursive: Key -> PNodeIndex -> PTree a -> (PTree a, PNodeIndex);
+    _erase_recursive: PKey -> PNodeIndex -> PTree a -> (PTree a, PNodeIndex);
     _erase_recursive = |new_key, node, tree| (
         match tree._get_node(node) {
             empty() => (tree, PNodeIndex::empty),
@@ -348,12 +348,12 @@ namespace PTree {
     // # Parameters
     //
     // * `tree` - A Patricia Tree.
-    _to_array: PTree a -> Array (Key, a);
+    _to_array: PTree a -> Array (PKey, a);
     _to_array = |tree| (
         tree._to_array_recursive(tree.@_root, [])
     );
 
-    _to_array_recursive: PNodeIndex -> Array (Key, a) -> PTree a -> Array (Key, a);
+    _to_array_recursive: PNodeIndex -> Array (PKey, a) -> PTree a -> Array (PKey, a);
     _to_array_recursive = |node, arr, tree| (
         match tree._get_node(node) {
             leaf((key, value)) => arr.push_back((key, value)),
@@ -368,14 +368,14 @@ namespace PTree {
 
     type PTreeIterator a = unbox struct {
         tree: PTree a,
-        lt_begin: Key -> Bool,
-        lt_end: Key -> Bool,
+        lt_begin: PKey -> Bool,
+        lt_end: PKey -> Bool,
         ascending: Bool,
         stack: Array PNodeIndex,
     };
 
     impl PTreeIterator a: Iterator {
-        type Item (PTreeIterator a) = (Key, a);
+        type Item (PTreeIterator a) = (PKey, a);
         advance = |iter| (
             let PTreeIterator { tree: tree, lt_begin: lt_begin, lt_end: lt_end, ascending: ascending, stack: stack } = iter;
             let iter = iter.set_stack([]); // scapegoat
@@ -414,7 +414,7 @@ namespace PTree {
         );
     }
 
-    _select_range: Option Key -> Option Key -> Bool -> PTree a -> PTreeIterator a;
+    _select_range: Option PKey -> Option PKey -> Bool -> PTree a -> PTreeIterator a;
     _select_range = |begin, end, ascending, tree| (
         let lt_begin = match begin {
             none() => |x| false,
@@ -461,7 +461,7 @@ namespace PTree {
 } // namespace PTree
 
 impl PTree a: Map {
-    type MapKey (PTree a) = Key;
+    type MapKey (PTree a) = PKey;
     type MapValue (PTree a) = a;
     type MapIterator (PTree a) = PTreeIterator a;
 

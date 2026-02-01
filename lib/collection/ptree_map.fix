@@ -19,14 +19,14 @@ import Minilib.Text.StringEx;
 // The trait of keys of a PTreeMap.
 trait k : PTreeMapKey {
     // Converts from `k` to an internal key.
-    _to_pattree_key: k -> PatTree::Key;
+    _to_pattree_key: k -> PatTree::PKey;
     // Converts from an internal key to `k`.
-    _from_pattree_key: PatTree::Key -> k;
+    _from_pattree_key: PatTree::PKey -> k;
 }
 
 namespace PTreeMapKey {
-    // Converts from `(PatTree::Key, v)` to `(k, v)`.
-    _from_pattree_kv: [k : PTreeMapKey] (PatTree::Key, v) -> (k, v);
+    // Converts from `(PatTree::PKey, v)` to `(k, v)`.
+    _from_pattree_kv: [k : PTreeMapKey] (PatTree::PKey, v) -> (k, v);
     _from_pattree_kv = |(key, v)| (key._from_pattree_key, v);
 }
 
@@ -94,7 +94,7 @@ empty = PTreeMap { tree: empty };
 impl [k: PTreeMapKey] PTreeMap k v: Map {
     type MapKey (PTreeMap k v) = k;
     type MapValue (PTreeMap k v) = v;
-    type MapIterator (PTreeMap k v) = Std::Iterator::MapIterator (PTreeIterator v) (PatTree::Key, v) (k, v);
+    type MapIterator (PTreeMap k v) = Std::Iterator::MapIterator (PTreeIterator v) (PatTree::PKey, v) (k, v);
 
     is_empty = |map| map.@tree.is_empty;
     get_size = |map| map.@tree.get_size;

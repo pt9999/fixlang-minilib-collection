@@ -19,14 +19,14 @@ import Minilib.Text.StringEx;
 // The trait of elements of a PTreeSet.
 trait e : PTreeSetElem {
     // Converts from `e` to an internal key.
-    _to_pattree_key: e -> PatTree::Key;
+    _to_pattree_key: e -> PatTree::PKey;
     // Converts from an internal key to `e`.
-    _from_pattree_key: PatTree::Key -> e;
+    _from_pattree_key: PatTree::PKey -> e;
 }
 
 namespace PTreeSetElem {
-    // Converts from `(PatTree::Key, v)` to `e`.
-    _from_pattree_kv: [e : PTreeSetElem] (PatTree::Key, v) -> e;
+    // Converts from `(PatTree::PKey, v)` to `e`.
+    _from_pattree_kv: [e : PTreeSetElem] (PatTree::PKey, v) -> e;
     _from_pattree_kv = |(key, v)| key._from_pattree_key;
 }
 
@@ -87,7 +87,7 @@ empty = PTreeSet { tree: empty };
 
 impl [e: PTreeSetElem] PTreeSet e: Set {
     type SetElem (PTreeSet e) = e;
-    type SetIterator (PTreeSet e) = Std::Iterator::MapIterator (PTreeIterator ()) (PatTree::Key, ()) e;
+    type SetIterator (PTreeSet e) = Std::Iterator::MapIterator (PTreeIterator ()) (PatTree::PKey, ()) e;
 
     is_empty = |set| set.@tree.is_empty;
     get_size = |set| set.@tree.get_size;

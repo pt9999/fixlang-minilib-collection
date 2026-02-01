@@ -11,37 +11,6 @@ import Minilib.Common.Common;
 import Minilib.Collection.Trait;
 import Minilib.Text.StringEx;
 
-// The trait of key comparators.
-trait kc : KeyCompare {
-    // The type of keys.
-    type Key kc;
-
-    // An empty key comparator.
-    empty: kc;
-    // Returns false iff the first key should appear after the second key.
-    compare : Key kc -> Key kc -> kc -> Bool;
-}
-
-// The type of key comparators which compares keys with `LessThan::less_than`.
-type KeyLessThan k = unbox struct {};
-
-impl [k: LessThan] KeyLessThan k: KeyCompare {
-    type Key (KeyLessThan k) = k;
-    empty = KeyLessThan {};
-    compare = |x, y, kc| x < y;
-}
-
-// The type of key comparators which compares keys with `LessThan::less_than` in reversed order.
-type KeyGreaterThan k = unbox struct {};
-
-impl [k: LessThan] KeyGreaterThan k: KeyCompare {
-    type Key (KeyGreaterThan k) = k;
-    empty = KeyGreaterThan {};
-    compare = |x, y, kc| y < x;
-}
-
-type WithValue v kc = unbox struct { kc: kc };
-
 // (used internally) The priority type. 
 type Priority = U64;
 
