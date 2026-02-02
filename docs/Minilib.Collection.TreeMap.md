@@ -1,40 +1,43 @@
 # Minilib.Collection.TreeMap
 
-Defined in minilib-collection@0.6.5
+Defined in minilib-collection@0.7.0-beta1
 
 TreeMap is a map that manages keys in sorted order.
+
+`TreeMap` implements the `Map` and `SortedMap` trait.
+ If you import this module, you should also import `Minilib.Collection.Trait`.
+
+The keys of a TreeMap must have a partial order,
+and `less_than` is the comparison function for that partial order.
+
+NOTE: `less_than()` function must meet following conditions.
+- Irreflexivity: for all `x`, `less_than(x,x)` must be false.
+- Asymmetry:     for all `x, y`, if `less_than(x,y)` is true, then `less_than(y,x)` must be false.
+- Transitivity:  for all `x, y, z`, if `less_than(x,y)` is true and `less_than(y,z)` is true,
+                 then `less_than(x,z)` must be true.
+
+If two keys `x` and `y` are incomparable, i.e. neither `less_than(x,y)` nor `less_than(y,x)` holds,
+then `x` and `y` are considered equivalent.
+
+## Benchmark Result
+
+```
+test_perf (n=1000000)
+ insert: 3.974124 seconds
+ to_iter.to_array: 1.078280 seconds
+ to_array: 0.099072 seconds
+ erase: 9.535200 seconds
+```
 
 ## Values
 
 ### namespace Minilib.Collection.TreeMap::TreeMap
 
-#### contains_key
-
-Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] k -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Bool`
-
-Checks whether a TreeMap contains a key.
-
-#### erase
-
-Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] k -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v`
-
-Erases an entry from a TreeMap.
-For example, `tm.erase(k)` removes an entry `(k,v)` from `tm`.
-
-NOTE: If `tm` contains an entry `(k1,v1)`
-where the key `k1` is equivalent to `k`,
-ie. `!less_than(k,k1) && !less_than(k1,k)` is true,
-then `(k1,v1)` is removed.
-
-#### find
-
-Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] k -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Option v`
-
-Finds an element from a TreeMap.
-
 #### find_range
 
 Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] k -> k -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator::DynIterator (k, v)`
+
+Deprecated: Use `select_range`.
 
 `tm.find_range(begin, end)` finds all entries `(k,v)`
 where `!less_than(k, begin) && less_than(k, end)` is true.
@@ -61,31 +64,6 @@ Type: `[it : Std::Iterator, k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey,
 
 Converts an iterator of key-value pairs into a TreeMap using specified ordering.
 
-#### get_size
-
-Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::I64`
-
-Gets the number of entries.
-The time complexity of this function is O(1).
-
-#### insert
-
-Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] k -> v -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v`
-
-Inserts an entry into a TreeMap.
-For example, `tm.insert(k, v)` inserts an entry `(k,v)` into `tm`.
-
-NOTE: If `tm` already contains an entry `(k1,v1)`
-where the key `k1` is equivalent to `k`,
-ie. `!less_than(k,k1) && !less_than(k1,k)` is true,
-then `(k1,v1)` is replaced with `(k,v)`.
-
-#### is_empty
-
-Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Bool`
-
-Checks whether a TreeMap is empty.
-
 #### keys
 
 Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator::DynIterator k`
@@ -105,18 +83,6 @@ Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collect
 `TreeMap::make_lt(less_than)` creates an empty `TreeMap` using specified ordering.
 NOTE: `less_than` function must meet specific conditions. For details, see documentation of
 [`RBTree`](./rbtree.md).
-
-#### to_array
-
-Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Array (k, v)`
-
-Converts a TreeMap into an array of key-value pairs in ascending order of keys.
-
-#### to_iter
-
-Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator::DynIterator (k, v)`
-
-Converts a TreeMap into an iterator of key-value pairs in ascending order of keys.
 
 #### upsert
 
@@ -142,7 +108,7 @@ Defined as: `type TreeMap k v = unbox struct { ...fields... }`
 
 ##### field `root`
 
-Type: `Minilib.Collection.RBTree::RBNode::RBNode (k, v)`
+Type: `Minilib.Collection.Internal.RBTree::RBNode::RBNode (k, v)`
 
 ##### field `size`
 
@@ -173,5 +139,9 @@ Kind: `*`
 A trait of the value. Currently `ToString` is required.
 
 ## Trait implementations
+
+### impl `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v : Minilib.Collection.Trait::Map`
+
+### impl `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v : Minilib.Collection.Trait::SortedMapIF`
 
 ### impl `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] Minilib.Collection.TreeMap::TreeMap::TreeMap k v : Std::ToString`
