@@ -9,6 +9,132 @@ import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
 import Minilib.Trait.Traversable;
 
+test_is_empty:
+    [map: Map, MapKey map = I64, MapValue map = String]
+    map -> TestCase;
+test_is_empty = |empty_map| (
+    make_test("test_is_empty") $ |_|
+    let map = empty_map;
+    assert_true("empty", map.is_empty);;
+    let map = map.insert((1, "a"));
+    assert_false("not empty", map.is_empty)
+);
+
+test_get_size:
+    [map: Map, MapKey map = I64, MapValue map = String]
+    map -> TestCase;
+test_get_size = |empty_map| (
+    make_test("test_get_size") $ |_|
+    let map = empty_map;
+    assert_equal("0", 0, map.get_size);;
+    let map = map.insert((1, "a"));
+    assert_equal("1", 1, map.get_size)
+);
+
+test_contains_key:
+    [map: Map, MapKey map = I64, MapValue map = String]
+    map -> TestCase;
+test_contains_key = |empty_map| (
+    make_test("test_contains_key") $ |_|
+    let map = empty_map;
+    assert_false("not contains_key", map.contains_key(1));;
+    let map = map.insert((1, "a"));
+    assert_true("contains_key", map.contains_key(1));;
+    assert_false("not contains_key 2", map.contains_key(2))
+);
+
+test_find:
+    [map: Map, MapKey map = I64, MapValue map = String]
+    map -> TestCase;
+test_find = |empty_map| (
+    make_test("test_find") $ |_|
+    let map = empty_map;
+    assert_equal("find 1", none(), map.find(1));;
+    let map = map.insert((1, "a"));
+    assert_equal("find 1", some("a"), map.find(1));;
+    assert_equal("find 2", none(), map.find(2))
+);
+
+test_insert:
+    [map: Map, MapKey map = I64, MapValue map = String]
+    map -> TestCase;
+test_insert = |empty_map| (
+    make_test("test_insert") $ |_|
+    let map = empty_map;
+    let map = map.insert((42, "a"));
+    let map = map.insert((42, "b"));
+    assert_equal("1", 1, map.get_size);;
+    assert_equal("find 42", some("b"), map.find(42));;
+    assert_equal("find 43", none(), map.find(43));;
+    let map = map.insert((43, "c"));
+    let map = map.insert((43, "d"));
+    let map = map.insert((42, "e"));
+    assert_equal("2", 2, map.get_size);;
+    assert_equal("find 42", some("e"), map.find(42));;
+    assert_equal("find 43", some("d"), map.find(43))
+);
+
+test_erase:
+    [map: Map, MapKey map = I64, MapValue map = String]
+    map -> TestCase;
+test_erase = |empty_map| (
+    make_test("test_erase") $ |_|
+    let map = empty_map;
+    let map = map.erase(42);
+    assert_equal("0", 0, map.get_size);;
+    assert_equal("find 42", none(), map.find(42));;
+    assert_equal("find 43", none(), map.find(43));;
+    let map = map.insert((42, "a"));
+    let map = map.insert((42, "b"));
+    let map = map.insert((43, "c"));
+    assert_equal("2", 2, map.get_size);;
+    assert_equal("find 42", some("b"), map.find(42));;
+    assert_equal("find 43", some("c"), map.find(43));;
+    let map = map.erase(42);
+    let map = map.erase(42);
+    assert_equal("1", 1, map.get_size);;
+    assert_equal("find 42", none(), map.find(42));;
+    assert_equal("find 43", some("c"), map.find(43))
+);
+
+test_set:
+    [map: Map, MapKey map = I64, MapValue map = String]
+    map -> TestCase;
+test_set = |empty_map| (
+    make_test("test_set") $ |_|
+    let map = empty_map;
+    let map = map.Map::set(42, some("a"));
+    assert_equal("1", 1, map.get_size);;
+    assert_equal("find 42", some("a"), map.find(42));;
+    let map = map.Map::set(42, some("b"));
+    assert_equal("1", 1, map.get_size);;
+    assert_equal("find 42", some("b"), map.find(42));;
+    let map = map.Map::set(42, none());
+    assert_equal("0", 0, map.get_size);;
+    assert_equal("find 42", none(), map.find(42))
+);
+
+store: [f: Functor, map: Map] MapKey map -> map ->
+ (Option (MapValue map) -> f (Option (MapValue map))) -> f map;
+store = |k, map, f|  map.act(k, f);
+
+test_act:
+    [map: Map, MapKey map = I64, MapValue map = String]
+    map -> TestCase;
+test_act = |empty_map| (
+    make_test("test_act") $ |_|
+    let map = empty_map;
+    let map = map.store(42).iset(some("a"));
+    assert_equal("size 1", 1, map.get_size);;
+    assert_equal("find 42", some("a"), map.find(42));;
+    assert_equal("iget 42", some("a"), map.store(42).iget);;
+    let map = map.store(42).imod(Functor::map(concat("b")));
+    assert_equal("iget 42", some("ab"), map.store(42).iget);;
+    let map = map.store(42).iset(none());
+    assert_equal("size 0", 0, map.get_size);;
+    assert_true("empty", map.is_empty)
+);
+
 test_to_iter:
     [map: Map, MapKey map = I64, MapValue map = String, Map::MapIterator map = iter, iter: Iterator, Item iter = (I64, String)]
     map -> TestCase;
@@ -96,10 +222,10 @@ test_insert_erase_ok = |empty_map, (n, insert_reorder, erase_reorder)| (
     pure()      // success
 );
 
-test_insert_erase:
+test_insert_erase_batch:
     [map: Map, MapKey map = I64, MapValue map = String]
     map -> TestCase;
-test_insert_erase = |empty_map| (
+test_insert_erase_batch = |empty_map| (
     do {
         let n = 30;
         let insert_reorder = *[skip(15), ascending(), descending(), shuffle(123)];
@@ -109,12 +235,12 @@ test_insert_erase = |empty_map| (
 );
 
 
-test_get_size:
+test_get_size_batch:
     [map: Map, MapKey map = I64, MapValue map = String]
     map -> TestCase;
-test_get_size = |empty_map| (
+test_get_size_batch = |empty_map| (
     make_table_test(
-        "test_get_size",
+        "test_get_size_batch",
         [
             (1234, 100, 3),
             (1235, 100, 10),
@@ -164,6 +290,31 @@ test_get_size = |empty_map| (
     )
 );
 
+test_large_keys_batch:
+    [map: Map, MapKey map = I64, MapValue map = String]
+    map -> TestCase;
+test_large_keys_batch = |empty_map| (
+    make_table_test(
+        "test_large_keys_batch",
+        [
+            (12345, 100),
+            (12346, 200),
+        ],
+        |(seed, n)|
+        let random = Random::init_by_seed(seed.to_U64);
+        let (random, keys) = random.generate_array(n, generate_U64 >> Functor::map(to_I64));
+        let keys_sorted = keys.sort.dedup;
+        let keys_shuffled =  keys_sorted.reorder(shuffle(seed * 10 + 1));
+        let map = keys_shuffled.to_iter.fold(
+            empty_map, |key, map|
+            map.insert((key, key.to_string))
+        );
+        let expected = keys_sorted.to_iter.Iterator::map(|key| (key, key.to_string)).to_array;
+        let actual = map.to_array;
+        assert_equal("eq", expected, actual)
+    )
+);
+
 test_perf:
     [map: Map, MapKey map = I64, MapValue map = String, Map::MapIterator map = iter, iter: Iterator, Item iter = (I64, String)]
     map -> I64 -> TestCase;
@@ -207,10 +358,19 @@ map_tests:
     map -> TestCase;
 map_tests = |empty_map| (
     [
+        test_is_empty(empty_map),
+        test_get_size(empty_map),
+        test_contains_key(empty_map),
+        test_find(empty_map),
+        test_insert(empty_map),
+        test_erase(empty_map),
+        test_set(empty_map),
+        test_act(empty_map),
         test_to_iter(empty_map),
         test_to_array(empty_map),
-        test_insert_erase(empty_map),
-        test_get_size(empty_map),
+        test_insert_erase_batch(empty_map),
+        test_get_size_batch(empty_map),
+        test_large_keys_batch(empty_map),
         test_perf(empty_map, 1000000),
     ]
     .run_tests

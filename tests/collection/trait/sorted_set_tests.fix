@@ -1,6 +1,7 @@
 // Tests for Minilib.Collection.Trait::SortedSet
 module SortedSetTests;
 
+import Random;
 import Minilib.Collection.Trait;
 import Minilib.Testing.TestUtilArray;
 import Minilib.Testing.UnitTest;
@@ -38,12 +39,60 @@ test_select_range = |empty_set| (
     )
 );
 
+test_select_range_random:
+    [set: SortedSet, SetElem set = I64, SetIterator set = iter, iter: Iterator, Item iter = I64]
+    set ->  TestCase;
+test_select_range_random = |empty_set| (
+    make_table_test("test_select_range_random",
+        [
+            (22347, 100),
+            (22348, 200),
+        ],
+        |(seed, n)|
+        let random = Random::init_by_seed(seed.to_U64);
+        let (random, elements) = random.generate_array(n, generate_U64 >> Functor::map(to_I64));
+        let elements_sorted = elements.sort.dedup;
+        let set = elements.to_iter.fold(empty_set, insert);
+        range(0, 100).fold_m(
+            random, |_, random|
+            let (random, lb_type) = random.generate_U64.Functor::map(to_I64);
+            let (random, lower_bound) = random.generate_U64.Functor::map(to_I64);
+            let (random, ub_type) = random.generate_U64.Functor::map(to_I64);
+            let (random, upper_bound) = random.generate_U64.Functor::map(to_I64);
+            let make_bound = |type_, bound| if type_ % 3 == 0 { unbound() }
+            else if type_ % 3 == 1 { included(bound) }
+            else { excluded(bound) };
+            let lower_bound = make_bound(lb_type, lower_bound);
+            let upper_bound = make_bound(lb_type, upper_bound);
+            let in_range = |e| (
+                let lb_ok = match lower_bound {
+                    unbound() => true,
+                    included(bound) => bound <= e,
+                    excluded(bound) => bound < e,
+                };
+                let ub_ok = match upper_bound {
+                    unbound() => true,
+                    included(bound) => e <= bound,
+                    excluded(bound) => e < bound,
+                };
+                lb_ok && ub_ok
+            );
+            let expected: Array I64 = elements_sorted.to_iter.filter(in_range).to_array;
+            let actual: Array I64 = set.select_range(lower_bound, upper_bound, true).to_array;
+            //eval debug_eprintln("(lower_bound, upper_bound, expected)=" + (lower_bound, upper_bound, expected).to_string);
+            assert_equal("eq", expected, actual);;
+            pure $ random
+        ).forget
+    )
+);
+
 sorted_set_tests:
     [set: SortedSet, SetElem set = I64, SetIterator set = iter, iter: Iterator, Item iter = I64]
     set -> TestCase;
 sorted_set_tests = |empty_set| (
     [
         test_select_range(empty_set),
+        test_select_range_random(empty_set),
     ]
     .run_tests
 );

@@ -9,6 +9,70 @@ import Minilib.Testing.UnitTest;
 import Minilib.Testing.TestUtilArray;
 import Minilib.Trait.Traversable;
 
+test_is_empty:
+    [set: Set, SetElem set = I64]
+    set ->  TestCase;
+test_is_empty = |empty_set| (
+    make_test("test_is_empty") $ |_|
+    let set = empty_set;
+    assert_true("empty", set.is_empty);;
+    let set = set.insert(1);
+    assert_false("not empty", set.is_empty)
+);
+
+test_get_size:
+    [set: Set, SetElem set = I64]
+    set ->  TestCase;
+test_get_size = |empty_set| (
+    make_test("test_get_size") $ |_|
+    let set = empty_set;
+    assert_equal("0", 0, set.get_size);;
+    let set = set.insert(1);
+    assert_equal("1", 1, set.get_size)
+);
+
+test_contains:
+    [set: Set, SetElem set = I64]
+    set ->  TestCase;
+test_contains = |empty_set| (
+    make_test("test_contains") $ |_|
+    let set = empty_set;
+    assert_false("not contains", set.contains(1));;
+    let set = set.insert(1);
+    assert_true("contains", set.contains(1));;
+    assert_false("not contains 2", set.contains(2))
+);
+
+test_insert:
+    [set: Set, SetElem set = I64]
+    set ->  TestCase;
+test_insert = |empty_set| (
+    make_test("test_insert") $ |_|
+    let set = empty_set;
+    let set = set.insert(42);
+    let set = set.insert(42);
+    assert_equal("1", 1, set.get_size);;
+    let set = set.insert(43);
+    let set = set.insert(43);
+    let set = set.insert(42);
+    assert_equal("2", 2, set.get_size)
+);
+
+test_erase:
+    [set: Set, SetElem set = I64]
+    set ->  TestCase;
+test_erase = |empty_set| (
+    make_test("test_erase") $ |_|
+    let set = empty_set;
+    let set = set.erase(42);
+    assert_equal("0", 0, set.get_size);;
+    let set = set.insert(42);
+    let set = set.insert(42);
+    assert_equal("1", 1, set.get_size);;
+    let set = set.erase(42);
+    assert_equal("0", 0, set.get_size)
+);
+
 test_to_iter:
     [set: Set, SetElem set = I64, SetIterator set = iter, iter: Iterator, Item iter = I64]
     set ->  TestCase;
@@ -75,10 +139,10 @@ test_insert_erase_ok = |empty_set, (n, insert_reorder, erase_reorder)| (
     pure()      // success
 );
 
-test_insert_erase:
+test_insert_erase_batch:
     [set: Set, SetElem set = I64]
     set -> TestCase;
-test_insert_erase = |empty_set| (
+test_insert_erase_batch = |empty_set| (
     do {
         let n = 30;
         let insert_reorder = *[skip(15), ascending(), descending(), shuffle(123)];
@@ -87,12 +151,12 @@ test_insert_erase = |empty_set| (
     }.run_tests
 );
 
-test_get_size:
+test_get_size_batch:
     [set: Set, SetElem set = I64]
     set -> TestCase;
-test_get_size = |empty_set| (
+test_get_size_batch = |empty_set| (
     make_table_test(
-        "test_get_size",
+        "test_get_size_batch",
         [
             (1234, 100, 2),
             (1235, 100, 10),
@@ -101,7 +165,7 @@ test_get_size = |empty_set| (
         ],
         |(seed, n, max_op)|
         let debug_eprintln = if false { debug_eprintln } else { |_| () };
-        eval debug_eprintln ("--- test_get_size (seed, n, max_op)=" + (seed, n, max_op).to_string);
+        eval debug_eprintln ("--- test_get_size_batch (seed, n, max_op)=" + (seed, n, max_op).to_string);
         let random = Random::init_by_seed(seed.to_U64);
         let mask = Array::fill(n, false);
         let size = 0;
@@ -120,6 +184,8 @@ test_get_size = |empty_set| (
                 eval debug_eprintln("insert " + (v, size).to_string);
                 assert_equal("insert", size, set.get_size);;
                 //assert_equal("insert root get_size", set.@root.get_size, set.get_size);;
+                assert_true("contains", set.contains(v));;
+                assert_equal("to_array", range(0,n).filter(|i| mask.@(i)).to_array, set.to_array);;
                 continue_m $ (random, mask, size, set, i + 1)
             } else { // op == 1 or above
                 let size = if !mask.@(v) { size } else { size - 1 };
@@ -128,9 +194,36 @@ test_get_size = |empty_set| (
                 eval debug_eprintln("erase " + (v, size).to_string);
                 assert_equal("erase", size, set.get_size);;
                 //assert_equal("erase root get_size", set.@root.get_size, set.get_size);;
+                assert_false("not contains", set.contains(v));;
+                assert_equal("to_array", range(0,n).filter(|i| mask.@(i)).to_array, set.to_array);;
                 continue_m $ (random, mask, size, set, i + 1)
             }
         )
+    )
+);
+
+test_large_elements_batch:
+    [set: Set, SetElem set = I64]
+    set -> TestCase;
+test_large_elements_batch = |empty_set| (
+    make_table_test(
+        "test_large_elements_batch",
+        [
+            (12347, 100),
+            (12348, 200),
+        ],
+        |(seed, n)|
+        let random = Random::init_by_seed(seed.to_U64);
+        let (random, elements) = random.generate_array(n, generate_U64 >> Functor::map(to_I64));
+        let elements_sorted = elements.sort.dedup;
+        let elements_shuffled =  elements_sorted.reorder(shuffle(seed * 10 + 1));
+        let set = elements_shuffled.to_iter.fold(
+            empty_set, |element, set|
+            set.insert(element)
+        );
+        let expected = elements_sorted;
+        let actual = set.to_array;
+        assert_equal("eq", expected, actual)
     )
 );
 
@@ -179,10 +272,16 @@ set_tests:
     set -> TestCase;
 set_tests = |empty_set| (
     [
+        test_is_empty(empty_set),
+        test_get_size(empty_set),
+        test_contains(empty_set),
+        test_insert(empty_set),
+        test_erase(empty_set),
         test_to_iter(empty_set),
         test_to_array(empty_set),
-        test_insert_erase(empty_set),
-        test_get_size(empty_set),
+        test_insert_erase_batch(empty_set),
+        test_get_size_batch(empty_set),
+        test_large_elements_batch(empty_set),
         test_perf(empty_set, 1000000),
     ]
     .run_tests
