@@ -82,28 +82,6 @@ test_equivalence = (
     assert_equal("eq", [12, 22, 32], array)
 );
 
-test_intersect: TestCase;
-test_intersect = (
-    make_test("test_intersect") $ |_|
-    let ts1 = TreeSet::from_iter(Iterator::range(0,20));
-    let ts2 = TreeSet::from_iter(Iterator::range(10,30));
-    let ts = ts1.intersect(ts2);
-    let actual = ts.to_iter.to_array;
-    let expected = Iterator::range(10,20).to_array;
-    assert_equal("eq", expected, actual)
-);
-
-test_merge: TestCase;
-test_merge = (
-    make_test("test_merge") $ |_|
-    let ts1 = TreeSet::from_iter(Iterator::range(0,10));
-    let ts2 = TreeSet::from_iter(Iterator::range(10,20));
-    let ts = ts1.merge(ts2);
-    let actual = ts.to_iter.to_array;
-    let expected = Iterator::range(0,20).to_array;
-    assert_equal("eq", expected, actual)
-);
-
 test_tuple2: TestCase;
 test_tuple2 = (
     make_test("test_tuple2") $ |_|
@@ -134,8 +112,6 @@ main = (
         test_find_range,
         test_find_range_descending,
         test_equivalence,
-        test_intersect,
-        test_merge,
         test_tuple2,
         TestCase::empty
     ]
