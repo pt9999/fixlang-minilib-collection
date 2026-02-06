@@ -469,7 +469,6 @@ impl PTree a: Map {
     act = Map::Default::default_act;
     to_iter = PTree::_to_iter;
     to_array = PTree::_to_array;
-    //from_iter = PTree::_from_iter;
 }
 
 impl PTree a: SortedMapIF {

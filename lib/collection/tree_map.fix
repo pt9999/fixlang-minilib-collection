@@ -225,7 +225,6 @@ impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: Map {
     act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
     to_iter = TreeMap::_to_iter;
     to_array = TreeMap::_to_array;
-    //from_iter = TreeMap::_from_iter;
 }
 
 impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: SortedMapIF {

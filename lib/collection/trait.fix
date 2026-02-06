@@ -89,8 +89,6 @@ trait set: Set {
     // # Parameters
     // - `set`: a set
     to_array: set -> Array (SetElem set);
-
-    //from_iter: [it: Iterator, Iterator::Item it = e, e = SetElem set] it -> set;
 }
 
 namespace Set {
@@ -247,8 +245,6 @@ trait map: Map {
     // # Parameters
     // - `map`: a map
     to_array: map -> Array (MapKey map, MapValue map);
-
-    //from_iter: [it: Iterator, Iterator::Item it = (k, v), MapKey map = k, MapValue map = v] it -> map;
 }
 
 namespace Map {

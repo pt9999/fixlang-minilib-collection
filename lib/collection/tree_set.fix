@@ -264,7 +264,6 @@ impl [a: TreeSetElem] TreeSet a: Set {
     merge = TreeSet::_merge;
     to_iter = TreeSet::_to_iter;
     to_array = TreeSet::_to_array;
-    //from_iter = TreeSet::_from_iter;
 }
 
 impl [a: TreeSetElem] TreeSet a: SortedSetIF {

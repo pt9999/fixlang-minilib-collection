@@ -62,7 +62,6 @@ impl [kc: KeyCompare, Key kc = k] TreapSet kc k: Set {
     merge = Set::Default::default_merge;
     to_iter = |set| set.@map.to_iter.Iterator::map(|(k,_)| k);
     to_array = |set| set.@map.to_array.Functor::map(|(k,_)| k);
-    //from_iter = TreapSet::_from_iter;
 }
 
 // Implementation of the `SortedSetIF` trait.

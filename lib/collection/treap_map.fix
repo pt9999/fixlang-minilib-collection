@@ -433,7 +433,6 @@ impl [kc: KeyCompare, Key kc = k] TreapMap kc k v: Map {
     act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
     to_iter = TreapMap::_to_iter;
     to_array = TreapMap::_to_array;
-    //from_iter = TreapMap::_from_iter;
 }
 
 // Implementation of the `SortedMapIF` trait.

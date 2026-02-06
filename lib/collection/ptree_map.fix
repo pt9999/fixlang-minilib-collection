@@ -119,7 +119,6 @@ impl [k: PTreeMapKey] PTreeMap k v: Map {
     act = |k, fun, map| map.act_tree(act(k._to_pattree_key, fun));
     to_iter = |map| map.@tree.to_iter.Iterator::map(_from_pattree_kv);
     to_array = |map| map.@tree.to_array.Functor::map(_from_pattree_kv);
-    //from_iter = PTree::_from_iter;
 }
 
 impl [k: PTreeMapKey] PTreeMap k v: SortedMapIF {
