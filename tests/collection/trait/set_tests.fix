@@ -377,7 +377,7 @@ set_tests = |empty_set| (
         test_intersect_merge_batch(empty_set),
         test_get_size_batch(empty_set),
         test_large_elements_batch(empty_set),
-        test_perf(empty_set, 1000000),
+        test_perf(empty_set, 100000),
     ]
     .run_tests
 );

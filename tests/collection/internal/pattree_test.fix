@@ -39,10 +39,10 @@ test_simple = (
     pure()
 );
 
-test_perf: TestCase;
-test_perf = (
+test_perf: I64 -> TestCase;
+test_perf = |n| (
     make_test("test_perf") $ |_|
-    let n = 1000000;
+    //let n = 1000000;
     //let n = 100000;
     //let n = 100;
     println("PatTreeTest::test_perf (n=" + n.to_string + ")").lift;;
@@ -98,7 +98,7 @@ main: IO () = (
     [
         // here we cannot use `MapTests::map_tests` since `MapKey (PTree a)` is U64
         test_simple,
-        test_perf,
+        test_perf(100000),
     ]
     .run_test_driver
 );

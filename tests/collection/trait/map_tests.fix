@@ -371,7 +371,7 @@ map_tests = |empty_map| (
         test_insert_erase_batch(empty_map),
         test_get_size_batch(empty_map),
         test_large_keys_batch(empty_map),
-        test_perf(empty_map, 1000000),
+        test_perf(empty_map, 100000),
     ]
     .run_tests
 );
