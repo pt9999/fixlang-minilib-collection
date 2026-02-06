@@ -17,8 +17,7 @@ import TreeSetTest;
 testsuite: TestSuite;
 testsuite = [
     ("RbtreeTest", RbtreeTest::main),
-    // ("PatTreeTest", PatTreeTest::main),  // TODO: update tests
-
+    ("PatTreeTest", PatTreeTest::main),
     ("DequeTest", DequeTest::main),
     ("OrderedMapTest", OrderedMapTest::main),
     ("PTreeMapTest", PTreeMapTest::main),
