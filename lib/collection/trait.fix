@@ -1,6 +1,7 @@
 // Trait definitions, default implementations of traits, and common type definitions for `Minilib.Collection.*`.
 //
 // The following traits are defined in this module.
+//
 // - `Set`: Abstract sets.
 // - `SortedSet`: Sorted sets.
 // - `Map`: Abstract maps.
@@ -10,6 +11,7 @@
 // Some trait methods have default implementations defined in `{trait-name}::Default` namespaces.
 //
 // The following types are defined in this module.
+//
 // - `Bound`: A bound of a range, used in `SortedMap` and `SortedSet`.
 // - `KeyLessThan`: Key comparators which compares keys with `LessThan::less_than`.
 // - `KeyGreaterThan`: Key comparators which compares keys with `LessThan::less_than` in reversed order.
