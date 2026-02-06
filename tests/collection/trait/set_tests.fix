@@ -73,6 +73,54 @@ test_erase = |empty_set| (
     assert_equal("0", 0, set.get_size)
 );
 
+test_intersect:
+    [set: Set, SetElem set = I64]
+    set ->  TestCase;
+test_intersect = |empty_set| (
+    make_table_test("test_intersect",
+        [
+            ([], [], []),
+            ([], [1], []),
+            ([1], [], []),
+            ([1], [1], [1]),
+            ([1, 2], [1], [1]),
+            ([1], [1, 2], [1]),
+            ([1, 2], [1, 2], [1, 2]),
+            ([1, 2], [1, 3], [1]),
+        ],
+        |(arr1, arr2, expected)|
+        let set1 = arr1.to_iter.fold(empty_set, insert);
+        let set2 = arr2.to_iter.fold(empty_set, insert);
+        let set3 = set1.intersect(set2);
+        let actual = set3.to_array;
+        assert_equal("eq", expected, actual)
+    )
+);
+
+test_merge:
+    [set: Set, SetElem set = I64]
+    set ->  TestCase;
+test_merge = |empty_set| (
+    make_table_test("test_merge",
+        [
+            ([], [], []),
+            ([], [1], [1]),
+            ([1], [], [1]),
+            ([1], [1], [1]),
+            ([1, 2], [1], [1, 2]),
+            ([1], [1, 2], [1, 2]),
+            ([1, 2], [1, 2], [1, 2]),
+            ([1, 2], [1, 3], [1, 2, 3]),
+        ],
+        |(arr1, arr2, expected)|
+        let set1 = arr1.to_iter.fold(empty_set, insert);
+        let set2 = arr2.to_iter.fold(empty_set, insert);
+        let set3 = set1.merge(set2);
+        let actual = set3.to_array;
+        assert_equal("eq", expected, actual)
+    )
+);
+
 test_to_iter:
     [set: Set, SetElem set = I64, SetIterator set = iter, iter: Iterator, Item iter = I64]
     set ->  TestCase;
@@ -149,6 +197,50 @@ test_insert_erase_batch = |empty_set| (
         let erase_reorder = *[skip(15), ascending(), descending(), shuffle(345)];
         pure $ empty_set.test_insert_erase_ok $ (n, insert_reorder, erase_reorder)
     }.run_tests
+);
+
+test_intersect_merge_batch:
+    [set: Set, SetElem set = I64]
+    set -> TestCase;
+test_intersect_merge_batch = |empty_set| (
+    make_table_test(
+        "test_intersect_merge_batch",
+        [
+            (3456, 100, 300),
+            (3456, 100, 200),
+            (3457, 100, 100),
+            (3458, 100, 50),
+        ],
+        |(seed, n, modulo)|
+        let random = Random::init_by_seed(seed.to_U64);
+        let (random, arr1) = random.generate_array(n, generate_I64_nonneg);
+        let (random, arr2) = random.generate_array(n, generate_I64_nonneg);
+        let arr1 = arr1.map(|x| x % modulo);
+        let arr2 = arr2.map(|x| x % modulo);
+        let set1 = arr1.to_iter.fold(empty_set, insert);
+        let set2 = arr2.to_iter.fold(empty_set, insert);
+        // test for intersection
+        let set3 = set1.intersect(set2);
+        let actual = set3.to_array;
+        let expected = (
+            let arr1 = arr1.sort.dedup;
+            let arr2 = arr2.sort.dedup;
+            arr1.to_iter.filter(|x| arr2.find_by(eq(x)).is_some).to_array
+        );
+        //eval debug_eprintln("intersect");
+        //eval debug_eprintln(" expected=" + expected.to_string);
+        //eval debug_eprintln(" actual  =" + actual.to_string);
+        assert_equal("intersect", expected, actual);;
+        // test for merge
+        let set4 = set1.merge(set2);
+        let actual = set4.to_array;
+        let expected = (arr1 + arr2).sort.dedup;
+        //eval debug_eprintln("merge");
+        //eval debug_eprintln(" expected=" + expected.to_string);
+        //eval debug_eprintln(" actual  =" + actual.to_string);
+        assert_equal("merge", expected, actual);;
+        pure()
+    )
 );
 
 test_get_size_batch:
@@ -277,9 +369,12 @@ set_tests = |empty_set| (
         test_contains(empty_set),
         test_insert(empty_set),
         test_erase(empty_set),
+        test_intersect(empty_set),
+        test_merge(empty_set),
         test_to_iter(empty_set),
         test_to_array(empty_set),
         test_insert_erase_batch(empty_set),
+        test_intersect_merge_batch(empty_set),
         test_get_size_batch(empty_set),
         test_large_elements_batch(empty_set),
         test_perf(empty_set, 1000000),

@@ -224,8 +224,8 @@ namespace TreeSet {
     // # Parameters
     // - `ts1`: a TreeSet
     // - `ts2`: another TreeSet
-    intersect: [a : TreeSetElem] TreeSet a -> TreeSet a -> TreeSet a;
-    intersect = |ts1, ts2| (
+    _intersect: [a : TreeSetElem] TreeSet a -> TreeSet a -> TreeSet a;
+    _intersect = |ts1, ts2| (
         ts1.to_iter.fold(
             ts1, |x, ts1|
             if ts2.contains(x) {
@@ -241,8 +241,8 @@ namespace TreeSet {
     // # Parameters
     // - `ts1`: a TreeSet
     // - `ts2`: another TreeSet
-    merge: [a : TreeSetElem] TreeSet a -> TreeSet a -> TreeSet a;
-    merge = |ts1, ts2| (
+    _merge: [a : TreeSetElem] TreeSet a -> TreeSet a -> TreeSet a;
+    _merge = |ts1, ts2| (
         ts2.to_iter.fold(
             ts1, |x, ts1|
             ts1.insert(x)
@@ -260,6 +260,8 @@ impl [a: TreeSetElem] TreeSet a: Set {
     contains = TreeSet::_contains;
     insert = TreeSet::_insert;
     erase = TreeSet::_erase;
+    intersect = TreeSet::_intersect;
+    merge = TreeSet::_merge;
     to_iter = TreeSet::_to_iter;
     to_array = TreeSet::_to_array;
     //from_iter = TreeSet::_from_iter;

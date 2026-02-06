@@ -64,6 +64,20 @@ trait set: Set {
     // - `set`: a set
     erase: SetElem set -> set -> set;
 
+    // Calculates intersection of two sets.
+    //
+    // # Parameters
+    // - `set1`: a set
+    // - `set2`: another set
+    intersect: set -> set -> set;
+
+    // Calculates union of two sets.
+    //
+    // # Parameters
+    // - `set1`: a set
+    // - `set2`: another set
+    merge: set -> set -> set;
+
     // Converts a set into an iterator.
     //
     // # Parameters
@@ -77,6 +91,36 @@ trait set: Set {
     to_array: set -> Array (SetElem set);
 
     //from_iter: [it: Iterator, Iterator::Item it = e, e = SetElem set] it -> set;
+}
+
+namespace Set {
+    namespace Default {
+        // Default implementation of `Set::intersect`.
+        default_intersect: 
+            [set: Set, SetIterator set = iter, iter: Iterator, Item iter = e, SetElem set = e]
+            set -> set -> set;
+        default_intersect = |set1, set2| (
+            set1.to_iter.fold(
+                set1, |x, set1|
+                if set2.contains(x) {
+                    set1
+                } else {
+                    set1.erase(x)
+                }
+            )
+        );
+
+        // Default implementation of `Set::merge`.
+        default_merge:
+            [set: Set, SetIterator set = iter, iter: Iterator, Item iter = e, SetElem set = e]
+            set -> set -> set;
+        default_merge = |set1, set2| (
+            set2.to_iter.fold(
+                set1, |x, set1|
+                set1.insert(x)
+            )
+        );
+    }
 }
 
 //---------------------------------------------------------------------------
