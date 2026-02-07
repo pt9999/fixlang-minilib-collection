@@ -1,6 +1,6 @@
 # Minilib.Collection.PTreeSet
 
-Defined in minilib-collection@0.7.0-beta1
+Defined in minilib-collection@0.7.0-beta2
 
 `PTreeSet` is a set that manages elements in sorted order.
 

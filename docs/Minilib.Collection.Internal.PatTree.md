@@ -1,19 +1,18 @@
 # Minilib.Collection.Internal.PatTree
 
-Defined in minilib-collection@0.7.0-beta1
+Defined in minilib-collection@0.7.0-beta2
 
 Simple map using Patricia Tree.
-The type of key is U64, and the type of value is any type.
+
+The type of key is `U64`, and the type of value is any type.
 
 ## Reference
 
-This module was inspired by Haskell's `Data.IntMap` package.
-https://hackage-content.haskell.org/package/containers-0.8/docs/Data-IntMap.html
+This module was inspired by [Haskell's `Data.IntMap` package](https://hackage-content.haskell.org/package/containers-0.8/docs/Data-IntMap.html).
 
 In particular, I used the following papers mentioned in the `Data.IntMap` package's documentation:
 
-Chris Okasaki and Andy Gill, "Fast Mergeable Integer Maps", Workshop on ML, September 1998, pages 77-86,
-https://web.archive.org/web/20150417234429/https://ittc.ku.edu/~andygill/papers/IntMap98.pdf
+[Chris Okasaki and Andy Gill, "Fast Mergeable Integer Maps", Workshop on ML, September 1998, pages 77-86](https://web.archive.org/web/20150417234429/https://ittc.ku.edu/~andygill/papers/IntMap98.pdf)
 
 ## Values
 

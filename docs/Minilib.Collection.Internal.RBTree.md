@@ -1,6 +1,6 @@
 # Minilib.Collection.Internal.RBTree
 
-Defined in minilib-collection@0.7.0-beta1
+Defined in minilib-collection@0.7.0-beta2
 
 Red-Black Tree.
 (This is an internal module of `TreeMap` and `TreeSet`.)
@@ -13,6 +13,7 @@ And for removal algorithm, ported from web site below.
 http://wwwa.pikara.ne.jp/okojisan/rb-tree/index.html#Delete
 
 NOTE: `less_than()` function must meet following conditions.
+
 - Irreflexivity: for all `x`, `less_than(x,x)` must be false.
 - Asymmetry:     for all `x, y`, if `less_than(x,y)` is true, then `less_than(y,x)` must be false.
 - Transitivity:  for all `x, y, z`, if `less_than(x,y)` is true and `less_than(y,z)` is true,

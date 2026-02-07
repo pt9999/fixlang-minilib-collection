@@ -1,10 +1,11 @@
 # Minilib.Collection.Trait
 
-Defined in minilib-collection@0.7.0-beta1
+Defined in minilib-collection@0.7.0-beta2
 
 Trait definitions, default implementations of traits, and common type definitions for `Minilib.Collection.*`.
 
 The following traits are defined in this module.
+
 - `Set`: Abstract sets.
 - `SortedSet`: Sorted sets.
 - `Map`: Abstract maps.
@@ -14,6 +15,7 @@ The following traits are defined in this module.
 Some trait methods have default implementations defined in `{trait-name}::Default` namespaces.
 
 The following types are defined in this module.
+
 - `Bound`: A bound of a range, used in `SortedMap` and `SortedSet`.
 - `KeyLessThan`: Key comparators which compares keys with `LessThan::less_than`.
 - `KeyGreaterThan`: Key comparators which compares keys with `LessThan::less_than` in reversed order.
@@ -255,6 +257,17 @@ Inserts an element into a set.
 - `elem`: a element
 - `set`: a set
 
+#### intersect
+
+Type: `[set : Minilib.Collection.Trait::Set] set -> set -> set`
+
+Calculates intersection of two sets.
+
+##### Parameters
+
+- `set1`: a set
+- `set2`: another set
+
 #### is_empty
 
 Type: `[set : Minilib.Collection.Trait::Set] set -> Std::Bool`
@@ -264,6 +277,17 @@ Checks whether a set is empty.
 ##### Parameters
 
 - `set`: a set
+
+#### merge
+
+Type: `[set : Minilib.Collection.Trait::Set] set -> set -> set`
+
+Calculates union of two sets.
+
+##### Parameters
+
+- `set1`: a set
+- `set2`: another set
 
 #### to_array
 
@@ -284,6 +308,20 @@ Converts a set into an iterator.
 ##### Parameters
 
 - `set`: a set
+
+### namespace Minilib.Collection.Trait::Set::Default
+
+#### default_intersect
+
+Type: `[iter : Std::Iterator, set : Minilib.Collection.Trait::Set, Minilib.Collection.Trait::Set::SetElem set = e, Minilib.Collection.Trait::Set::SetIterator set = iter, Std::Iterator::Item iter = e] set -> set -> set`
+
+Default implementation of `Set::intersect`.
+
+#### default_merge
+
+Type: `[iter : Std::Iterator, set : Minilib.Collection.Trait::Set, Minilib.Collection.Trait::Set::SetElem set = e, Minilib.Collection.Trait::Set::SetIterator set = iter, Std::Iterator::Item iter = e] set -> set -> set`
+
+Default implementation of `Set::merge`.
 
 ### namespace Minilib.Collection.Trait::SortedMapIF
 
@@ -626,6 +664,28 @@ Erases all elements which is equivalent to the specified element.
 
 - `elem`: a element
 - `set`: a set
+
+##### method `intersect`
+
+Type: `set -> set -> set`
+
+Calculates intersection of two sets.
+
+###### Parameters
+
+- `set1`: a set
+- `set2`: another set
+
+##### method `merge`
+
+Type: `set -> set -> set`
+
+Calculates union of two sets.
+
+###### Parameters
+
+- `set1`: a set
+- `set2`: another set
 
 ##### method `to_iter`
 

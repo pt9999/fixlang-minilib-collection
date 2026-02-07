@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeSet
 
-Defined in minilib-collection@0.7.0-beta1
+Defined in minilib-collection@0.7.0-beta2
 
 TreeSet is a set that manages elements in sorted order.
 
@@ -11,6 +11,7 @@ The elements of a TreeSet must have a partial order,
 and `less_than` is the comparison function for that partial order.
 
 NOTE: `less_than()` function must meet following conditions.
+
 - Irreflexivity: for all `x`, `less_than(x,x)` must be false.
 - Asymmetry:     for all `x, y`, if `less_than(x,y)` is true, then `less_than(y,x)` must be false.
 - Transitivity:  for all `x, y, z`, if `less_than(x,y)` is true and `less_than(y,z)` is true,
@@ -116,17 +117,6 @@ Converts an iterator into a TreeSet using specified ordering.
 - `less_than`: a comparision function
 - `iter`: an iterator of elements
 
-#### intersect
-
-Type: `[a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
-
-Calculates intersection of two TreeSets.
-
-##### Parameters
-
-- `ts1`: a TreeSet
-- `ts2`: another TreeSet
-
 #### make
 
 Type: `[a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem, a : Std::LessThan] () -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
@@ -142,17 +132,6 @@ Type: `[a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] (a -> a -> Std::Bo
 ##### Parameters
 
 - `less_than`: a comparision function
-
-#### merge
-
-Type: `[a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a`
-
-Calculates union of two TreeSets.
-
-##### Parameters
-
-- `ts1`: a TreeSet
-- `ts2`: another TreeSet
 
 ## Types and aliases
 

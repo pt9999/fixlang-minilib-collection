@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeMap
 
-Defined in minilib-collection@0.7.0-beta1
+Defined in minilib-collection@0.7.0-beta2
 
 TreeMap is a map that manages keys in sorted order.
 
@@ -11,6 +11,7 @@ The keys of a TreeMap must have a partial order,
 and `less_than` is the comparison function for that partial order.
 
 NOTE: `less_than()` function must meet following conditions.
+
 - Irreflexivity: for all `x`, `less_than(x,x)` must be false.
 - Asymmetry:     for all `x, y`, if `less_than(x,y)` is true, then `less_than(y,x)` must be false.
 - Transitivity:  for all `x, y, z`, if `less_than(x,y)` is true and `less_than(y,z)` is true,
