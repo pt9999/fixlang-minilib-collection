@@ -1,6 +1,6 @@
 # Minilib.Collection.PTreeMap
 
-Defined in minilib-collection@0.7.0-beta2
+Defined in minilib-collection@0.7.0
 
 `PTreeMap` is a map that manages keys in sorted order.
 
