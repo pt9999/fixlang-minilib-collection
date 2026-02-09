@@ -15,6 +15,8 @@
   * `Minilib.Collection.TreapSet`
   * `Minilib.Collection.Trait`
   * `Minilib.Collection.Internal.PatTree`
+### Changed
+- fixproj.toml: Bumped `fix_version` to 1.3.0. Depends on minilib-common@0.12.0. Moved random to test_dependencies.
 
 ## 0.6.6
 ### Changed

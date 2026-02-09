@@ -1,4 +1,4 @@
-proj_file_hash = "241d60ba68514fa197c61ad5c9759049"
+proj_file_hash = "2516f4f531808d7750f74a87cd0d28dd"
 
 [[dependencies]]
 name = "character"
@@ -35,6 +35,15 @@ path = ".fixlang/deps/minilib-common_0.12.0"
 [dependencies.git]
 repo = "https://github.com/pt9999/fixlang-minilib-common.git"
 rev = "b618c599f408f3b3d83b138475059d7563115915"
+
+[[dependencies]]
+name = "random"
+version = "1.1.1"
+path = ".fixlang/deps/random_1.1.1"
+
+[dependencies.git]
+repo = "https://github.com/tttmmmyyyy/fixlang-random.git"
+rev = "b4f83ee48564e714c0918513dd431f9135493dce"
 
 [[dependencies]]
 name = "time"
