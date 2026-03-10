@@ -1,6 +1,6 @@
 # Minilib.Collection.Trait
 
-Defined in minilib-collection@0.7.0
+Defined in minilib-collection@0.7.1
 
 Trait definitions, default implementations of traits, and common type definitions for `Minilib.Collection.*`.
 
@@ -53,11 +53,15 @@ Checks if the key is below the uppwer bound.
 
 Type: `[kc : Minilib.Collection.Trait::KeyCompare] Minilib.Collection.Trait::KeyCompare::Key kc -> Minilib.Collection.Trait::KeyCompare::Key kc -> kc -> Std::Bool`
 
+Trait member of `Minilib.Collection.Trait::KeyCompare`
+
 Returns false if and only if the first key should appear after the second key.
 
 #### empty
 
 Type: `[kc : Minilib.Collection.Trait::KeyCompare] kc`
+
+Trait member of `Minilib.Collection.Trait::KeyCompare`
 
 An empty key comparator.
 
@@ -78,6 +82,8 @@ Creates a key comparator using the specified function.
 #### act
 
 Type: `[f : Std::Functor, map : Minilib.Collection.Trait::Map] Minilib.Collection.Trait::Map::MapKey map -> (Std::Option (Minilib.Collection.Trait::Map::MapValue map) -> f (Std::Option (Minilib.Collection.Trait::Map::MapValue map))) -> map -> f map`
+
+Trait member of `Minilib.Collection.Trait::Map`
 
 Modifies a map by a functorial action.
 
@@ -101,6 +107,8 @@ Semantically, `map.act(key, fun)` is equivalent to
 
 Type: `[map : Minilib.Collection.Trait::Map] Minilib.Collection.Trait::Map::MapKey map -> map -> Std::Bool`
 
+Trait member of `Minilib.Collection.Trait::Map`
+
 Checks whether any entry exists whose key is equivalent to the specified key.
 
 ##### Parameters
@@ -112,6 +120,8 @@ Checks whether any entry exists whose key is equivalent to the specified key.
 
 Type: `[map : Minilib.Collection.Trait::Map] Minilib.Collection.Trait::Map::MapKey map -> map -> map`
 
+Trait member of `Minilib.Collection.Trait::Map`
+
 Erases all entries whose key is equivalent to the specified key.
 
 ##### Parameters
@@ -122,6 +132,8 @@ Erases all entries whose key is equivalent to the specified key.
 #### find
 
 Type: `[map : Minilib.Collection.Trait::Map] Minilib.Collection.Trait::Map::MapKey map -> map -> Std::Option (Minilib.Collection.Trait::Map::MapValue map)`
+
+Trait member of `Minilib.Collection.Trait::Map`
 
 Finds an entry whose key is equivalent to the specified key.
 If an entry is found, returns `some(v)` where `v` is the value.
@@ -136,6 +148,8 @@ If no entry is found, returns `none()`.
 
 Type: `[map : Minilib.Collection.Trait::Map] map -> Std::I64`
 
+Trait member of `Minilib.Collection.Trait::Map`
+
 Gets the number of entries in a map.
 
 ##### Parameters
@@ -145,6 +159,8 @@ Gets the number of entries in a map.
 #### insert
 
 Type: `[map : Minilib.Collection.Trait::Map] (Minilib.Collection.Trait::Map::MapKey map, Minilib.Collection.Trait::Map::MapValue map) -> map -> map`
+
+Trait member of `Minilib.Collection.Trait::Map`
 
 Inserts an entry into a map.
 
@@ -157,6 +173,8 @@ Inserts an entry into a map.
 
 Type: `[map : Minilib.Collection.Trait::Map] map -> Std::Bool`
 
+Trait member of `Minilib.Collection.Trait::Map`
+
 Checks whether a map is empty.
 
 ##### Parameters
@@ -166,6 +184,8 @@ Checks whether a map is empty.
 #### set
 
 Type: `[map : Minilib.Collection.Trait::Map] Minilib.Collection.Trait::Map::MapKey map -> Std::Option (Minilib.Collection.Trait::Map::MapValue map) -> map -> map`
+
+Trait member of `Minilib.Collection.Trait::Map`
 
 Inserts an entry to a map, or erases an entry from a map.
 
@@ -182,6 +202,8 @@ Semantically, `map.set(key, opt_v)` is equivalent to
 
 Type: `[map : Minilib.Collection.Trait::Map] map -> Std::Array (Minilib.Collection.Trait::Map::MapKey map, Minilib.Collection.Trait::Map::MapValue map)`
 
+Trait member of `Minilib.Collection.Trait::Map`
+
 Converts a map into an array of entries.
 
 ##### Parameters
@@ -191,6 +213,8 @@ Converts a map into an array of entries.
 #### to_iter
 
 Type: `[map : Minilib.Collection.Trait::Map] map -> Minilib.Collection.Trait::Map::MapIterator map`
+
+Trait member of `Minilib.Collection.Trait::Map`
 
 Converts a map into an iterator of entries.
 
@@ -218,6 +242,8 @@ Default implementation of `Map::set`.
 
 Type: `[set : Minilib.Collection.Trait::Set] Minilib.Collection.Trait::Set::SetElem set -> set -> Std::Bool`
 
+Trait member of `Minilib.Collection.Trait::Set`
+
 Checks whether a set contains the specified element.
 
 ##### Parameters
@@ -228,6 +254,8 @@ Checks whether a set contains the specified element.
 #### erase
 
 Type: `[set : Minilib.Collection.Trait::Set] Minilib.Collection.Trait::Set::SetElem set -> set -> set`
+
+Trait member of `Minilib.Collection.Trait::Set`
 
 Erases all elements which is equivalent to the specified element.
 
@@ -240,6 +268,8 @@ Erases all elements which is equivalent to the specified element.
 
 Type: `[set : Minilib.Collection.Trait::Set] set -> Std::I64`
 
+Trait member of `Minilib.Collection.Trait::Set`
+
 Gets the number of elements in a set.
 
 ##### Parameters
@@ -249,6 +279,8 @@ Gets the number of elements in a set.
 #### insert
 
 Type: `[set : Minilib.Collection.Trait::Set] Minilib.Collection.Trait::Set::SetElem set -> set -> set`
+
+Trait member of `Minilib.Collection.Trait::Set`
 
 Inserts an element into a set.
 
@@ -261,6 +293,8 @@ Inserts an element into a set.
 
 Type: `[set : Minilib.Collection.Trait::Set] set -> set -> set`
 
+Trait member of `Minilib.Collection.Trait::Set`
+
 Calculates intersection of two sets.
 
 ##### Parameters
@@ -272,6 +306,8 @@ Calculates intersection of two sets.
 
 Type: `[set : Minilib.Collection.Trait::Set] set -> Std::Bool`
 
+Trait member of `Minilib.Collection.Trait::Set`
+
 Checks whether a set is empty.
 
 ##### Parameters
@@ -281,6 +317,8 @@ Checks whether a set is empty.
 #### merge
 
 Type: `[set : Minilib.Collection.Trait::Set] set -> set -> set`
+
+Trait member of `Minilib.Collection.Trait::Set`
 
 Calculates union of two sets.
 
@@ -293,6 +331,8 @@ Calculates union of two sets.
 
 Type: `[set : Minilib.Collection.Trait::Set] set -> Std::Array (Minilib.Collection.Trait::Set::SetElem set)`
 
+Trait member of `Minilib.Collection.Trait::Set`
+
 Converts a set into an array.
 
 ##### Parameters
@@ -302,6 +342,8 @@ Converts a set into an array.
 #### to_iter
 
 Type: `[set : Minilib.Collection.Trait::Set] set -> Minilib.Collection.Trait::Set::SetIterator set`
+
+Trait member of `Minilib.Collection.Trait::Set`
 
 Converts a set into an iterator.
 
@@ -329,6 +371,8 @@ Default implementation of `Set::merge`.
 
 Type: `[map : Minilib.Collection.Trait::SortedMapIF] Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Map::MapKey map) -> Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Map::MapKey map) -> Std::Bool -> map -> Minilib.Collection.Trait::Map::MapIterator map`
 
+Trait member of `Minilib.Collection.Trait::SortedMapIF`
+
 Finds all entries in the specified range.
 
 ##### Parameters
@@ -352,6 +396,8 @@ map.select_range(unbound(), unbound(), true)    // finds all entries in ascendin
 #### select_range
 
 Type: `[set : Minilib.Collection.Trait::SortedSetIF] Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Set::SetElem set) -> Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Set::SetElem set) -> Std::Bool -> set -> Minilib.Collection.Trait::Set::SetIterator set`
+
+Trait member of `Minilib.Collection.Trait::SortedSetIF`
 
 Finds all elements in the specified range.
 

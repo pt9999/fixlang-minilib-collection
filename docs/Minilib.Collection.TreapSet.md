@@ -1,6 +1,6 @@
 # Minilib.Collection.TreapSet
 
-Defined in minilib-collection@0.7.0
+Defined in minilib-collection@0.7.1
 
 `TreapSet` is a set that manages elements in sorted order.
 
@@ -34,6 +34,28 @@ test_perf (n=1000000)
 Type: `[kc : Minilib.Collection.Trait::KeyCompare, Minilib.Collection.Trait::KeyCompare::Key kc = k] Minilib.Collection.TreapSet::TreapSet kc k`
 
 An empty TreapSet.
+
+#### from_iter
+
+Type: `[i : Std::Iterator, k : Std::LessThan, Std::Iterator::Item i = k] i -> Minilib.Collection.TreapSet::TreapSet (Minilib.Collection.Trait::KeyLessThan k) k`
+
+Converts an iterator to a TreapSet with the `KeyLessThan` comparator.
+
+##### Parameters
+
+##### - `iter`: an iterator
+
+#### from_iter_kc
+
+Type: `[i : Std::Iterator, kc : Minilib.Collection.Trait::KeyCompare, Minilib.Collection.Trait::KeyCompare::Key kc = k, Std::Iterator::Item i = k] kc -> i -> Minilib.Collection.TreapSet::TreapSet kc k`
+
+Converts an iterator to a TreapSet.
+
+##### Parameters
+
+##### - `kc`: a key comparator
+
+##### - `iter`: an iterator
 
 #### make
 
