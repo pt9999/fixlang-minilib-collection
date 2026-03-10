@@ -25,6 +25,22 @@ test_simple = (
     pure()
 );
 
+test_from_iter: TestCase;
+test_from_iter = (
+    make_test("test_from_iter") $ |_|
+    let t: TreapSet (KeyLessThan I64) I64 = range(0, 3).from_iter;
+    assert_equal("eq", [0, 1, 2], t.to_array);;
+    pure()
+);
+
+test_from_iter_kc: TestCase;
+test_from_iter_kc = (
+    make_test("test_from_iter_kc") $ |_|
+    let t: TreapSet (KeyGreaterThan I64) I64 = range(0, 3).from_iter_kc(KeyGreaterThan{});
+    assert_equal("eq", [2, 1, 0], t.to_array);;
+    pure()
+);
+
 type IgnoreCase = unbox struct {};
 
 impl IgnoreCase: KeyCompare {
@@ -98,6 +114,8 @@ main = (
         SetTests::set_tests(empty_set),
         SortedSetTests::sorted_set_tests(empty_set),
         test_simple,
+        test_from_iter,
+        test_from_iter_kc,
         test_kc,
         //test_perf,
         TestCase::empty

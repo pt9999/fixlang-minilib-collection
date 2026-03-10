@@ -46,6 +46,25 @@ namespace TreapSet {
     make = |kc| TreapSet {
         map: TreapMap::make(kc)
     };
+
+    // Converts an iterator to a TreapSet with the `KeyLessThan` comparator.
+    //
+    // # Parameters
+    // # - `iter`: an iterator
+    from_iter: [k: LessThan, i: Iterator, Item i = k] i -> TreapSet (KeyLessThan k) k;
+    from_iter = |iter| (
+        iter.from_iter_kc(KeyLessThan{})
+    );
+
+    // Converts an iterator to a TreapSet.
+    //
+    // # Parameters
+    // # - `kc`: a key comparator
+    // # - `iter`: an iterator
+    from_iter_kc: [kc: KeyCompare, Key kc = k, i: Iterator, Item i = k] kc -> i -> TreapSet kc k;
+    from_iter_kc = |kc, iter| TreapSet {
+        map: iter.map(|k| (k, ())).from_iter_kc(kc)
+    };
 }
 
 // Implementation of the `Set` trait.

@@ -1,3 +1,9 @@
+## 0.7.1
+### Added
+- Minilib.Collection.TreapSet: Added `from_iter`, `from_iter_kc`.
+### Fixed
+- Fixed problems which were found by `fix check` command. (Thanks to tttmmm san)
+
 ## 0.7.0
 ### ** BREAKING CHANGES **
 - These modules use traits such as `Set` and `Map` defined in `Minilib.Collection.Trait`.

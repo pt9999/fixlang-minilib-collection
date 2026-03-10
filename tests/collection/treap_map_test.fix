@@ -7,10 +7,28 @@ import Minilib.Testing.UnitTest;
 import MapTests;
 import SortedMapTests;
 
+test_from_iter: TestCase;
+test_from_iter = (
+    make_test("test_from_iter") $ |_|
+    let t: TreapMap (KeyLessThan I64) I64 String = range(0, 3).map(|k| (k, k.to_string)).from_iter;
+    assert_equal("eq", [(0, "0"), (1, "1"), (2, "2")], t.to_array);;
+    pure()
+);
+
+test_from_iter_kc: TestCase;
+test_from_iter_kc = (
+    make_test("test_from_iter_kc") $ |_|
+    let t: TreapMap (KeyGreaterThan I64) I64 String = range(0, 3).map(|k| (k, k.to_string)).from_iter_kc(KeyGreaterThan{});
+    assert_equal("eq", [(2, "2"), (1, "1"), (0, "0")], t.to_array);;
+    pure()
+);
+
 main: IO ();
 main = (
     let empty_map: TreapMap (KeyLessThan I64) I64 String = TreapMap::empty;
     [
+        test_from_iter,
+        test_from_iter_kc,
         MapTests::map_tests(empty_map),
         SortedMapTests::sorted_map_tests(empty_map),
     ]
