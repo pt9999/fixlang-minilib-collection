@@ -16,6 +16,8 @@
   - `SortedSet::select_range` -> `Set::select_range`
   - `SortedMap::select_range` -> `Map::select_range`
 - `SortedSet` and `SortedMap` are now empty. These are used to indicate that `select_range` is correctly defined.
+### Changed
+- Utilized minilib-common@0.13.0.
 
 ## 0.7.1
 ### Added
