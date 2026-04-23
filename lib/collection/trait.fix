@@ -27,9 +27,6 @@ module Minilib.Collection.Trait;
 trait set: Set {
     // The type of the elements.
     type SetElem set;
-    // The type of the iterator returned by `to_iter` and `SortedSetIF::select_range`.
-    // `Item (SetIterator set)` should be equal to `SetElem set`.
-    type SetIterator set;
 
     // Checks whether a set is empty.
     //
@@ -82,21 +79,40 @@ trait set: Set {
     //
     // # Parameters
     // - `set`: a set
-    to_iter: set -> SetIterator set;
+    to_iter: [?i: Iterator, Item ?i = SetElem set] set -> ?i;
 
     // Converts a set into an array.
     //
     // # Parameters
     // - `set`: a set
     to_array: set -> Array (SetElem set);
+
+    // Finds all elements in the specified range.
+    //
+    // # Note
+    // If `set` does not implement `SortedSet`, this method may be undefined.
+    //
+    // # Parameters
+    // - `lower_bound`: the lower bound of the range
+    // - `upper_bound`: the upper bound of the range
+    // - `ascending`: order of elements (true: ascending, false: descending)
+    // - `set`: a set
+    //
+    // Example:
+    // ```
+    // set.select_range(included(5), excluded(10), true)    // finds all elements where 5 <= key < 10 in ascending order
+    // set.select_range(excluded(5), included(10), false)   // finds all elements where 5 < key <= 10 in descending order
+    // set.select_range(unbound(), excluded(10), true)    // finds all elements where key < 10 in ascending order
+    // set.select_range(included(5), unbound(), true)    // finds all elements where 5 <= key in ascending order
+    // set.select_range(unbound(), unbound(), true)    // finds all elements in ascending order
+    // ```
+    select_range: [?i: Iterator, Item ?i = SetElem set] Bound (SetElem set) -> Bound (SetElem set) -> Bool -> set -> ?i;
 }
 
 namespace Set {
     namespace Default {
         // Default implementation of `Set::intersect`.
-        default_intersect: 
-            [set: Set, SetIterator set = iter, iter: Iterator, Item iter = e, SetElem set = e]
-            set -> set -> set;
+        default_intersect: [set: Set] set -> set -> set;
         default_intersect = |set1, set2| (
             set1.to_iter.fold(
                 set1, |x, set1|
@@ -109,9 +125,7 @@ namespace Set {
         );
 
         // Default implementation of `Set::merge`.
-        default_merge:
-            [set: Set, SetIterator set = iter, iter: Iterator, Item iter = e, SetElem set = e]
-            set -> set -> set;
+        default_merge: [set: Set] set -> set -> set;
         default_merge = |set1, set2| (
             set2.to_iter.fold(
                 set1, |x, set1|
@@ -130,23 +144,7 @@ trait SortedSet = Set + SortedSetIF;
 
 // The interface for sorted sets.
 trait set: SortedSetIF {
-    // Finds all elements in the specified range.
-    //
-    // # Parameters
-    // - `lower_bound`: the lower bound of the range
-    // - `upper_bound`: the upper bound of the range
-    // - `ascending`: order of elements (true: ascending, false: descending)
-    // - `set`: a set
-    //
-    // Example:
-    // ```
-    // set.select_range(included(5), excluded(10), true)    // finds all elements where 5 <= key < 10 in ascending order
-    // set.select_range(excluded(5), included(10), false)   // finds all elements where 5 < key <= 10 in descending order
-    // set.select_range(unbound(), excluded(10), true)    // finds all elements where key < 10 in ascending order
-    // set.select_range(included(5), unbound(), true)    // finds all elements where 5 <= key in ascending order
-    // set.select_range(unbound(), unbound(), true)    // finds all elements in ascending order
-    // ```
-    select_range: Bound (SetElem set) -> Bound (SetElem set) -> Bool -> set -> Set::SetIterator set;
+    // select_range should be defined
 }
 
 //---------------------------------------------------------------------------
@@ -159,9 +157,6 @@ trait map: Map {
     type MapKey map;
     // The type of the values.
     type MapValue map;
-    // The type of the iterator returned by `to_iter` and `SortedMapIF::select_range`.
-    // `Item (MapIterator map)` should be equal to `(MapKey map, MapValue map)`.
-    type MapIterator map;
 
     // Checks whether a map is empty.
     //
@@ -238,13 +233,34 @@ trait map: Map {
     //
     // # Parameters
     // - `map`: a map
-    to_iter: map -> Map::MapIterator map;
+    to_iter: [?i: Iterator, Item ?i = (MapKey map, MapValue map)] map -> ?i;
 
     // Converts a map into an array of entries.
     //
     // # Parameters
     // - `map`: a map
     to_array: map -> Array (MapKey map, MapValue map);
+
+    // Finds all entries in the specified range.
+    //
+    // # Note
+    // If `map` does not implement `SortedMap`, this method may be undefined.
+    //
+    // # Parameters
+    // - `lower_bound`: the lower bound of the range
+    // - `upper_bound`: the upper bound of the range
+    // - `ascending`: order of entries (true: ascending, false: descending)
+    // - `map`: a map
+    //
+    // Example:
+    // ```
+    // map.select_range(included(5), excluded(10), true)    // finds all entries where 5 <= key < 10 in ascending order
+    // map.select_range(excluded(5), included(10), false)   // finds all entries where 5 < key <= 10 in descending order
+    // map.select_range(unbound(), excluded(10), true)    // finds all entries where key < 10 in ascending order
+    // map.select_range(included(5), unbound(), true)    // finds all entries where 5 <= key in ascending order
+    // map.select_range(unbound(), unbound(), true)    // finds all entries in ascending order
+    // ```
+    select_range: [?i: Iterator, Item ?i = (MapKey map, MapValue map)] Bound (MapKey map) -> Bound (MapKey map) -> Bool -> map -> ?i;
 }
 
 namespace Map {
@@ -268,23 +284,7 @@ trait SortedMap = Map + SortedMapIF;
 
 // The interface for sorted maps.
 trait map: SortedMapIF {
-    // Finds all entries in the specified range.
-    //
-    // # Parameters
-    // - `lower_bound`: the lower bound of the range
-    // - `upper_bound`: the upper bound of the range
-    // - `ascending`: order of entries (true: ascending, false: descending)
-    // - `map`: a map
-    //
-    // Example:
-    // ```
-    // map.select_range(included(5), excluded(10), true)    // finds all entries where 5 <= key < 10 in ascending order
-    // map.select_range(excluded(5), included(10), false)   // finds all entries where 5 < key <= 10 in descending order
-    // map.select_range(unbound(), excluded(10), true)    // finds all entries where key < 10 in ascending order
-    // map.select_range(included(5), unbound(), true)    // finds all entries where 5 <= key in ascending order
-    // map.select_range(unbound(), unbound(), true)    // finds all entries in ascending order
-    // ```
-    select_range: Bound (MapKey map) -> Bound (MapKey map) -> Bool -> map -> Map::MapIterator map;
+    // select_range should be defined
 }
 
 //---------------------------------------------------------------------------

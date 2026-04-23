@@ -455,7 +455,6 @@ namespace PTree {
 impl PTree a: Map {
     type MapKey (PTree a) = PKey;
     type MapValue (PTree a) = a;
-    type MapIterator (PTree a) = PTreeIterator a;
 
     is_empty = PTree::_is_empty;
     get_size = PTree::_get_size;
@@ -469,10 +468,10 @@ impl PTree a: Map {
     act = Map::Default::default_act;
     to_iter = PTree::_to_iter;
     to_array = PTree::_to_array;
+    select_range = PTree::_select_range;
 }
 
 impl PTree a: SortedMapIF {
-    select_range = PTree::_select_range;
 }
 
 impl [a: ToString] PTree a: ToString {

@@ -70,7 +70,6 @@ namespace TreapSet {
 // Implementation of the `Set` trait.
 impl [kc: KeyCompare, Key kc = k] TreapSet kc k: Set {
     type SetElem (TreapSet kc k) = k;
-    type SetIterator (TreapSet kc k) = Std::Iterator::MapIterator (TreapMapIterator kc k ()) (k, ()) k;
 
     insert = |k, set| set.mod_map(insert((k,())));
     erase = |k, set| set.mod_map(erase(k));
@@ -81,11 +80,11 @@ impl [kc: KeyCompare, Key kc = k] TreapSet kc k: Set {
     merge = Set::Default::default_merge;
     to_iter = |set| set.@map.to_iter.Iterator::map(|(k,_)| k);
     to_array = |set| set.@map.to_array.Functor::map(|(k,_)| k);
+    select_range = |lower_bound, upper_bound, ascending, set| (
+        set.@map.select_range(lower_bound, upper_bound, ascending).Iterator::map(|(k,_)| k)
+    );
 }
 
 // Implementation of the `SortedSetIF` trait.
 impl [kc: KeyCompare, Key kc = k] TreapSet kc k: SortedSetIF {
-    select_range = |lower_bound, upper_bound, ascending, set| (
-        set.@map.select_range(lower_bound, upper_bound, ascending).Iterator::map(|(k,_)| k)
-    );
 }

@@ -253,7 +253,6 @@ namespace TreeSet {
 // Implementation of the `Set` trait.
 impl [a: TreeSetElem] TreeSet a: Set {
     type SetElem (TreeSet a) = a;
-    type SetIterator (TreeSet a) = DynIterator a;
 
     is_empty = TreeSet::_is_empty;
     get_size = TreeSet::_get_size;
@@ -264,12 +263,10 @@ impl [a: TreeSetElem] TreeSet a: Set {
     merge = TreeSet::_merge;
     to_iter = TreeSet::_to_iter;
     to_array = TreeSet::_to_array;
+    select_range = TreeSet::_select_range;
 }
 
 impl [a: TreeSetElem] TreeSet a: SortedSetIF {
-    //find_range = TreeSet::_find_range;
-    //find_range_descending = TreeSet::_find_range_descending;
-    select_range = TreeSet::_select_range;
 }
 
 // Converts a TreeSet into a String.

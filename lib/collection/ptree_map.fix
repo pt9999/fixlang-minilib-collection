@@ -107,7 +107,6 @@ empty = PTreeMap { tree: empty };
 impl [k: PTreeMapKey] PTreeMap k v: Map {
     type MapKey (PTreeMap k v) = k;
     type MapValue (PTreeMap k v) = v;
-    type MapIterator (PTreeMap k v) = Std::Iterator::MapIterator (PTreeIterator v) (PatTree::PKey, v) (k, v);
 
     is_empty = |map| map.@tree.is_empty;
     get_size = |map| map.@tree.get_size;
@@ -119,13 +118,13 @@ impl [k: PTreeMapKey] PTreeMap k v: Map {
     act = |k, fun, map| map.act_tree(act(k._to_pattree_key, fun));
     to_iter = |map| map.@tree.to_iter.Iterator::map(_from_pattree_kv);
     to_array = |map| map.@tree.to_array.Functor::map(_from_pattree_kv);
-}
-
-impl [k: PTreeMapKey] PTreeMap k v: SortedMapIF {
     select_range = |lower_bound, upper_bound, ascending, map| (
         let lower_bound = lower_bound.Functor::map(_to_pattree_key);
         let upper_bound = upper_bound.Functor::map(_to_pattree_key);
         map.@tree.select_range(lower_bound, upper_bound, ascending)
         .Iterator::map(_from_pattree_kv)
     );
+}
+
+impl [k: PTreeMapKey] PTreeMap k v: SortedMapIF {
 }

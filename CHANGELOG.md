@@ -1,3 +1,22 @@
+## 0.8.0
+### ** BREAKING CHANGES **
+- The following functions now return an Iterator of opaque types.
+  - `OrderedMap::to_iter`
+- The following type aliases are now removed.
+  - `OrderedMapIterator`
+- The following trait methods now return an Iterator of opaque types.
+  - `Set::to_iter`
+  - `Map::to_iter`
+  - `SortedSetIF::select_range`
+  - `SortedMapIF::select_range`
+- The following associated types are now removed.
+  - `Set::SetIterator`
+  - `Map::MapIterator`
+- The following trait methods are moved to the parent traits, since they use associated types of the parent traits.
+  - `SortedSet::select_range` -> `Set::select_range`
+  - `SortedMap::select_range` -> `Map::select_range`
+- `SortedSet` and `SortedMap` are now empty. These are used to indicate that `select_range` is correctly defined.
+
 ## 0.7.1
 ### Added
 - Minilib.Collection.TreapSet: Added `from_iter`, `from_iter_kc`.

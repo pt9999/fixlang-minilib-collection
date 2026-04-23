@@ -137,7 +137,7 @@ namespace TreeMap {
     // Returns an iterator of keys in ascending order.
     keys: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> DynIterator k;
     keys = |tm| (
-        tm.to_iter.map(|e| e.@0)
+        tm.to_iter.map(|e| e.@0).to_dyn
     );
 
     // Finds an element from a TreeMap.
@@ -213,7 +213,6 @@ namespace TreeMap {
 impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: Map {
     type MapKey (TreeMap k v) = k;
     type MapValue (TreeMap k v) = v;
-    type MapIterator (TreeMap k v) = DynIterator (k, v);
 
     is_empty = TreeMap::_is_empty;
     get_size = TreeMap::_get_size;
@@ -225,10 +224,10 @@ impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: Map {
     act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
     to_iter = TreeMap::_to_iter;
     to_array = TreeMap::_to_array;
+    select_range = TreeMap::_select_range;
 }
 
 impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: SortedMapIF {
-    select_range = TreeMap::_select_range;
 }
 
 impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: ToString {

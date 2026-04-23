@@ -122,7 +122,7 @@ test_merge = |empty_set| (
 );
 
 test_to_iter:
-    [set: Set, SetElem set = I64, SetIterator set = iter, iter: Iterator, Item iter = I64]
+    [set: Set, SetElem set = I64]
     set ->  TestCase;
 test_to_iter = |empty_set| (
     make_test("test_to_iter") $ |_|
@@ -322,7 +322,7 @@ test_large_elements_batch = |empty_set| (
 // `test_perf` for the abstract type is a little slower than `test_perf` for the concrete type. why?
 
 test_perf:
-    [set: Set, SetElem set = I64, SetIterator set = iter, iter: Iterator, Item iter = I64]
+    [set: Set, SetElem set = I64]
     set -> I64 -> TestCase;
 test_perf = |empty_set, n| (
     make_test("test_perf") $ |_|
@@ -360,7 +360,7 @@ test_perf = |empty_set, n| (
 );
 
 set_tests:
-    [set: Set, SetElem set = I64, SetIterator set = iter, iter: Iterator, Item iter = I64]
+    [set: Set, SetElem set = I64]
     set -> TestCase;
 set_tests = |empty_set| (
     [

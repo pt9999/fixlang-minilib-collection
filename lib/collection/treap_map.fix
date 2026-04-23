@@ -418,7 +418,6 @@ namespace TreapMap {
 impl [kc: KeyCompare, Key kc = k] TreapMap kc k v: Map {
     type MapKey (TreapMap kc k v) = k;
     type MapValue (TreapMap kc k v) = v;
-    type MapIterator (TreapMap kc k v) = TreapMapIterator kc k v;
 
     is_empty = TreapMap::_is_empty;
     get_size = TreapMap::_get_size;
@@ -430,9 +429,9 @@ impl [kc: KeyCompare, Key kc = k] TreapMap kc k v: Map {
     act = |key, fun, map| fun(map.find(key)).Functor::map(|opt_v| map.set(key, opt_v));
     to_iter = TreapMap::_to_iter;
     to_array = TreapMap::_to_array;
+    select_range = TreapMap::_select_range;
 }
 
 // Implementation of the `SortedMapIF` trait.
 impl [kc: KeyCompare, Key kc = k] TreapMap kc k v: SortedMapIF {
-    select_range = TreapMap::_select_range;
 }
