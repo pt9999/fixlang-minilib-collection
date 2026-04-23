@@ -1,6 +1,6 @@
 # Minilib.Collection.Trait
 
-Defined in minilib-collection@0.7.1
+Defined in minilib-collection@0.8.0
 
 Trait definitions, default implementations of traits, and common type definitions for `Minilib.Collection.*`.
 
@@ -181,6 +181,34 @@ Checks whether a map is empty.
 
 - `map`: a map
 
+#### select_range
+
+Type: `[?i : Std::Iterator, map : Minilib.Collection.Trait::Map, Std::Iterator::Item ?i = (Minilib.Collection.Trait::Map::MapKey map, Minilib.Collection.Trait::Map::MapValue map)] Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Map::MapKey map) -> Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Map::MapKey map) -> Std::Bool -> map -> ?i`
+
+Trait member of `Minilib.Collection.Trait::Map`
+
+Finds all entries in the specified range.
+
+##### Note
+
+If `map` does not implement `SortedMap`, this method may be undefined.
+
+##### Parameters
+
+- `lower_bound`: the lower bound of the range
+- `upper_bound`: the upper bound of the range
+- `ascending`: order of entries (true: ascending, false: descending)
+- `map`: a map
+
+Example:
+```
+map.select_range(included(5), excluded(10), true)    // finds all entries where 5 <= key < 10 in ascending order
+map.select_range(excluded(5), included(10), false)   // finds all entries where 5 < key <= 10 in descending order
+map.select_range(unbound(), excluded(10), true)    // finds all entries where key < 10 in ascending order
+map.select_range(included(5), unbound(), true)    // finds all entries where 5 <= key in ascending order
+map.select_range(unbound(), unbound(), true)    // finds all entries in ascending order
+```
+
 #### set
 
 Type: `[map : Minilib.Collection.Trait::Map] Minilib.Collection.Trait::Map::MapKey map -> Std::Option (Minilib.Collection.Trait::Map::MapValue map) -> map -> map`
@@ -212,7 +240,7 @@ Converts a map into an array of entries.
 
 #### to_iter
 
-Type: `[map : Minilib.Collection.Trait::Map] map -> Minilib.Collection.Trait::Map::MapIterator map`
+Type: `[?i : Std::Iterator, map : Minilib.Collection.Trait::Map, Std::Iterator::Item ?i = (Minilib.Collection.Trait::Map::MapKey map, Minilib.Collection.Trait::Map::MapValue map)] map -> ?i`
 
 Trait member of `Minilib.Collection.Trait::Map`
 
@@ -327,79 +355,17 @@ Calculates union of two sets.
 - `set1`: a set
 - `set2`: another set
 
-#### to_array
-
-Type: `[set : Minilib.Collection.Trait::Set] set -> Std::Array (Minilib.Collection.Trait::Set::SetElem set)`
-
-Trait member of `Minilib.Collection.Trait::Set`
-
-Converts a set into an array.
-
-##### Parameters
-
-- `set`: a set
-
-#### to_iter
-
-Type: `[set : Minilib.Collection.Trait::Set] set -> Minilib.Collection.Trait::Set::SetIterator set`
-
-Trait member of `Minilib.Collection.Trait::Set`
-
-Converts a set into an iterator.
-
-##### Parameters
-
-- `set`: a set
-
-### namespace Minilib.Collection.Trait::Set::Default
-
-#### default_intersect
-
-Type: `[iter : Std::Iterator, set : Minilib.Collection.Trait::Set, Minilib.Collection.Trait::Set::SetElem set = e, Minilib.Collection.Trait::Set::SetIterator set = iter, Std::Iterator::Item iter = e] set -> set -> set`
-
-Default implementation of `Set::intersect`.
-
-#### default_merge
-
-Type: `[iter : Std::Iterator, set : Minilib.Collection.Trait::Set, Minilib.Collection.Trait::Set::SetElem set = e, Minilib.Collection.Trait::Set::SetIterator set = iter, Std::Iterator::Item iter = e] set -> set -> set`
-
-Default implementation of `Set::merge`.
-
-### namespace Minilib.Collection.Trait::SortedMapIF
-
 #### select_range
 
-Type: `[map : Minilib.Collection.Trait::SortedMapIF] Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Map::MapKey map) -> Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Map::MapKey map) -> Std::Bool -> map -> Minilib.Collection.Trait::Map::MapIterator map`
+Type: `[?i : Std::Iterator, set : Minilib.Collection.Trait::Set, Std::Iterator::Item ?i = Minilib.Collection.Trait::Set::SetElem set] Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Set::SetElem set) -> Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Set::SetElem set) -> Std::Bool -> set -> ?i`
 
-Trait member of `Minilib.Collection.Trait::SortedMapIF`
-
-Finds all entries in the specified range.
-
-##### Parameters
-
-- `lower_bound`: the lower bound of the range
-- `upper_bound`: the upper bound of the range
-- `ascending`: order of entries (true: ascending, false: descending)
-- `map`: a map
-
-Example:
-```
-map.select_range(included(5), excluded(10), true)    // finds all entries where 5 <= key < 10 in ascending order
-map.select_range(excluded(5), included(10), false)   // finds all entries where 5 < key <= 10 in descending order
-map.select_range(unbound(), excluded(10), true)    // finds all entries where key < 10 in ascending order
-map.select_range(included(5), unbound(), true)    // finds all entries where 5 <= key in ascending order
-map.select_range(unbound(), unbound(), true)    // finds all entries in ascending order
-```
-
-### namespace Minilib.Collection.Trait::SortedSetIF
-
-#### select_range
-
-Type: `[set : Minilib.Collection.Trait::SortedSetIF] Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Set::SetElem set) -> Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Set::SetElem set) -> Std::Bool -> set -> Minilib.Collection.Trait::Set::SetIterator set`
-
-Trait member of `Minilib.Collection.Trait::SortedSetIF`
+Trait member of `Minilib.Collection.Trait::Set`
 
 Finds all elements in the specified range.
+
+##### Note
+
+If `set` does not implement `SortedSet`, this method may be undefined.
 
 ##### Parameters
 
@@ -416,6 +382,44 @@ set.select_range(unbound(), excluded(10), true)    // finds all elements where k
 set.select_range(included(5), unbound(), true)    // finds all elements where 5 <= key in ascending order
 set.select_range(unbound(), unbound(), true)    // finds all elements in ascending order
 ```
+
+#### to_array
+
+Type: `[set : Minilib.Collection.Trait::Set] set -> Std::Array (Minilib.Collection.Trait::Set::SetElem set)`
+
+Trait member of `Minilib.Collection.Trait::Set`
+
+Converts a set into an array.
+
+##### Parameters
+
+- `set`: a set
+
+#### to_iter
+
+Type: `[?i : Std::Iterator, set : Minilib.Collection.Trait::Set, Std::Iterator::Item ?i = Minilib.Collection.Trait::Set::SetElem set] set -> ?i`
+
+Trait member of `Minilib.Collection.Trait::Set`
+
+Converts a set into an iterator.
+
+##### Parameters
+
+- `set`: a set
+
+### namespace Minilib.Collection.Trait::Set::Default
+
+#### default_intersect
+
+Type: `[set : Minilib.Collection.Trait::Set] set -> set -> set`
+
+Default implementation of `Set::intersect`.
+
+#### default_merge
+
+Type: `[set : Minilib.Collection.Trait::Set] set -> set -> set`
+
+Default implementation of `Set::merge`.
 
 ## Types and aliases
 
@@ -510,13 +514,6 @@ The type of the values.
 Defined as: `MapKey map`
 
 The type of the keys.
-
-##### type `MapIterator`
-
-Defined as: `MapIterator map`
-
-The type of the iterator returned by `to_iter` and `SortedMapIF::select_range`.
-`Item (MapIterator map)` should be equal to `(MapKey map, MapValue map)`.
 
 ##### method `is_empty`
 
@@ -623,7 +620,7 @@ Semantically, `map.act(key, fun)` is equivalent to
 
 ##### method `to_iter`
 
-Type: `map -> Minilib.Collection.Trait::Map::MapIterator map`
+Type: `[?i : Std::Iterator] map -> ?i`
 
 Converts a map into an iterator of entries.
 
@@ -641,6 +638,32 @@ Converts a map into an array of entries.
 
 - `map`: a map
 
+##### method `select_range`
+
+Type: `[?i : Std::Iterator] Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Map::MapKey map) -> Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Map::MapKey map) -> Std::Bool -> map -> ?i`
+
+Finds all entries in the specified range.
+
+###### Note
+
+If `map` does not implement `SortedMap`, this method may be undefined.
+
+###### Parameters
+
+- `lower_bound`: the lower bound of the range
+- `upper_bound`: the upper bound of the range
+- `ascending`: order of entries (true: ascending, false: descending)
+- `map`: a map
+
+Example:
+```
+map.select_range(included(5), excluded(10), true)    // finds all entries where 5 <= key < 10 in ascending order
+map.select_range(excluded(5), included(10), false)   // finds all entries where 5 < key <= 10 in descending order
+map.select_range(unbound(), excluded(10), true)    // finds all entries where key < 10 in ascending order
+map.select_range(included(5), unbound(), true)    // finds all entries where 5 <= key in ascending order
+map.select_range(unbound(), unbound(), true)    // finds all entries in ascending order
+```
+
 #### trait `set : Set`
 
 The trait for abstract sets.
@@ -650,13 +673,6 @@ The trait for abstract sets.
 Defined as: `SetElem set`
 
 The type of the elements.
-
-##### type `SetIterator`
-
-Defined as: `SetIterator set`
-
-The type of the iterator returned by `to_iter` and `SortedSetIF::select_range`.
-`Item (SetIterator set)` should be equal to `SetElem set`.
 
 ##### method `is_empty`
 
@@ -735,7 +751,7 @@ Calculates union of two sets.
 
 ##### method `to_iter`
 
-Type: `set -> Minilib.Collection.Trait::Set::SetIterator set`
+Type: `[?i : Std::Iterator] set -> ?i`
 
 Converts a set into an iterator.
 
@@ -753,53 +769,15 @@ Converts a set into an array.
 
 - `set`: a set
 
-#### trait `SortedMap = Minilib.Collection.Trait::Map + Minilib.Collection.Trait::SortedMapIF`
-
-Kind: `*`
-
-The trait for sorted maps.
-
-#### trait `map : SortedMapIF`
-
-The interface for sorted maps.
-
 ##### method `select_range`
 
-Type: `Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Map::MapKey map) -> Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Map::MapKey map) -> Std::Bool -> map -> Minilib.Collection.Trait::Map::MapIterator map`
-
-Finds all entries in the specified range.
-
-###### Parameters
-
-- `lower_bound`: the lower bound of the range
-- `upper_bound`: the upper bound of the range
-- `ascending`: order of entries (true: ascending, false: descending)
-- `map`: a map
-
-Example:
-```
-map.select_range(included(5), excluded(10), true)    // finds all entries where 5 <= key < 10 in ascending order
-map.select_range(excluded(5), included(10), false)   // finds all entries where 5 < key <= 10 in descending order
-map.select_range(unbound(), excluded(10), true)    // finds all entries where key < 10 in ascending order
-map.select_range(included(5), unbound(), true)    // finds all entries where 5 <= key in ascending order
-map.select_range(unbound(), unbound(), true)    // finds all entries in ascending order
-```
-
-#### trait `SortedSet = Minilib.Collection.Trait::Set + Minilib.Collection.Trait::SortedSetIF`
-
-Kind: `*`
-
-The trait for sorted sets.
-
-#### trait `set : SortedSetIF`
-
-The interface for sorted sets.
-
-##### method `select_range`
-
-Type: `Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Set::SetElem set) -> Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Set::SetElem set) -> Std::Bool -> set -> Minilib.Collection.Trait::Set::SetIterator set`
+Type: `[?i : Std::Iterator] Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Set::SetElem set) -> Minilib.Collection.Trait::Bound (Minilib.Collection.Trait::Set::SetElem set) -> Std::Bool -> set -> ?i`
 
 Finds all elements in the specified range.
+
+###### Note
+
+If `set` does not implement `SortedSet`, this method may be undefined.
 
 ###### Parameters
 
@@ -816,6 +794,26 @@ set.select_range(unbound(), excluded(10), true)    // finds all elements where k
 set.select_range(included(5), unbound(), true)    // finds all elements where 5 <= key in ascending order
 set.select_range(unbound(), unbound(), true)    // finds all elements in ascending order
 ```
+
+#### trait `SortedMap = Minilib.Collection.Trait::Map + Minilib.Collection.Trait::SortedMapIF`
+
+Kind: `*`
+
+The trait for sorted maps.
+
+#### trait `map : SortedMapIF`
+
+The interface for sorted maps.
+
+#### trait `SortedSet = Minilib.Collection.Trait::Set + Minilib.Collection.Trait::SortedSetIF`
+
+Kind: `*`
+
+The trait for sorted sets.
+
+#### trait `set : SortedSetIF`
+
+The interface for sorted sets.
 
 ## Trait implementations
 

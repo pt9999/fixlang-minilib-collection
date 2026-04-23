@@ -1,6 +1,6 @@
 # Minilib.Collection.Internal.PatTree
 
-Defined in minilib-collection@0.7.1
+Defined in minilib-collection@0.8.0
 
 Simple map using Patricia Tree.
 
@@ -104,26 +104,6 @@ The type of index of the node array.
 Defined as: `type PTree a = unbox struct { ...fields... }`
 
 The type of Patricia Trees.
-
-##### field `_root`
-
-Type: `Minilib.Collection.Internal.PatTree::PNodeIndex`
-
-##### field `_size`
-
-Type: `Std::I64`
-
-##### field `_combine`
-
-Type: `Minilib.Collection.Internal.PatTree::Combine a`
-
-##### field `_nodes`
-
-Type: `Std::Array (Minilib.Collection.Internal.PatTree::PNode a)`
-
-##### field `_freelist`
-
-Type: `Std::Array Minilib.Collection.Internal.PatTree::PNodeIndex`
 
 #### Prefix
 

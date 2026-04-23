@@ -1,6 +1,6 @@
 # Minilib.Collection.Deque
 
-Defined in minilib-collection@0.7.1
+Defined in minilib-collection@0.8.0
 
 Deque (double-ended queue).
 Deque can be used as a FIFO such as a message queue.
@@ -67,7 +67,7 @@ Pushes an element to the front of the queue.
 
 #### to_iter
 
-Type: `Minilib.Collection.Deque::Deque a -> Minilib.Collection.Deque::Deque::DequeIterator a`
+Type: `[?i : Std::Iterator, Std::Iterator::Item ?i = a] Minilib.Collection.Deque::Deque a -> ?i`
 
 Returns an iterator of elements.
 
@@ -88,12 +88,6 @@ Type: `Std::Array a`
 ##### field `back`
 
 Type: `Std::Array a`
-
-### namespace Minilib.Collection.Deque::Deque
-
-#### DequeIterator
-
-Defined as: `type DequeIterator a = Std::Iterator::AppendIterator (Std::Iterator::ReverseIterator (Std::Iterator::ArrayIterator a) a) (Std::Iterator::ArrayIterator a)`
 
 ## Traits and aliases
 

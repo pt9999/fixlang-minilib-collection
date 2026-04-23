@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeSet
 
-Defined in minilib-collection@0.7.1
+Defined in minilib-collection@0.8.0
 
 TreeSet is a set that manages elements in sorted order.
 

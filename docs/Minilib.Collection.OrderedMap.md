@@ -1,6 +1,6 @@
 # Minilib.Collection.OrderedMap
 
-Defined in minilib-collection@0.7.1
+Defined in minilib-collection@0.8.0
 
 Ordered map.
 This is similar to HashMap except it preserves the order of entries.
@@ -65,7 +65,7 @@ Reserve an OrderedMap so that it will not rehash until size exceeds the spacifie
 
 #### to_iter
 
-Type: `Minilib.Collection.OrderedMap::OrderedMap k v -> Minilib.Collection.OrderedMap::OrderedMap::OrderedMapIterator k v`
+Type: `[?i : Std::Iterator, Std::Iterator::Item ?i = (k, v)] Minilib.Collection.OrderedMap::OrderedMap k v -> ?i`
 
 Convert an OrderedMap into an iterator. The order of the elements is the same as
 when they were inserted into the map.
@@ -87,12 +87,6 @@ Type: `HashMap::HashMap k (Std::I64, v)`
 ##### field `serial`
 
 Type: `Std::I64`
-
-### namespace Minilib.Collection.OrderedMap::OrderedMap
-
-#### OrderedMapIterator
-
-Defined as: `type OrderedMapIterator k v = Std::Iterator::MapIterator (Std::Iterator::ArrayIterator (k, (Std::I64, v))) (k, (Std::I64, v)) (k, v)`
 
 ## Traits and aliases
 
