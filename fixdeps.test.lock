@@ -1,4 +1,4 @@
-proj_file_hash = "78bafae82619f5400f8b3b20efe1de5a"
+proj_file_hash = "a52e642085c8a270ebf2a551f15b387e"
 
 [[dependencies]]
 name = "character"
@@ -20,21 +20,21 @@ rev = "145a20913eb9c280edd616d5b9977d33303343c1"
 
 [[dependencies]]
 name = "hashmap"
-version = "1.2.0"
-path = ".fixlang/deps/hashmap_1.2.0"
+version = "2.0.0"
+path = ".fixlang/deps/hashmap_2.0.0"
 
 [dependencies.git]
 repo = "https://github.com/tttmmmyyyy/fixlang-hashmap.git"
-rev = "a7cb58fef24d0cf11ba305faf4f764dca72ecc45"
+rev = "26bcb6c7cb66cc39b4f2604e1c94aa7730e03a9e"
 
 [[dependencies]]
 name = "minilib-common"
-version = "0.13.0"
-path = ".fixlang/deps/minilib-common_0.13.0"
+version = "0.13.1"
+path = ".fixlang/deps/minilib-common_0.13.1"
 
 [dependencies.git]
 repo = "https://github.com/pt9999/fixlang-minilib-common.git"
-rev = "d8af3860a44a3ab19ddf6a39c809b959821cbe98"
+rev = "87c043b05ab35881c81a53587cdbc72f0ae0e5cf"
 
 [[dependencies]]
 name = "random"

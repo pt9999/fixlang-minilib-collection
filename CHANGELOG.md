@@ -1,3 +1,7 @@
+## 0.8.1
+### Changed
+- Upgraded to minilib-common@0.13.1, hashmap@2.0.0.
+
 ## 0.8.0
 ### ** BREAKING CHANGES **
 - The following functions now return an Iterator of opaque types.
