@@ -110,6 +110,9 @@ trait set: Set {
 }
 
 namespace Set {
+    DEPRECATED[get_size, "Use `@size` instead."];
+    get_size: [set: Set] set -> I64 = @size;
+
     namespace Default {
         // Default implementation of `Set::intersect`.
         default_intersect: [set: Set] set -> set -> set;
@@ -264,6 +267,9 @@ trait map: Map {
 }
 
 namespace Map {
+    DEPRECATED[get_size, "Use `@size` instead."];
+    get_size: [map: Map] map -> I64 = @size;
+
     namespace Default {
         // Default implementation of `Map::set`.
         default_set: [map: Map] MapKey map -> (Option (MapValue map)) -> map -> map;

@@ -47,6 +47,9 @@ namespace OrderedMap {
     @size: OrderedMap k v -> I64;
     @size = |self| self.@map.@size;
 
+    DEPRECATED[get_size, "Use `@size` instead."];
+    get_size: OrderedMap k v -> I64 = @size;
+
     // Insert an element into an OrderedMap.
     insert: [k : HashKey] k -> v -> OrderedMap k v -> OrderedMap k v;
     insert = |k, v, self| (

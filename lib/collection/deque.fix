@@ -24,6 +24,9 @@ namespace Deque {
     @size: Deque a -> I64;
     @size = |q| q.@front.@size + q.@back.@size;
 
+    DEPRECATED[get_size, "Use `@size` instead."];
+    get_size: Deque a -> I64 = @size;
+
     // Returns true iff the queue is empty.
     is_empty: Deque a -> Bool;
     is_empty = |q| q.@size == 0;

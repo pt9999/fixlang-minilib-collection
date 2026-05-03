@@ -7,6 +7,7 @@
   - `TreeSet::find_range_descending`
 - Modified some code to remove the deprecation warnings.
 - Renamed `get_size` to `@size`.
+- Added `get_size` functions with `DEPRECATED` pragmas for backward compatibility.
 
 ## 0.8.1
 ### Changed
