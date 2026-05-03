@@ -22,7 +22,8 @@ test_find_range = (
         set.insert(x)
     );
     let test_find_range_ok = |begin, end, expected| (
-        let actual = set.find_range(begin, end).to_array;
+        //let actual = set.find_range(begin, end).to_array;
+        let actual = set.select_range(included(begin), excluded(end), true).to_array;
         assert_equal("begin="+begin.to_string+" end="+end.to_string, expected, actual)
     );
     let test_find_raw_range_ok = |lt_begin, lt_end, expected| (
@@ -52,7 +53,8 @@ test_find_range_descending = (
         set.insert(x)
     );
     let test_find_range_desc_ok = |begin, end, expected| (
-        let actual = set.find_range_descending(begin, end).to_array;
+        //let actual = set.find_range_descending(begin, end).to_array;
+        let actual = set.select_range(included(begin), excluded(end), false).to_array;
         assert_equal("begin="+begin.to_string+" end="+end.to_string, expected, actual)
     );
     let test_find_range_desc_desc_ok = |lt_begin, lt_end, expected| (

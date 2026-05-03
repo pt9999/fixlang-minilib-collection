@@ -248,7 +248,7 @@ test_get_size_batch = |empty_map| (
             (1237, 10, 10),
         ],
         |(seed, n, max_op)|
-        let random = Random::init_by_seed(seed.to_U64);
+        let random = Random::init_by_seed(seed.u64);
         let mask = Array::fill(n, false);
         let size = 0;
         let map = empty_map;
@@ -258,9 +258,9 @@ test_get_size_batch = |empty_map| (
             let (random, k) = random.generate_U64;
             let (random, v) = random.generate_U64;
             let (random, op) = random.generate_U64;
-            let k = (k % n.to_U64).to_I64;
-            let v = (v % n.to_U64).to_I64.to_string;
-            let op = (op % max_op.to_U64).to_I64;
+            let k = (k % n.u64).i64;
+            let v = (v % n.u64).i64.to_string;
+            let op = (op % max_op.u64).i64;
             if op == 0 {
                 let size = if mask.@(k) { size } else { size + 1 };
                 let mask = mask.set(k, true);
@@ -301,8 +301,8 @@ test_large_keys_batch = |empty_map| (
             (12346, 200),
         ],
         |(seed, n)|
-        let random = Random::init_by_seed(seed.to_U64);
-        let (random, keys) = random.generate_array(n, generate_U64 >> Functor::map(to_I64));
+        let random = Random::init_by_seed(seed.u64);
+        let (random, keys) = random.generate_array(n, generate_U64 >> Functor::map(i64));
         let keys_sorted = keys.sort.dedup;
         let keys_shuffled =  keys_sorted.reorder(shuffle(seed * 10 + 1));
         let map = keys_shuffled.to_iter.fold(

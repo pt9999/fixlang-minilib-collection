@@ -158,7 +158,7 @@ test_find_range_perf = (
     );
     let (ans, ans_time) = *consumed_time_while_io(do {
         pure();;
-        pure $ query((n.to_F64*0.1).to_I64, (n.to_F64*0.9).to_I64)
+        pure $ query((n.f64*0.1).i64, (n.f64*0.9).i64)
     }).lift;
     let (first, first_time) = *consumed_time_while_io(do {
         pure();;

@@ -48,17 +48,17 @@ test_select_range_random = |empty_map| (
             (32348, 200),
         ],
         |(seed, n)|
-        let random = Random::init_by_seed(seed.to_U64);
-        let (random, keys) = random.generate_array(n, generate_U64 >> Functor::map(to_I64));
+        let random = Random::init_by_seed(seed.u64);
+        let (random, keys) = random.generate_array(n, generate_U64 >> Functor::map(i64));
         let keyvalues = keys.map(|k| (k, k.to_string));
         let map = keyvalues.to_iter.fold(empty_map, insert);
         let keyvalues_sorted: Array (I64, String) = keyvalues.sort.dedup;
         range(0, 100).fold_m(
             random, |_, random|
-            let (random, lb_type) = random.generate_U64.Functor::map(to_I64);
-            let (random, lower_bound) = random.generate_U64.Functor::map(to_I64);
-            let (random, ub_type) = random.generate_U64.Functor::map(to_I64);
-            let (random, upper_bound) = random.generate_U64.Functor::map(to_I64);
+            let (random, lb_type) = random.generate_U64.Functor::map(i64);
+            let (random, lower_bound) = random.generate_U64.Functor::map(i64);
+            let (random, ub_type) = random.generate_U64.Functor::map(i64);
+            let (random, upper_bound) = random.generate_U64.Functor::map(i64);
             let make_bound = |type_, bound| if type_ % 3 == 0 { unbound() }
             else if type_ % 3 == 1 { included(bound) }
             else { excluded(bound) };

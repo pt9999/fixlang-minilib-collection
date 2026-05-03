@@ -40,7 +40,8 @@ test_find_range = (
         map.insert((k, k*10))
     );
     let test_find_range_ok = |begin, end, expected| (
-        let actual = map.find_range(begin, end).to_array;
+        //let actual = map.find_range(begin, end).to_array;
+        let actual = map.select_range(included(begin), excluded(end), true).to_array;
         assert_equal("begin="+begin.to_string+" end="+end.to_string, expected, actual)
     );
     let test_find_raw_range_ok = |lt_begin, lt_end, expected| (

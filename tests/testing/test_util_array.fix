@@ -29,7 +29,7 @@ shuffle_array = |array, random| (
             break $ (random, array)
         };
         let (random, j) = random.generate_U64;
-        let j = (j % (i + 1).to_U64).to_I64;
+        let j = (j % (i + 1).u64).i64;
         let tmp = array.@(i);
         let array = array.set(i, array.@(j));
         let array = array.set(j, tmp);
@@ -90,7 +90,7 @@ reorder = |reorder, array| (
     };
     if reorder.is_shuffle {
         let seed = reorder.as_shuffle;
-        let random = Random::init_by_seed(seed.to_U64);
+        let random = Random::init_by_seed(seed.u64);
         let (random, array) = random.shuffle_array(array);
         array
     };

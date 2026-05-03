@@ -49,16 +49,16 @@ test_select_range_random = |empty_set| (
             (22348, 200),
         ],
         |(seed, n)|
-        let random = Random::init_by_seed(seed.to_U64);
-        let (random, elements) = random.generate_array(n, generate_U64 >> Functor::map(to_I64));
+        let random = Random::init_by_seed(seed.u64);
+        let (random, elements) = random.generate_array(n, generate_U64 >> Functor::map(i64));
         let elements_sorted = elements.sort.dedup;
         let set = elements.to_iter.fold(empty_set, insert);
         range(0, 100).fold_m(
             random, |_, random|
-            let (random, lb_type) = random.generate_U64.Functor::map(to_I64);
-            let (random, lower_bound) = random.generate_U64.Functor::map(to_I64);
-            let (random, ub_type) = random.generate_U64.Functor::map(to_I64);
-            let (random, upper_bound) = random.generate_U64.Functor::map(to_I64);
+            let (random, lb_type) = random.generate_U64.Functor::map(i64);
+            let (random, lower_bound) = random.generate_U64.Functor::map(i64);
+            let (random, ub_type) = random.generate_U64.Functor::map(i64);
+            let (random, upper_bound) = random.generate_U64.Functor::map(i64);
             let make_bound = |type_, bound| if type_ % 3 == 0 { unbound() }
             else if type_ % 3 == 1 { included(bound) }
             else { excluded(bound) };

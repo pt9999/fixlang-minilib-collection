@@ -212,7 +212,7 @@ test_intersect_merge_batch = |empty_set| (
             (3458, 100, 50),
         ],
         |(seed, n, modulo)|
-        let random = Random::init_by_seed(seed.to_U64);
+        let random = Random::init_by_seed(seed.u64);
         let (random, arr1) = random.generate_array(n, generate_I64_nonneg);
         let (random, arr2) = random.generate_array(n, generate_I64_nonneg);
         let arr1 = arr1.map(|x| x % modulo);
@@ -258,7 +258,7 @@ test_get_size_batch = |empty_set| (
         |(seed, n, max_op)|
         let debug_eprintln = if false { debug_eprintln } else { |_| () };
         eval debug_eprintln ("--- test_get_size_batch (seed, n, max_op)=" + (seed, n, max_op).to_string);
-        let random = Random::init_by_seed(seed.to_U64);
+        let random = Random::init_by_seed(seed.u64);
         let mask = Array::fill(n, false);
         let size = 0;
         let set = empty_set;
@@ -267,8 +267,8 @@ test_get_size_batch = |empty_set| (
             if i >= n * 10 { break_m $ () };
             let (random, v) = random.generate_U64;
             let (random, op) = random.generate_U64;
-            let v = (v % n.to_U64).to_I64;
-            let op = (op % max_op.to_U64).to_I64;
+            let v = (v % n.u64).i64;
+            let op = (op % max_op.u64).i64;
             if op == 0 {
                 let size = if mask.@(v) { size } else { size + 1 };
                 let mask = mask.Array::set(v, true);
@@ -305,8 +305,8 @@ test_large_elements_batch = |empty_set| (
             (12348, 200),
         ],
         |(seed, n)|
-        let random = Random::init_by_seed(seed.to_U64);
-        let (random, elements) = random.generate_array(n, generate_U64 >> Functor::map(to_I64));
+        let random = Random::init_by_seed(seed.u64);
+        let (random, elements) = random.generate_array(n, generate_U64 >> Functor::map(i64));
         let elements_sorted = elements.sort.dedup;
         let elements_shuffled =  elements_sorted.reorder(shuffle(seed * 10 + 1));
         let set = elements_shuffled.to_iter.fold(
