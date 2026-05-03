@@ -1,4 +1,4 @@
-proj_file_hash = "a52e642085c8a270ebf2a551f15b387e"
+proj_file_hash = "45a225dbf7e930d4561e9f7e4e1ca4aa"
 
 [[dependencies]]
 name = "character"
@@ -11,39 +11,39 @@ rev = "fd75a6634ec0c919f2d1703112d25da9a3c2346e"
 
 [[dependencies]]
 name = "hash"
-version = "1.1.1"
-path = ".fixlang/deps/hash_1.1.1"
+version = "1.1.2"
+path = ".fixlang/deps/hash_1.1.2"
 
 [dependencies.git]
 repo = "https://github.com/tttmmmyyyy/fixlang-hash.git"
-rev = "145a20913eb9c280edd616d5b9977d33303343c1"
+rev = "dbf95379b6ee7b26ec4858116f24c0251467cb83"
 
 [[dependencies]]
 name = "hashmap"
-version = "2.0.0"
-path = ".fixlang/deps/hashmap_2.0.0"
+version = "2.0.1"
+path = ".fixlang/deps/hashmap_2.0.1"
 
 [dependencies.git]
 repo = "https://github.com/tttmmmyyyy/fixlang-hashmap.git"
-rev = "26bcb6c7cb66cc39b4f2604e1c94aa7730e03a9e"
+rev = "103595c593e92849be0b23df5cfee254da274a3e"
 
 [[dependencies]]
 name = "minilib-common"
-version = "0.13.1"
-path = ".fixlang/deps/minilib-common_0.13.1"
+version = "0.13.2"
+path = ".fixlang/deps/minilib-common_0.13.2"
 
 [dependencies.git]
 repo = "https://github.com/pt9999/fixlang-minilib-common.git"
-rev = "87c043b05ab35881c81a53587cdbc72f0ae0e5cf"
+rev = "dd2ac9b5be81dca3ddac5384954534b26835293c"
 
 [[dependencies]]
 name = "random"
-version = "1.1.1"
-path = ".fixlang/deps/random_1.1.1"
+version = "1.1.2"
+path = ".fixlang/deps/random_1.1.2"
 
 [dependencies.git]
 repo = "https://github.com/tttmmmyyyy/fixlang-random.git"
-rev = "b4f83ee48564e714c0918513dd431f9135493dce"
+rev = "af8b2ea3f4fb783d86119d1a2504a12d8f2be2c1"
 
 [[dependencies]]
 name = "time"
