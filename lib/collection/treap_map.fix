@@ -59,7 +59,7 @@ type TreapMap kc k v = box struct {
     // The key comparator.
     kc: kc,
     // The number of elements.
-    size: I64,
+    _size: I64,
     // The random seed.
     seed: Priority,
     // The array of nodes.
@@ -89,7 +89,7 @@ namespace TreapMap {
     make = |kc| TreapMap {
         root: TNodeIndex::empty,
         kc: kc,
-        size: 0,
+        _size: 0,
         seed: 0x0123456789abcdef_U64,
         nodes: [],
         freelist: [],
@@ -105,7 +105,7 @@ namespace TreapMap {
                 (treap, node)
             ),
             none() => (
-                let node = treap.@nodes.get_size;
+                let node = treap.@nodes.@size;
                 let treap = treap[^nodes].imod(push_back(some $ nodedata));
                 (treap, node)
             )
@@ -122,7 +122,7 @@ namespace TreapMap {
     // makes a branch node
     _make_branch: Priority -> k -> v -> TNodeIndex -> TNodeIndex -> TreapMap kc k v -> (TreapMap kc k v, TNodeIndex);
     _make_branch = |prio, key, value, left, right, treap| (
-        let treap = treap[^size].imod(add(1));
+        let treap = treap[^_size].imod(add(1));
         let b = TNode { prio:prio, key:key, value:value, left:left, right:right };
         treap._make_node(b)
     );
@@ -130,7 +130,7 @@ namespace TreapMap {
     // marks a branch as free
     _free_branch: TNodeIndex -> TreapMap kc k v -> TreapMap kc k v;
     _free_branch = |node, treap| (
-        let treap = treap[^size].imod(add(-1));
+        let treap = treap[^_size].imod(add(-1));
         treap._free_node(node)
     );
 
@@ -148,11 +148,11 @@ namespace TreapMap {
 
     // Checks whether a map is empty.
     _is_empty: TreapMap kc k v -> Bool;
-    _is_empty = |treap| treap.@size == 0;
+    _is_empty = |treap| treap.@_size == 0;
 
     // Gets the number of elements in a map.
     _get_size: TreapMap kc k v -> I64;
-    _get_size = @size;
+    _get_size = @_size;
 
     // Checks whether a map contains the specified key.
     _contains_key: [kc: KeyCompare, Key kc = k] k -> TreapMap kc k v -> Bool;
@@ -420,7 +420,7 @@ impl [kc: KeyCompare, Key kc = k] TreapMap kc k v: Map {
     type MapValue (TreapMap kc k v) = v;
 
     is_empty = TreapMap::_is_empty;
-    get_size = TreapMap::_get_size;
+    @size = TreapMap::_get_size;
     contains_key = TreapMap::_contains_key;
     find = TreapMap::_find;
     insert = TreapMap::_insert;

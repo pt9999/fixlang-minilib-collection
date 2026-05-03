@@ -20,7 +20,7 @@ test_empty = (
     make_test("test_stream_empty") $ |_|
     let om: OrderedMap String String = OrderedMap::empty(100);
     assert_equal("capacity", 128, om.get_capacity);; // power of two
-    assert_equal("size", 0, om.get_size);;
+    assert_equal("size", 0, om.@size);;
     pure()
 );
 

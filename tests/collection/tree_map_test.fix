@@ -18,10 +18,10 @@ test_upsert = (
     let map = map.upsert(1, [11], push_back(12));
     let map = map.upsert(2, [21], push_back(22));
     let map = map.upsert(3, [31], push_back(32));
-    assert_equal("size", 3, map.get_size);;
+    assert_equal("size", 3, map.@size);;
     let map = map.upsert(1, [13], push_back(14));
     let map = map.upsert(2, [23], pop_back);
-    assert_equal("size", 3, map.get_size);;
+    assert_equal("size", 3, map.@size);;
     assert_equal("eq", none(), map.find(0));;
     assert_equal("eq", some([11, 14]), map.find(1));;
     assert_equal("eq", some([]), map.find(2));;

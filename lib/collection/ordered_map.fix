@@ -44,8 +44,8 @@ namespace OrderedMap {
     get_capacity = |self| self.@map.get_capacity;
 
     // Get size (number of elements) in an OrderedMap.
-    get_size: OrderedMap k v -> I64;
-    get_size = |self| self.@map.get_size;
+    @size: OrderedMap k v -> I64;
+    @size = |self| self.@map.@size;
 
     // Insert an element into an OrderedMap.
     insert: [k : HashKey] k -> v -> OrderedMap k v -> OrderedMap k v;
@@ -76,7 +76,7 @@ namespace OrderedMap {
 impl [k: HashKey, v: Eq] OrderedMap k v: Eq
 {
     eq = |omap1, omap2| (
-        if omap1.get_size != omap2.get_size {
+        if omap1.@size != omap2.@size {
             false
         };
         let every = |f, iter| (

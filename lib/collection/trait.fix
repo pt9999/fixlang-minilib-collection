@@ -38,7 +38,7 @@ trait set: Set {
     //
     // # Parameters
     // - `set`: a set
-    get_size: set -> I64;
+    @size: set -> I64;
 
     // Checks whether a set contains the specified element.
     //
@@ -168,7 +168,7 @@ trait map: Map {
     //
     // # Parameters
     // - `map`: a map
-    get_size: map -> I64;
+    @size: map -> I64;
 
     // Checks whether any entry exists whose key is equivalent to the specified key.
     //

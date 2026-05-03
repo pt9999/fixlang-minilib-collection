@@ -10,7 +10,7 @@ test_get_size_ok = |(front, back, expected)| (
     let testname = "test_get_size_ok (" + front.to_string + "," + back.to_string + ")";
     make_test(testname) $ |_|
     let q = Deque { front: front, back: back };
-    let actual = q.get_size;
+    let actual = q.@size;
     assert_equal("equal", expected, actual)
 );
 

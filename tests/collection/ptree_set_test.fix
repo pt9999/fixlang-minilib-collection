@@ -14,9 +14,9 @@ test_element_type = |empty_set, name| (
     let set = set.insert(_from_pattree_key(255_U64));
     let set = set.insert(_from_pattree_key(128_U64));
     assert_equal("contains", true, set.contains(_from_pattree_key(255_U64)));;
-    assert_equal("size", 2, set.get_size);;
+    assert_equal("size", 2, set.@size);;
     let set = set.erase(_from_pattree_key(255_U64));
-    assert_equal("size", 1, set.get_size);;
+    assert_equal("size", 1, set.@size);;
     pure()
 );
 

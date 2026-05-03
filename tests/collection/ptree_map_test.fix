@@ -15,9 +15,9 @@ test_key_type = |empty_map, name| (
     let map = map.insert((_from_pattree_key(128_U64), "def"));
     assert_equal("contains_key", true, map.contains_key(_from_pattree_key(255_U64)));;
     assert_equal("find", some("abc"), map.find(_from_pattree_key(255_U64)));;
-    assert_equal("size", 2, map.get_size);;
+    assert_equal("size", 2, map.@size);;
     let map = map.erase(_from_pattree_key(255_U64));
-    assert_equal("size", 1, map.get_size);;
+    assert_equal("size", 1, map.@size);;
     pure()
 );
 

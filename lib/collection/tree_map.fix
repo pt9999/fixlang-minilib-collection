@@ -46,7 +46,7 @@ namespace TreeMap {
     // `TreeMap` is a structure that stores key-value pairs into a red-black tree.
     type TreeMap k v = unbox struct {
         root: RBNode (k, v),
-        size: I64,
+        _size: I64,
         key_less_than: k -> k -> Bool,
         entry_less_than: (k, v) -> (k, v) -> Bool
     };
@@ -64,7 +64,7 @@ namespace TreeMap {
     make_lt = |key_less_than| (
         TreeMap {
             root: RBNode::empty(),
-            size: 0,
+            _size: 0,
             key_less_than: key_less_than,
             entry_less_than: _lift_lt(key_less_than)
         }
@@ -73,7 +73,7 @@ namespace TreeMap {
     _mod_root_and_size: (RBNode (k, v) -> (I64, RBNode (k, v))) -> TreeMap k v -> TreeMap k v;
     _mod_root_and_size = |f, tm| (
         let (dsize, tm) = tm.act_root(f);
-        tm.mod_size(add(dsize))
+        tm.mod__size(add(dsize))
     );
 
     // Inserts an entry into a TreeMap.
@@ -124,9 +124,7 @@ namespace TreeMap {
     // Gets the number of entries.
     // The time complexity of this function is O(1).
     _get_size: [k: TreeMapKey, v: TreeMapValue] TreeMap k v -> I64;
-    _get_size = |tm| (
-        tm.@size
-    );
+    _get_size = @_size;
 
     // Checks whether a TreeMap contains a key.
     _contains_key: [k: TreeMapKey, v: TreeMapValue] k -> TreeMap k v -> Bool;
@@ -198,7 +196,7 @@ namespace TreeMap {
     from_iter_lt = |key_less_than, iter| (
         let tm = TreeMap::make_lt(key_less_than);
         let root = RBNode::from_iter_lt(tm.@entry_less_than, iter);
-        tm.set_root(root).set_size(root.get_size)
+        tm.set_root(root).set__size(root.@size)
     );
 
     // Converts an iterator of key-value pairs into a TreeMap using default `LessThan` ordering.
@@ -214,7 +212,7 @@ impl [k: TreeMapKey, v: TreeMapValue] TreeMap k v: Map {
     type MapValue (TreeMap k v) = v;
 
     is_empty = TreeMap::_is_empty;
-    get_size = TreeMap::_get_size;
+    @size = TreeMap::_get_size;
     contains_key = TreeMap::_contains_key;
     find = TreeMap::_find;
     insert = TreeMap::_insert;

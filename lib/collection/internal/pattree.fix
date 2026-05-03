@@ -68,7 +68,7 @@ namespace PTree {
                 (tree, node)
             ),
             none() => (
-                let node = tree.@_nodes.get_size;
+                let node = tree.@_nodes.@size;
                 let tree = tree.mod__nodes(push_back(nodedata));
                 (tree, node)
             )
@@ -457,7 +457,7 @@ impl PTree a: Map {
     type MapValue (PTree a) = a;
 
     is_empty = PTree::_is_empty;
-    get_size = PTree::_get_size;
+    @size = PTree::_get_size;
     contains_key = PTree::_contains_key;
     find = PTree::_find;
     insert = PTree::_insert;

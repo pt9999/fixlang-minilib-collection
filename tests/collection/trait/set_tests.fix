@@ -26,9 +26,9 @@ test_get_size:
 test_get_size = |empty_set| (
     make_test("test_get_size") $ |_|
     let set = empty_set;
-    assert_equal("0", 0, set.get_size);;
+    assert_equal("0", 0, set.@size);;
     let set = set.insert(1);
-    assert_equal("1", 1, set.get_size)
+    assert_equal("1", 1, set.@size)
 );
 
 test_contains:
@@ -51,11 +51,11 @@ test_insert = |empty_set| (
     let set = empty_set;
     let set = set.insert(42);
     let set = set.insert(42);
-    assert_equal("1", 1, set.get_size);;
+    assert_equal("1", 1, set.@size);;
     let set = set.insert(43);
     let set = set.insert(43);
     let set = set.insert(42);
-    assert_equal("2", 2, set.get_size)
+    assert_equal("2", 2, set.@size)
 );
 
 test_erase:
@@ -65,12 +65,12 @@ test_erase = |empty_set| (
     make_test("test_erase") $ |_|
     let set = empty_set;
     let set = set.erase(42);
-    assert_equal("0", 0, set.get_size);;
+    assert_equal("0", 0, set.@size);;
     let set = set.insert(42);
     let set = set.insert(42);
-    assert_equal("1", 1, set.get_size);;
+    assert_equal("1", 1, set.@size);;
     let set = set.erase(42);
-    assert_equal("0", 0, set.get_size)
+    assert_equal("0", 0, set.@size)
 );
 
 test_intersect:
@@ -162,7 +162,7 @@ test_insert_erase_ok = |empty_set, (n, insert_reorder, erase_reorder)| (
     );
 
     // assert that the size is same as keys
-    assert_equal("size after insertion", keys_sorted.get_size, set.get_size);;
+    assert_equal("size after insertion", keys_sorted.@size, set.@size);;
 
     // assert that keys are sorted
     let keys_current = set.to_array;
@@ -182,7 +182,7 @@ test_insert_erase_ok = |empty_set, (n, insert_reorder, erase_reorder)| (
     let keys_current = set.to_array;
     assert_equal("[] == keys_current", [], keys_current);;
     assert_true("set.is_empty", set.is_empty);;
-    assert_equal("size after erase", 0, set.get_size);;
+    assert_equal("size after erase", 0, set.@size);;
 
     pure()      // success
 );
@@ -274,8 +274,8 @@ test_get_size_batch = |empty_set| (
                 let mask = mask.Array::set(v, true);
                 let set = set.insert(v);
                 eval debug_eprintln("insert " + (v, size).to_string);
-                assert_equal("insert", size, set.get_size);;
-                //assert_equal("insert root get_size", set.@root.get_size, set.get_size);;
+                assert_equal("insert", size, set.@size);;
+                //assert_equal("insert root @size", set.@root.@size, set.@size);;
                 assert_true("contains", set.contains(v));;
                 assert_equal("to_array", range(0,n).filter(|i| mask.@(i)).to_array, set.to_array);;
                 continue_m $ (random, mask, size, set, i + 1)
@@ -284,8 +284,8 @@ test_get_size_batch = |empty_set| (
                 let mask = mask.Array::set(v, false);
                 let set = set.erase(v);
                 eval debug_eprintln("erase " + (v, size).to_string);
-                assert_equal("erase", size, set.get_size);;
-                //assert_equal("erase root get_size", set.@root.get_size, set.get_size);;
+                assert_equal("erase", size, set.@size);;
+                //assert_equal("erase root @size", set.@root.@size, set.@size);;
                 assert_false("not contains", set.contains(v));;
                 assert_equal("to_array", range(0,n).filter(|i| mask.@(i)).to_array, set.to_array);;
                 continue_m $ (random, mask, size, set, i + 1)
@@ -335,7 +335,7 @@ test_perf = |empty_set, n| (
         pure $ shuffled.to_iter.fold(empty_set, insert)
     }).lift;
     println(" insert: " + insert_time.to_string + " seconds").lift;;
-    assert_equal("size", n, set.get_size);;
+    assert_equal("size", n, set.@size);;
     let (ans1, ans1_time) = *consumed_time_while_io(do {
         pure();;
         pure $ set.to_iter.Iterator::to_array
@@ -355,7 +355,7 @@ test_perf = |empty_set, n| (
         )
     }).lift;
     println(" erase: " + erase_time.to_string + " seconds").lift;;
-    assert_equal("size", 0, set.get_size);;
+    assert_equal("size", 0, set.@size);;
     pure()
 );
 

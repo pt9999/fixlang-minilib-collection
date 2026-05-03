@@ -203,7 +203,7 @@ namespace TreeSet {
         let node = RBNode::from_iter_lt(less_than, iter);
         TreeSet {
             root: node,
-            size: node.get_size,
+            size: node.@size,
             less_than: less_than
         }
     );
@@ -253,7 +253,7 @@ impl [a: TreeSetElem] TreeSet a: Set {
     type SetElem (TreeSet a) = a;
 
     is_empty = TreeSet::_is_empty;
-    get_size = TreeSet::_get_size;
+    @size = TreeSet::_get_size;
     contains = TreeSet::_contains;
     insert = TreeSet::_insert;
     erase = TreeSet::_erase;

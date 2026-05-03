@@ -5,6 +5,8 @@
   - `TreeMap::find_range`
   - `TreeSet::find_range`
   - `TreeSet::find_range_descending`
+- Modified some code to remove the deprecation warnings.
+- Renamed `get_size` to `@size`.
 
 ## 0.8.1
 ### Changed

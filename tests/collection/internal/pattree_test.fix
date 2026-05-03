@@ -57,7 +57,7 @@ test_perf = |n| (
             tree.insert((array.@(i).to_U64, i)))
     }).lift;
     println(" insert: " + insert_time.to_string + " seconds").lift;;
-    assert_equal("size", n, tree.get_size);;
+    assert_equal("size", n, tree.@size);;
 /*
     let (_, find_time) = *consumed_time_while_io(do {
         pure();;
@@ -90,7 +90,7 @@ test_perf = |n| (
         )
     }).lift;
     println(" erase: " + erase_time.to_string + " seconds").lift;;
-    assert_equal("size", 0, tree.get_size);;
+    assert_equal("size", 0, tree.@size);;
     pure()
 );
 
