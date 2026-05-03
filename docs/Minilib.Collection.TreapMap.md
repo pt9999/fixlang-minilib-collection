@@ -1,6 +1,6 @@
 # Minilib.Collection.TreapMap
 
-Defined in minilib-collection@0.8.1
+Defined in minilib-collection@0.8.2
 
 `TreapMap` is a map that manages keys in sorted order.
 
@@ -128,12 +128,6 @@ The root node.
 Type: `kc`
 
 The key comparator.
-
-##### field `size`
-
-Type: `Std::I64`
-
-The number of elements.
 
 ##### field `seed`
 

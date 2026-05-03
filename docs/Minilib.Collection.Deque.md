@@ -1,6 +1,6 @@
 # Minilib.Collection.Deque
 
-Defined in minilib-collection@0.8.1
+Defined in minilib-collection@0.8.2
 
 Deque (double-ended queue).
 Deque can be used as a FIFO such as a message queue.
@@ -10,6 +10,12 @@ When used as a FIFO, the amortized costs of `push_back()` and
 ## Values
 
 ### namespace Minilib.Collection.Deque::Deque
+
+#### @size
+
+Type: `Minilib.Collection.Deque::Deque a -> Std::I64`
+
+Gets the size of the queue.
 
 #### empty
 
@@ -31,9 +37,9 @@ Gets the front element of the queue.
 
 #### get_size
 
-Type: `Minilib.Collection.Deque::Deque a -> Std::I64`
+**Deprecated**: Use `@size` instead.
 
-Gets the size of the queue.
+Type: `Minilib.Collection.Deque::Deque a -> Std::I64`
 
 #### is_empty
 

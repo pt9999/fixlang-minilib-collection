@@ -1,6 +1,6 @@
 # Minilib.Collection.OrderedMap
 
-Defined in minilib-collection@0.8.1
+Defined in minilib-collection@0.8.2
 
 Ordered map.
 This is similar to HashMap except it preserves the order of entries.
@@ -8,6 +8,12 @@ This is similar to HashMap except it preserves the order of entries.
 ## Values
 
 ### namespace Minilib.Collection.OrderedMap::OrderedMap
+
+#### @size
+
+Type: `Minilib.Collection.OrderedMap::OrderedMap k v -> Std::I64`
+
+Get size (number of elements) in an OrderedMap.
 
 #### contains_key
 
@@ -47,9 +53,9 @@ Get capacity of an OrderedMap.
 
 #### get_size
 
-Type: `Minilib.Collection.OrderedMap::OrderedMap k v -> Std::I64`
+**Deprecated**: Use `@size` instead.
 
-Get size (number of elements) in an OrderedMap.
+Type: `Minilib.Collection.OrderedMap::OrderedMap k v -> Std::I64`
 
 #### insert
 

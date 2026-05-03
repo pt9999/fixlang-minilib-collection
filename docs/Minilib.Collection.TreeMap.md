@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeMap
 
-Defined in minilib-collection@0.8.1
+Defined in minilib-collection@0.8.2
 
 TreeMap is a map that manages keys in sorted order.
 
@@ -36,13 +36,9 @@ test_perf (n=1000000)
 
 #### find_range
 
+**Deprecated**: Use `select_range` instead.
+
 Type: `[k : Minilib.Collection.TreeMap::TreeMap::TreeMapKey, v : Minilib.Collection.TreeMap::TreeMap::TreeMapValue] k -> k -> Minilib.Collection.TreeMap::TreeMap::TreeMap k v -> Std::Iterator::DynIterator (k, v)`
-
-Deprecated: Use `select_range`.
-
-`tm.find_range(begin, end)` finds all entries `(k,v)`
-where `!less_than(k, begin) && less_than(k, end)` is true.
-In default `LessThan` ordering, that condition is same as `begin <= k && k < end`.
 
 #### find_raw_range
 
@@ -110,10 +106,6 @@ Defined as: `type TreeMap k v = unbox struct { ...fields... }`
 ##### field `root`
 
 Type: `Minilib.Collection.Internal.RBTree::RBNode::RBNode (k, v)`
-
-##### field `size`
-
-Type: `Std::I64`
 
 ##### field `key_less_than`
 

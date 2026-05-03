@@ -1,6 +1,6 @@
 # Minilib.Collection.TreeSet
 
-Defined in minilib-collection@0.8.1
+Defined in minilib-collection@0.8.2
 
 TreeSet is a set that manages elements in sorted order.
 
@@ -36,35 +36,15 @@ test_perf (n=1000000)
 
 #### find_range
 
+**Deprecated**: Use `select_range` instead.
+
 Type: `[a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] a -> a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator::DynIterator a`
-
-Deprecated: use `select_range`.
-
-`ts.find_range(begin, end)` finds all elements `x`
-where `!less_than(x, begin) && less_than(x, end)` is true.
-In default `LessThan` ordering, that condition is same as `begin <= x && x < end`.
-
-##### Parameters
-
-- `begin`: the beginning of range
-- `end`: the end of range
-- `ts`: a TreeSet
 
 #### find_range_descending
 
+**Deprecated**: Use `select_range` instead.
+
 Type: `[a : Minilib.Collection.TreeSet::TreeSet::TreeSetElem] a -> a -> Minilib.Collection.TreeSet::TreeSet::TreeSet a -> Std::Iterator::DynIterator a`
-
-Deprecated: use `select_range`.
-
-`ts.find_range(begin, end)` finds all elements `x`
-where `!less_than(x, begin) && less_than(x, end)` is true,  in descending order.
-In default `LessThan` ordering, that condition is same as `begin <= x && x < end`.
-
-##### Parameters
-
-- `begin`: the beginning of range
-- `end`: the end of range
-- `ts`: a TreeSet
 
 #### find_raw_range
 

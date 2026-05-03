@@ -1,6 +1,6 @@
 # Minilib.Collection.Trait
 
-Defined in minilib-collection@0.8.1
+Defined in minilib-collection@0.8.2
 
 Trait definitions, default implementations of traits, and common type definitions for `Minilib.Collection.*`.
 
@@ -79,6 +79,18 @@ Creates a key comparator using the specified function.
 
 ### namespace Minilib.Collection.Trait::Map
 
+#### @size
+
+Type: `[map : Minilib.Collection.Trait::Map] map -> Std::I64`
+
+Trait member of `Minilib.Collection.Trait::Map`
+
+Gets the number of entries in a map.
+
+##### Parameters
+
+- `map`: a map
+
 #### act
 
 Type: `[f : Std::Functor, map : Minilib.Collection.Trait::Map] Minilib.Collection.Trait::Map::MapKey map -> (Std::Option (Minilib.Collection.Trait::Map::MapValue map) -> f (Std::Option (Minilib.Collection.Trait::Map::MapValue map))) -> map -> f map`
@@ -146,15 +158,9 @@ If no entry is found, returns `none()`.
 
 #### get_size
 
+**Deprecated**: Use `@size` instead.
+
 Type: `[map : Minilib.Collection.Trait::Map] map -> Std::I64`
-
-Trait member of `Minilib.Collection.Trait::Map`
-
-Gets the number of entries in a map.
-
-##### Parameters
-
-- `map`: a map
 
 #### insert
 
@@ -266,6 +272,18 @@ Default implementation of `Map::set`.
 
 ### namespace Minilib.Collection.Trait::Set
 
+#### @size
+
+Type: `[set : Minilib.Collection.Trait::Set] set -> Std::I64`
+
+Trait member of `Minilib.Collection.Trait::Set`
+
+Gets the number of elements in a set.
+
+##### Parameters
+
+- `set`: a set
+
 #### contains
 
 Type: `[set : Minilib.Collection.Trait::Set] Minilib.Collection.Trait::Set::SetElem set -> set -> Std::Bool`
@@ -294,15 +312,9 @@ Erases all elements which is equivalent to the specified element.
 
 #### get_size
 
+**Deprecated**: Use `@size` instead.
+
 Type: `[set : Minilib.Collection.Trait::Set] set -> Std::I64`
-
-Trait member of `Minilib.Collection.Trait::Set`
-
-Gets the number of elements in a set.
-
-##### Parameters
-
-- `set`: a set
 
 #### insert
 
@@ -525,7 +537,7 @@ Checks whether a map is empty.
 
 - `map`: a map
 
-##### method `get_size`
+##### method `@size`
 
 Type: `map -> Std::I64`
 
@@ -684,7 +696,7 @@ Checks whether a set is empty.
 
 - `set`: a set
 
-##### method `get_size`
+##### method `@size`
 
 Type: `set -> Std::I64`
 

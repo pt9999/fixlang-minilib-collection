@@ -1,6 +1,6 @@
 # Minilib.Collection.Internal.RBTree
 
-Defined in minilib-collection@0.8.1
+Defined in minilib-collection@0.8.2
 
 Red-Black Tree.
 (This is an internal module of `TreeMap` and `TreeSet`.)
@@ -22,6 +22,13 @@ NOTE: `less_than()` function must meet following conditions.
 ## Values
 
 ### namespace Minilib.Collection.Internal.RBTree::RBNode
+
+#### @size
+
+Type: `Minilib.Collection.Internal.RBTree::RBNode::RBNode a -> Std::I64`
+
+Gets the number of elements.
+The time complexity of this function is O(n).
 
 #### find
 
@@ -79,13 +86,6 @@ Type: `Minilib.Collection.Internal.RBTree::RBNode::RBNode a -> Minilib.Collectio
 #### get_right
 
 Type: `Minilib.Collection.Internal.RBTree::RBNode::RBNode a -> Minilib.Collection.Internal.RBTree::RBNode::RBNode a`
-
-#### get_size
-
-Type: `Minilib.Collection.Internal.RBTree::RBNode::RBNode a -> Std::I64`
-
-Gets the number of elements.
-The time complexity of this function is O(n).
 
 #### get_triplet
 
