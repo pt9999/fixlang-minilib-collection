@@ -160,11 +160,10 @@ namespace TreeMap {
         else { tm.@root.find_range_descending(lt_begin, lt_end) }
     );
 
-    // Deprecated: Use `select_range`.
-    //
     // `tm.find_range(begin, end)` finds all entries `(k,v)`
     // where `!less_than(k, begin) && less_than(k, end)` is true.
     // In default `LessThan` ordering, that condition is same as `begin <= k && k < end`.
+    DEPRECATED[find_range, "Use `select_range` instead."];
     find_range: [k: TreeMapKey, v: TreeMapValue] k -> k -> TreeMap k v -> DynIterator (k, v);
     find_range = |begin, end, tm| (
         let less_than = tm.@key_less_than;

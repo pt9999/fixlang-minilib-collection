@@ -116,8 +116,6 @@ namespace TreeSet {
         else { ts.@root.find_range_descending(lt_begin, lt_end) }
     );
 
-    // Deprecated: use `select_range`.
-    //
     // `ts.find_range(begin, end)` finds all elements `x`
     // where `!less_than(x, begin) && less_than(x, end)` is true.
     // In default `LessThan` ordering, that condition is same as `begin <= x && x < end`.
@@ -126,6 +124,7 @@ namespace TreeSet {
     // - `begin`: the beginning of range
     // - `end`: the end of range
     // - `ts`: a TreeSet
+    DEPRECATED[find_range, "Use `select_range` instead."];
     find_range: [a: TreeSetElem] a -> a -> TreeSet a -> DynIterator a;
     find_range = |begin, end, ts| (
         let less_than = ts.@less_than;
@@ -134,8 +133,6 @@ namespace TreeSet {
         ts.@root.find_range(lt_begin, lt_end)
     );
 
-    // Deprecated: use `select_range`.
-    //
     // `ts.find_range(begin, end)` finds all elements `x`
     // where `!less_than(x, begin) && less_than(x, end)` is true,  in descending order.
     // In default `LessThan` ordering, that condition is same as `begin <= x && x < end`.
@@ -144,6 +141,7 @@ namespace TreeSet {
     // - `begin`: the beginning of range
     // - `end`: the end of range
     // - `ts`: a TreeSet
+    DEPRECATED[find_range_descending, "Use `select_range` instead."];
     find_range_descending: [a: TreeSetElem] a -> a -> TreeSet a -> DynIterator a;
     find_range_descending = |begin, end, ts| (
         let less_than = ts.@less_than;

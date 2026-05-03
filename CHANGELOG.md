@@ -1,6 +1,10 @@
 ## 0.8.2
 ### Changed
 - Upgraded to minilib-common@0.13.2.
+- Added `DEPRECATED` pragmas to following functions.
+  - `TreeMap::find_range`
+  - `TreeSet::find_range`
+  - `TreeSet::find_range_descending`
 
 ## 0.8.1
 ### Changed
