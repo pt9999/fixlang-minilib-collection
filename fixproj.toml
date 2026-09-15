@@ -43,15 +43,13 @@ files = [
 ]
 
 [[dependencies]]
-name = "minilib-common"
-version = "0.14.0"
-# path = "../fixlang-minilib-common"
-git = { url = "https://github.com/pt9999/fixlang-minilib-common.git" }
-
+name = "hash"
+version = "1.1.3"
+git = { url = "https://github.com/tttmmmyyyy/fixlang-hash.git" }
 
 [[dependencies]]
 name = "hashmap"
-version = "2.0.0"
+version = "2.1.0"
 git = { url = "https://github.com/tttmmmyyyy/fixlang-hashmap.git" }
 
 # for test_util_array.fix
@@ -59,3 +57,9 @@ git = { url = "https://github.com/tttmmmyyyy/fixlang-hashmap.git" }
 name = "random"
 version = "1.1.1"
 git = { url = "https://github.com/tttmmmyyyy/fixlang-random.git" }
+
+[[dependencies]]
+name = "minilib-common"
+version = "0.14.0"
+# path = "../fixlang-minilib-common"
+git = { url = "https://github.com/pt9999/fixlang-minilib-common.git" }
