@@ -1,6 +1,6 @@
 # Minilib.Collection.Internal.PatTree
 
-Defined in minilib-collection@0.9.0
+Defined in minilib-collection@0.9.1
 
 Simple map using Patricia Tree.
 
