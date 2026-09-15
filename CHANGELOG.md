@@ -1,4 +1,11 @@
-## 0.8.0
+## 0.9.1
+### Changed
+- Added indirect dependencies.
+- Upgraded to hashmap@2.1.0.
+- Changed a testcase of OrderedMap.
+- Fixed typo in CHANGELOG.md.
+
+## 0.9.0
 ### Changed
 - Merged PR#2 (thanks to tttmmmyyyy san).
   - Migrate to the unboxed-Array standard library.
