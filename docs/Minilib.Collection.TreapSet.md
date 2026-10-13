@@ -1,6 +1,6 @@
 # Minilib.Collection.TreapSet
 
-Defined in minilib-collection@0.9.1
+Defined in minilib-collection@0.10.0
 
 `TreapSet` is a set that manages elements in sorted order.
 

@@ -1,6 +1,6 @@
 # Minilib.Collection.PTreeMap
 
-Defined in minilib-collection@0.9.1
+Defined in minilib-collection@0.10.0
 
 `PTreeMap` is a map that manages keys in sorted order.
 
@@ -74,18 +74,6 @@ The type of Patricia Tree Maps whose keys are of type `U64`.
 #### trait `k : PTreeMapKey`
 
 The trait of keys of a PTreeMap.
-
-##### method `_to_pattree_key`
-
-Type: `k -> Std::U64`
-
-Converts from `k` to an internal key.
-
-##### method `_from_pattree_key`
-
-Type: `Std::U64 -> k`
-
-Converts from an internal key to `k`.
 
 ## Trait implementations
 

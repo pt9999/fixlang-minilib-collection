@@ -1,6 +1,6 @@
 # Minilib.Collection.TreapMap
 
-Defined in minilib-collection@0.9.1
+Defined in minilib-collection@0.10.0
 
 `TreapMap` is a map that manages keys in sorted order.
 

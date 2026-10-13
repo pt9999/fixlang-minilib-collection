@@ -1,6 +1,6 @@
 # Minilib.Collection.PTreeSet
 
-Defined in minilib-collection@0.9.1
+Defined in minilib-collection@0.10.0
 
 `PTreeSet` is a set that manages elements in sorted order.
 
@@ -62,18 +62,6 @@ The internal Patricia Tree.
 #### trait `e : PTreeSetElem`
 
 The trait of elements of a PTreeSet.
-
-##### method `_to_pattree_key`
-
-Type: `e -> Std::U64`
-
-Converts from `e` to an internal key.
-
-##### method `_from_pattree_key`
-
-Type: `Std::U64 -> e`
-
-Converts from an internal key to `e`.
 
 ## Trait implementations
 

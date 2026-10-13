@@ -1,6 +1,6 @@
 # Minilib.Collection.Trait
 
-Defined in minilib-collection@0.9.1
+Defined in minilib-collection@0.10.0
 
 Trait definitions, default implementations of traits, and common type definitions for `Minilib.Collection.*`.
 
