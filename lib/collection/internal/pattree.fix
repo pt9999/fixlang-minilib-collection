@@ -376,7 +376,7 @@ namespace PTree {
     impl PTreeIterator a: Iterator {
         type Item (PTreeIterator a) = (PKey, a);
         advance = |iter| (
-            let PTreeIterator { tree: tree, lower_bound: lower_bound, upper_bound: upper_bound, ascending: ascending, stack: stack } = iter;
+            let PTreeIterator { tree, lower_bound, upper_bound, ascending, stack } = iter;
             let iter = iter.set_stack([]); // scapegoat
             loop(
                 stack, |stack|
@@ -417,10 +417,7 @@ namespace PTree {
     _select_range: Bound PKey -> Bound PKey -> Bool -> PTree a -> PTreeIterator a;
     _select_range = |lower_bound, upper_bound, ascending, tree| (
         PTreeIterator {
-            tree: tree,
-            lower_bound: lower_bound,
-            upper_bound: upper_bound,
-            ascending: ascending,
+            tree, lower_bound, upper_bound, ascending,
             stack: [tree.@_root]
         }
     );

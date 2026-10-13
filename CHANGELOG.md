@@ -1,6 +1,10 @@
 ## 0.10.0
 ### Changed
 - fixproj.toml: Bumped `fix_version` to 1.6.0. Depends on minilib-common@0.15.0.
+- Updated several files to reflect the specification changes in Fix v1.6.0.
+  - rbtree.fix: Changed `_Debug` to `__Debug`.
+  - treap_map.fix, pattree.fix: Omitted redundant field names in structure
+    pattern matchings and constructions. Reduced warnings.
 
 ## 0.9.1
 ### Changed

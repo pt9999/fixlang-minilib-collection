@@ -123,7 +123,7 @@ namespace TreapMap {
     _make_branch: Priority -> k -> v -> TNodeIndex -> TNodeIndex -> TreapMap kc k v -> (TreapMap kc k v, TNodeIndex);
     _make_branch = |prio, key, value, left, right, treap| (
         let treap = treap[^_size].imod(add(1));
-        let b = TNode { prio:prio, key:key, value:value, left:left, right:right };
+        let b = TNode { prio, key, value, left, right };
         treap._make_node(b)
     );
 
@@ -170,7 +170,7 @@ namespace TreapMap {
         if node == TNodeIndex::empty {
             none()
         };
-        let TNode{ key:key, value:value, left:left, right:right } = treap[node].iget;
+        let TNode{ key, value, left, right, _ } = treap[node].iget;
         if treap.@kc.compare(key, key_to_find) { // key < key_to_find
             treap._find_recursive(key_to_find, right)
         } else if treap.@kc.compare(key_to_find, key) { // key_to_find < key
@@ -193,10 +193,10 @@ namespace TreapMap {
         if old_node == TNodeIndex::empty {
             treap._make_branch(new_prio, new_key, new_value, TNodeIndex::empty, TNodeIndex::empty)
         };
-        let TNode{ prio:old_prio, key:old_key, left:old_left, right:old_right } = treap[old_node].iget;
+        let TNode{ prio:old_prio, key:old_key, left:old_left, right:old_right, _ } = treap[old_node].iget;
         if treap.@kc.compare(old_key, new_key) { // old_key < new_key
             let (treap, up_node) = treap._insert_recursive(new_prio, new_key, new_value, old_right);
-            let TNode{ prio:up_prio, left:up_left } = treap[up_node].iget;
+            let TNode{ prio:up_prio, left:up_left, _ } = treap[up_node].iget;
             if old_prio < up_prio {
                 let treap = treap[old_node][^right].iset(up_left);
                 let treap = treap[up_node][^left].iset(old_node);
@@ -207,7 +207,7 @@ namespace TreapMap {
             }
         } else if treap.@kc.compare(new_key, old_key) { // new_key < old_key
             let (treap, up_node) = treap._insert_recursive(new_prio, new_key, new_value, old_left);
-            let TNode{ prio:up_prio, right:up_right } = treap[up_node].iget;
+            let TNode{ prio:up_prio, right:up_right, _ } = treap[up_node].iget;
             if old_prio < up_prio {
                 let treap = treap[old_node][^left].iset(up_right);
                 let treap = treap[up_node][^right].iset(old_node);
@@ -234,7 +234,7 @@ namespace TreapMap {
         if old_node == TNodeIndex::empty {
             (treap, TNodeIndex::empty)
         };
-        let TNode{ key:old_key, left:old_left, right:old_right } = treap[old_node].iget;
+        let TNode{ key:old_key, left:old_left, right:old_right, _ } = treap[old_node].iget;
         if treap.@kc.compare(old_key, key) { // old_key < key
             let (treap, right2) = treap._erase_recursive(key, old_right);
             let treap = if old_right == right2 { treap } else { treap[old_node][^right].iset(right2) };
@@ -273,7 +273,7 @@ namespace TreapMap {
     _to_array = |treap| (
         let inner = fix $ |inner, node, arr| (
             if node == TNodeIndex::empty { arr };
-            let TNode{ prio:prio, key:key, value:value, left:left, right:right } = treap[node].iget;
+            let TNode{ prio, key, value, left, right } = treap[node].iget;
             let arr = inner(left, arr);
             let arr = arr.push_back((key, value));
             let arr = inner(right, arr);
@@ -294,7 +294,7 @@ namespace TreapMap {
     impl [kc: KeyCompare, Key kc = k] TreapMapIterator kc k v: Iterator {
         type Item (TreapMapIterator kc k v) = (k, v);
         advance = |iter| (
-            let TreapMapIterator { treap: treap, lower_bound: lower_bound, upper_bound: upper_bound, ascending: ascending, stack: stack } = iter;
+            let TreapMapIterator { treap, lower_bound, upper_bound, ascending, stack } = iter;
             let iter = iter.set_stack([]); // scapegoat
             loop(
                 stack, |stack|
@@ -306,7 +306,7 @@ namespace TreapMap {
                     ok(kv) => break $ some $ (iter.set_stack(stack), kv),
                     err(node) => (
                         if node == TNodeIndex::empty { continue $ stack };
-                        let TNode{ prio:prio, key:key, value:value, left:left, right:right } = treap[node].iget;
+                        let TNode { prio, key, value, left, right } = treap[node].iget;
                         let kc = treap.@kc;
                         let too_small = !kc.above_lower_bound(lower_bound, key);
                         let too_large = !kc.below_upper_bound(upper_bound, key);
@@ -330,10 +330,7 @@ namespace TreapMap {
     _select_range: [kc: KeyCompare, Key kc = k] Bound k -> Bound k -> Bool -> TreapMap kc k v -> TreapMapIterator kc k v;
     _select_range = |lower_bound, upper_bound, ascending, treap| (
         TreapMapIterator {
-            treap: treap,
-            lower_bound: lower_bound,
-            upper_bound: upper_bound,
-            ascending: ascending,
+            treap, lower_bound, upper_bound, ascending,
             stack: [err(treap.@root)]
         }
     );
@@ -347,7 +344,7 @@ namespace TreapMap {
     _debug_to_string = |treap| (
         let inner = fix $ |inner, indent, node, str: String| (
             if node == TNodeIndex::empty { str };
-            let TNode{ prio:prio, key:key, value:value, left:left, right:right } = treap[node].iget;
+            let TNode{ prio, key, value, left, right } = treap[node].iget;
             let s_indent = Array::fill(indent, ' ').push_back('\0').from_bytes.as_ok;
             let str: String = inner(indent + 2, left, str);
             let str: String = str + s_indent + (prio, key, value).format("prio={} key={} value={}\n");
@@ -402,7 +399,7 @@ namespace TreapMap {
             };
             treap
         };
-        let TNode{ prio:old_prio, key:old_key, left:old_left, right:old_right } = treap[old_node].iget;
+        let TNode{ prio:old_prio, key:old_key, left:old_left, right:old_right, _ } = treap[old_node].iget;
         if treap.@kc.compare(old_key, new_key) { // old_key < new_key
             treap._insert_to_leaf(new_prio, new_key, new_value, old_right, old_node, 1_I8)
         } else if treap.@kc.compare(new_key, old_key) { // new_key < old_key
